@@ -239,7 +239,11 @@ export class PresidentComponent implements OnInit {
       {
         name: 'Age Range',
         sortOrder: null,
-        sortFn: (a: President, b: President) => a.birthYr - b.birthYr,
+        sortFn: (a: President, b: President) => {
+          const ageA = a.birthYr + a.deathAge;
+          const ageB = b.birthYr + b.deathAge;
+          return ageA - ageB;
+        },
         sortDirections: ['ascend', 'descend', null],
         filterMultiple: true,
         listOfFilter: this.getAgeRanges(), // Initialize with age range filters
