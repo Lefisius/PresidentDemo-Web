@@ -15,7 +15,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
-
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 @NgModule({
   declarations: [
@@ -35,6 +35,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
     NzDropDownModule,
     NzPageHeaderModule,
     NzInputNumberModule,
+    NzSelectModule,
   ]
 })
 export class PreshobbyModule { }

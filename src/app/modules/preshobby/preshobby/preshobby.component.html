@@ -49,11 +49,20 @@
             <nz-content>
                 <div>
                     <h1 class="header">{{ tableTitle }}</h1>
+                    <div class="printer">
+                        <nz-select [(ngModel)]="selectedPrinter" placeholder="Select Printer" style="width: 200px;">
+                            <nz-option *ngFor="let printer of printers" [nzValue]="printer.printerName"
+                                [nzLabel]="printer.printerName"></nz-option>
+                        </nz-select>
+                        <button class="botton-margin" nz-button nzType="primary" (click)="installPrinter()">Install Printer</button>
+                        <button class="botton-margin" nz-button nzType="default" (click)="printDocument()">Print</button>
+                    </div>
                     <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
                             <tr>
                                 <th>PresName</th>
                                 <th>Hobby</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let president of filteredData">
