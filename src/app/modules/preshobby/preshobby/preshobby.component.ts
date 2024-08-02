@@ -121,6 +121,15 @@ export class PreshobbyComponent implements OnInit {
       this.preshobbyService.installLocalPPDFile(formData).subscribe(response => {
         console.log('PPD install response:', response);
         alert('Printer driver installed successfully!');
+        // รีเซ็ตฟิลด์หลังการติดตั้งสำเร็จ
+        this.printerName = '';
+        this.printerIP = '';
+        this.selectedFile = null;
+        // อัปเดต UI ให้รีเซ็ต
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = ''; // รีเซ็ตค่าของ input type="file"
+        }
       }, error => {
         console.error('Error installing PPD:', error);
         alert('Failed to install printer driver.');
