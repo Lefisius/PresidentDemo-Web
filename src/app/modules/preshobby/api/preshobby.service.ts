@@ -1,3 +1,4 @@
+// preshobby.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -31,4 +32,8 @@ export class PreshobbyService {
     return this.http.post(url, formData);
   }
 
+  installLocalPPDFile(formData: FormData): Observable<any> {
+    const url = 'http://localhost:9003/api/printers/install-local'; // Ensure this URL matches your backend API
+    return this.http.post(url, formData, { responseType: 'text' });
+  }
 }

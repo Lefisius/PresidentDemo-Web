@@ -16,6 +16,9 @@ export class PreshobbyComponent implements OnInit {
   filteredData: any[] = [];
   printers: any[] = [];
   selectedPrinter: string = '';
+  printerName: string = '';
+  printerIP: string = '';
+  selectedFile: File | null = null; // กำหนดค่าเริ่มต้นเป็น null
 
   constructor(private preshobbyService: PreshobbyService, private http: HttpClient) { }
 
@@ -98,6 +101,32 @@ export class PreshobbyComponent implements OnInit {
       });
     } else {
       alert('Please select a printer.');
+    }
+  }
+
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  onUploadPPD(): void {
+    if (this.selectedFile && this.printerName && this.printerIP) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+      formData.append('printerName', this.printerName);
+      formData.append('printerIP', this.printerIP);
+
+      this.preshobbyService.installLocalPPDFile(formData).subscribe(response => {
+        console.log('PPD install response:', response);
+        alert('Printer driver installed successfully!');
+      }, error => {
+        console.error('Error installing PPD:', error);
+        alert('Failed to install printer driver.');
+      });
+    } else {
+      alert('Please provide all required fields and select a file.');
     }
   }
 }

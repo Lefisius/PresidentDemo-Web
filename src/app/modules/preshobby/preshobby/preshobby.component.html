@@ -49,14 +49,37 @@
             <nz-content>
                 <div>
                     <h1 class="header">{{ tableTitle }}</h1>
-                    <div class="printer">
+                    <!-- <div class="printer">
                         <nz-select [(ngModel)]="selectedPrinter" placeholder="Select Printer" style="width: 200px;">
                             <nz-option *ngFor="let printer of printers" [nzValue]="printer.printerName"
                                 [nzLabel]="printer.printerName"></nz-option>
                         </nz-select>
-                        <button class="botton-margin" nz-button nzType="primary" (click)="installPrinter()">Install Printer</button>
-                        <button class="botton-margin" nz-button nzType="default" (click)="printDocument()">Print</button>
+                        <button class="botton-margin" nz-button nzType="primary" (click)="installPrinter()">Install
+                            Printer</button>
+                        <button class="botton-margin" nz-button nzType="default"
+                            (click)="printDocument()">Print</button>
+                    </div> -->
+                    <div class="printer">
+                        <!-- เลือกเครื่องพิมพ์ -->
+                        <nz-select [(ngModel)]="selectedPrinter" placeholder="Select Printer" style="width: 200px;">
+                            <nz-option *ngFor="let printer of printers" [nzValue]="printer.printerName"
+                                [nzLabel]="printer.printerName"></nz-option>
+                        </nz-select>
+                        <!-- ปุ่มติดตั้งเครื่องพิมพ์ -->
+                        <button class="botton-margin" nz-button nzType="primary" (click)="installPrinter()">Install
+                            Printer</button>
+                        <!-- ปุ่มพิมพ์เอกสาร -->
+                        <button class="botton-margin" nz-button nzType="default"
+                            (click)="printDocument()">Print</button>
                     </div>
+                    <!-- ฟอร์มการอัพโหลด PPD -->
+                    <form class="printer-from" (ngSubmit)="onUploadPPD()" #ppdForm="ngForm">
+                        <input type="text" [(ngModel)]="printerName" name="printerName" placeholder="Printer Name"
+                            required>
+                        <input type="text" [(ngModel)]="printerIP" name="printerIP" placeholder="Printer IP" required>
+                        <input type="file" (change)="onFileChange($event)" required>
+                        <button type="submit" nz-button nzType="primary">Install Printer Driver</button>
+                    </form>
                     <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
                             <tr>
