@@ -3,52 +3,75 @@
         <nz-header>
             <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
                 <li nz-menu-item routerLink="/Administration" routerLinkActive="active">Administration</li>
-                <li nz-menu-item routerLink="/Adminprvp" routerLinkActive="active">
-                    AdminPrVp</li>
-                <li nz-menu-item nzSelected routerLink="/Election" routerLinkActive="active">
-                    Election</li>
-                <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">
-                    PresHobby</li>
-                <li nz-menu-item routerLink="/President" routerLinkActive="active">
-                    President</li>
+                <li nz-menu-item routerLink="/Adminprvp" routerLinkActive="active">AdminPrVp</li>
+                <li nz-menu-item nzSelected routerLink="/Election" routerLinkActive="active">Election</li>
+                <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
+                <li nz-menu-item routerLink="/President" routerLinkActive="active">President</li>
                 <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
-                <li nz-menu-item routerLink="/State" routerLinkActive="active">State
-                </li>
+                <li nz-menu-item routerLink="/State" routerLinkActive="active">State</li>
                 <div id="datetime" class="datetime">{{ datetime }}</div>
             </ul>
             <div class="example-input">
                 <input nz-input placeholder="Search President" nzSize="default" [(ngModel)]="searchTerm"
                     (ngModelChange)="onSearch()" />
                 <button nz-button nzType="primary" (click)="onSearch()">
-                    <i nz-icon nzType="search"></i>
-                    Search
+                    <i nz-icon nzType="search"></i> Search
                 </button>
-                <button class="botton-margin" nz-button nz-dropdown [nzDropdownMenu]="menu4">
-                    Select
-                    <i nz-icon nzType="down"></i>
-                </button>
-                <nz-dropdown-menu #menu4="nzDropdownMenu">
-                    <ul nz-menu nzMode="horizontal">
-                        <li nz-menu-item routerLink="/Administration" routerLinkActive="active">Administration</li>
-                        <li nz-menu-item routerLink="/Adminprvp" routerLinkActive="active">
-                            AdminPrVp</li>
-                        <li nz-menu-item nzSelected routerLink="/Election" routerLinkActive="active">
-                            Election</li>
-                        <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">
-                            PresHobby</li>
-                        <li nz-menu-item routerLink="/President" routerLinkActive="active">
-                            President</li>
-                        <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
-                        <li nz-menu-item routerLink="/State" routerLinkActive="active">State
-                        </li>
-                    </ul>
-                </nz-dropdown-menu>
             </div>
         </nz-header>
         <nz-layout class="inner-layout">
             <nz-content>
-                <div>
+                <div class="container">
                     <h1 class="header">{{ tableTitle }}</h1>
+                    <div class="add-printer-section">
+                        <h2>Add Printer</h2>
+                        <form #printerForm="ngForm" (ngSubmit)="addPrinter(printerForm)">
+                            <div>
+                                <label for="printerName">Printer Name</label>
+                                <input id="printerName" nz-input [(ngModel)]="printerName" name="printerName"
+                                    required />
+                            </div>
+                            <div>
+                                <label for="printerIP">Printer IP</label>
+                                <input id="printerIP" nz-input [(ngModel)]="printerIP" name="printerIP" required />
+                            </div>
+                            <div>
+                                <label for="printerDescription">Printer Description</label>
+                                <input id="printerDescription" nz-input [(ngModel)]="printerDescription"
+                                    name="printerDescription" required />
+                            </div>
+                            <div>
+                                <label for="ppdFile">PPD File</label>
+                                <input type="file" id="ppdFile" #ppdFileInput (change)="handlePpdFileInput($event)"
+                                    required />
+                                <div *ngIf="!printerPpdBase64" class="text-class">PPD File is required</div>
+                            </div>
+                            <div>
+                                <button nz-button nzType="primary" type="submit">Add Printer</button>
+                            </div>
+                        </form>
+                    </div>
+                    <nz-table #headerTable [nzData]="printersData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
+                        <thead>
+                            <tr>
+                                <th>Printer Name</th>
+                                <th>Printer IP</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let printer of printersData">
+                                <td>{{ printer.name }}</td>
+                                <td>{{ printer.ip }}</td>
+                                <td>{{ printer.description }}</td>
+                                <td>
+                                    <button nz-button nzType="default"
+                                        (click)="deletePrinter(printer.id)">Delete</button> <!-- ปุ่มลบ -->
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
                     <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
                             <tr>
@@ -56,6 +79,7 @@
                                 <th>candidate</th>
                                 <th>Votes</th>
                                 <th>WinnerLoserIndic</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let president of filteredData">

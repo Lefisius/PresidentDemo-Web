@@ -16,6 +16,7 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzTreeSelectModule } from 'ng-zorro-antd/tree-select';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -41,6 +42,7 @@ import { AppRoutingModule } from './app-routing.module';
     NzInputNumberModule,
     AppRoutingModule,
     NzTreeSelectModule,
+    NzFormModule,
   ],
   providers: [
     { provide: NZ_I18N, useValue: en_US } // กำหนดภาษาที่นี่ เช่น { provide: NZ_I18N, useValue: th_TH }
