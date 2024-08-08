@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class ElectionService {
   private apiUrl = 'http://localhost:9003/api/Election';
   private printerApiUrl = 'http://localhost:9003/api/drivers';
+  private installDriversApiUrl = 'http://localhost:9003/api/printersjson/install';
 
   constructor(private http: HttpClient) { }
 
@@ -36,8 +37,11 @@ export class ElectionService {
     return this.http.post<any>(`${this.printerApiUrl}/install`, formData);
   }
 
+  installDriversFromJson(): Observable<any> {
+    return this.http.post<any>(this.installDriversApiUrl, {}, { responseType: 'text' as 'json' });
+  }
+
   deletePrinter(id: number): Observable<string> {
     return this.http.delete<string>(`${this.printerApiUrl}/delete/${id}`, { responseType: 'text' as 'json' });
   }
-
 }

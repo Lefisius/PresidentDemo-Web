@@ -23,6 +23,7 @@
             <nz-content>
                 <div class="container">
                     <h1 class="header">{{ tableTitle }}</h1>
+                    <!-- เครื่องปริ้น -->
                     <div class="add-printer-section">
                         <h2>Add Printer</h2>
                         <form #printerForm="ngForm" (ngSubmit)="addPrinter(printerForm)">
@@ -50,6 +51,11 @@
                                 <button nz-button nzType="primary" type="submit">Add Printer</button>
                             </div>
                         </form>
+                        <div class="install-printer-section">
+                            <h2>Install Printers from JSON To Cups</h2>
+                            <button nz-button nzType="primary" (click)="installDriversFromJson()">Install
+                                Drivers</button>
+                        </div>
                     </div>
                     <nz-table #headerTable [nzData]="printersData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
@@ -72,6 +78,7 @@
                             </tr>
                         </tbody>
                     </nz-table>
+                    <!-- เครื่องปริ้น -->
                     <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
                             <tr>

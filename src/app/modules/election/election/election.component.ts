@@ -92,13 +92,26 @@ export class ElectionComponent implements OnInit {
     }
   }
 
+  installDriversFromJson(): void {
+    this.electionService.installDriversFromJson().subscribe(
+      response => {
+        console.log('Drivers installation response:', response);
+        this.notification.success('Success', 'Printers installation process completed');
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error installing drivers:', error);
+        this.notification.error('Error', 'An error occurred while installing the drivers.');
+      }
+    );
+  }
+
   addPrinter(printerForm: NgForm): void {
     if (printerForm.valid && this.printerPpdBase64) {
       this.electionService.addPrinter(this.printerName, this.printerIP, this.printerDescription, this.printerPpdBase64).subscribe(response => {
         console.log('Printer added successfully:', response);
         this.notification.success('Success', 'Printer added successfully.');
         this.loadPrinters(); // รีโหลดข้อมูลเครื่องพิมพ์หลังจากเพิ่ม
-        this.loadElections(); // รีโหลดข้อมูลของElections ไม่เกียวกับcode ของ printer
+        this.loadElections(); // รีโหลดข้อมูลของ Elections
         this.printerName = '';
         this.printerIP = '';
         this.printerDescription = '';
