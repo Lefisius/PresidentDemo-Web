@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   { path: 'Dash', loadChildren: () => import('./modules/dash/dash.module').then(m => m.DashModule) },
   { path: 'Administration', loadChildren: () => import('./modules/administrations/administration.module').then(m => m.AdministrationModule) },
-  { path: 'Adminprvp', loadChildren: () => import('./modules/adminprvp/admin-pr-vp.module').then(m => m.AdminPrVpModule) },
+  { path: 'Adminprvp', loadChildren: () => import('./modules/adminprvp/adminprvp.module').then(m => m.AdminPrVpModule) },
   { path: 'Election', loadChildren: () => import('./modules/election/election.module').then(m => m.ElectionModule) },
   { path: 'Preshobby', loadChildren: () => import('./modules/preshobby/preshobby.module').then(m => m.PreshobbyModule) },
   { path: 'President', loadChildren: () => import('./modules/president/president.module').then(m => m.PresidentModule) },

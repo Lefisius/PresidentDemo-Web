@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { AdminPrVpRoutingModule } from './admin-pr-vp-routing.module';
-import { AdminPrVpComponent } from './admin-pr-vp/admin-pr-vp.component';
+import { AdminPrVpRoutingModule } from './adminprvp-routing.module';
+import { AdminPrVpComponent } from './adminprvp/adminprvp.component';
 
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -31,7 +31,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
     NzIconModule,
     NzDropDownModule,
     NzPageHeaderModule,
-    NzInputNumberModule,
+    NzInputNumberModule
   ]
 })
 export class AdminPrVpModule { }

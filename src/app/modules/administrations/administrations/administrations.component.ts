@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AdministrationService } from '../api/administration.service';
 
 @Component({
-  selector: 'app-administration',
-  templateUrl: './administration.component.html',
+  selector: 'app-administrations',
+  templateUrl: './administrations.component.html',
   styleUrls: ['']
 })
-export class AdministrationComponent implements OnInit {
+export class AdministrationsComponent implements OnInit {
   searchTerm: string = '';
   tableTitle: string = 'Administration';
   datetime: string = '';

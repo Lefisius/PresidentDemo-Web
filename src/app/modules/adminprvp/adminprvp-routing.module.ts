@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminPrVpComponent } from './admin-pr-vp/admin-pr-vp.component';
+import { AdminPrVpComponent } from './adminprvp/adminprvp.component';
 
 const routes: Routes = [
   { path: '', component: AdminPrVpComponent }

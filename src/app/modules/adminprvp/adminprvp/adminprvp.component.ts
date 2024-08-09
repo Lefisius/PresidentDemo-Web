@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AdminprvpService } from '../api/adminprvp.service';
 
 @Component({
-  selector: 'app-admin-pr-vp',
-  templateUrl: './admin-pr-vp.component.html',
+  selector: 'app-adminprvp',
+  templateUrl: './adminprvp.component.html',
   styleUrls: ['']
 })
 export class AdminPrVpComponent implements OnInit {

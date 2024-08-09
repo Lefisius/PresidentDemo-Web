@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AdministrationRoutingModule } from './administration-routing.module';
-import { AdministrationComponent } from './administration/administration.component';
+import { AdministrationsComponent } from './administrations/administrations.component';
 
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -17,7 +17,7 @@ import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 @NgModule({
-  declarations: [AdministrationComponent],
+  declarations: [AdministrationsComponent],
   imports: [
     AdministrationRoutingModule,
     CommonModule,
