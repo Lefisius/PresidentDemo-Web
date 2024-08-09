@@ -76,8 +76,8 @@
                     <form class="printer-from" (ngSubmit)="onUploadPPD()" #ppdForm="ngForm">
                         <input type="text" [(ngModel)]="printerName" name="printerName" placeholder="Printer Name"
                             required>
-                        <input type="text" [(ngModel)]="printerIP" name="printerIP" placeholder="Printer IP" required>
-                        <input type="file" (change)="onFileChange($event)" required>
+                        <input class="printermargin" type="text" [(ngModel)]="printerIP" name="printerIP" placeholder="Printer IP" required>
+                        <input class="printermargin" type="file" (change)="onFileChange($event)" required>
                         <button type="submit" nz-button nzType="primary">Install Printer Driver</button>
                     </form>
                     <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
