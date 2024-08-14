@@ -44,5 +44,5 @@ jobs:
         password: ${{secrets.EMAIL_PASS}}
         subject: โค้ดมีการเปลี่ยนแปลง - ต้องการ E2E Test
         body: โค้ดมีการเปลี่ยนแปลง แต่ยังไม่มี E2E test ใหม่ กรุณาเพิ่ม Playwright test สำหรับการเปลี่ยนแปลงนี้
-        to: developer@yourcompany.com
+        to: ditoey2002@gmail.com
         from: GitHub Actions
