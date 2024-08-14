@@ -118,6 +118,7 @@
   },
   "defaultProject": "President",
   "cli": {
+    "analytics": false,
     "defaultCollection": "@angular-eslint/schematics"
   }
 }
