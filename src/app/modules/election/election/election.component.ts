@@ -38,15 +38,17 @@ export class ElectionComponent implements OnInit {
   }
 
   loadElections(): void {
-    this.electionService.getPresElections().subscribe(data => {
-      console.log('Elections Data:', data); // ตรวจสอบข้อมูลที่รับมา
-      this.presidentsData = data;
-      this.filteredData = data;
-    }, error => {
-      console.error('Error fetching Elections:', error);
-    });
+    this.electionService.getPresElections().subscribe(
+      data => {
+        this.presidentsData = this.removeDuplicates(data, 'electionYear'); // กรองข้อมูลที่ซ้ำซ้อน
+        this.filteredData = [...this.presidentsData];
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error fetching Elections:', error);
+        this.notification.error('Error', 'Failed to load election data.');
+      }
+    );
   }
-
 
   loadPrinters(): void {
     this.electionService.getPrinters().subscribe(data => {
@@ -128,7 +130,6 @@ export class ElectionComponent implements OnInit {
     }
   }
 
-
   deletePrinter(id: number): void {
     this.electionService.deletePrinter(id).subscribe(
       (response: string) => {
@@ -144,4 +145,9 @@ export class ElectionComponent implements OnInit {
     );
   }
 
+  removeDuplicates(array: any[], key: string): any[] {
+    return array.filter((value, index, self) =>
+      index === self.findIndex((t) => t[key] === value[key])
+    );
+  }
 }
