@@ -45,7 +45,7 @@ test.describe('State Component Tests', () => {
   test('should display the correct date and time', async () => {
     const datetimeElement = page.locator('#datetime');
     const datetimeText = await datetimeElement.textContent();
-    
+
     // Check if datetime text is not empty
     expect(datetimeText).not.toBeNull();
     expect(datetimeText?.trim()).not.toBe('');
@@ -71,7 +71,7 @@ test.describe('State Component Tests', () => {
     expect(titleText).toBe('State');
   });
 
-  test('should check for new entities', async () => {
+  test('should check for new entitie', async () => {
     // Define the entities to check
     const entitiesToCheck: { name: string; type: EntityType }[] = [
       { name: 'exampleFunction', type: 'function' },
