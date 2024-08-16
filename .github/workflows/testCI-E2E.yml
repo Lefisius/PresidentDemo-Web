@@ -35,9 +35,6 @@ jobs:
           npm start &
           sleep 10
 
-      - name: Wait for server to be available
-        run: npx wait-on http://localhost:4200
-
       - name: Run Playwright tests
         run: npx playwright test
 
