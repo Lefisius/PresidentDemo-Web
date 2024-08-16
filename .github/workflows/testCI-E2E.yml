@@ -21,21 +21,23 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Display current directory
-        run: pwd
-
-      - name: List files in current directory
-        run: ls -al
-
-      - name: Set npm registry
-        run: npm config set registry https://registry.npmjs.org/
+      - name: Use npm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
-        continue-on-error: true
+
+      - name: List node_modules
+        run: ls -la node_modules/@playwright/test
 
       - name: Run Playwright tests
         run: npx playwright test
+
 
 
       # - name: Send email notification
