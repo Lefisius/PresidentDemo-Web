@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm install --force
 
-      - name: Build the app
-        run: npm run build
-
       - name: install playwright
         run: npx playwright install
 
