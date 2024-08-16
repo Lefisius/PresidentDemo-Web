@@ -25,7 +25,8 @@ jobs:
         run: npm config set registry https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --force
+
 
       - name: Run Playwright tests
         run: npx playwright test
