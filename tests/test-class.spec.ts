@@ -34,7 +34,7 @@ test.describe('State Component Tests', () => {
 
   test.beforeEach(async ({ page: p }) => {
     page = p;
-    await page.goto('http://localhost:4200/State');
+    await page.goto('/State');
   });
 
   test('should display table with correct headers', async () => {
