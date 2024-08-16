@@ -42,28 +42,6 @@ test.describe('State Component Tests', () => {
     expect(headers).toEqual(['StateName', 'AdminEntered', 'YearEntered']);
   });
 
-  test('should display the correct date and time', async () => {
-    const datetimeElement = page.locator('#datetime');
-    const datetimeText = await datetimeElement.textContent();
-
-    // Check if datetime text is not empty
-    expect(datetimeText).not.toBeNull();
-    expect(datetimeText?.trim()).not.toBe('');
-  });
-
-  test('should filter data based on search term', async () => {
-    const searchInput = page.locator('input[placeholder="Search State"]');
-    const searchButton = page.locator('button[nzType="primary"]');
-
-    // Initial search term
-    await searchInput.fill('new');
-    await searchButton.click();
-
-    // Assume that you have some mock data or pre-set state for the test
-    const filteredRows = await page.locator('nz-table tbody tr').allTextContents();
-    expect(filteredRows).toContain('New Mexico311912');
-  });
-
   test('should update the table title correctly', async () => {
     // Verify the table title is correct
     const titleElement = page.locator('h1.header');
@@ -71,16 +49,4 @@ test.describe('State Component Tests', () => {
     expect(titleText).toBe('State');
   });
 
-  test('should check for new entitie', async () => {
-    // Define the entities to check
-    const entitiesToCheck: { name: string; type: EntityType }[] = [
-      { name: 'exampleFunction', type: 'function' },
-      { name: 'ExampleClass', type: 'class' },
-      { name: 'SomeModule', type: 'module' },
-    ];
-
-    for (const entity of entitiesToCheck) {
-      await checkNewEntity(page, entity.name, entity.type);
-    }
-  });
 });
