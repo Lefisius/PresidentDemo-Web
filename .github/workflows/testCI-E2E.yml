@@ -30,10 +30,16 @@ jobs:
       - name: install playwright
         run: npx playwright install
 
-      - name: Start web server
-        run: |
-          npm start &
-          sleep 10
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Start server
+        run: npm start &
+        env:
+          PORT: 4200
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:4200
 
       - name: Run Playwright tests
         run: npx playwright test
