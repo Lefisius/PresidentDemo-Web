@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: '18'  # ระบุเวอร์ชัน Node.js ที่ต้องการ
 
+      - name: Display current directory
+        run: pwd
+
+      - name: List files in current directory
+        run: ls -al
+
       - name: Install dependencies
         run: npm install
 
