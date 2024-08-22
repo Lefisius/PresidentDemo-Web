@@ -1,47 +1,47 @@
-name: Playwright Tests
+# name: Playwright Tests
 
-on:
-  push:
-    branches:
-      - dorn-cicd
-  pull_request:
-    branches:
-      - dorn-cicd
+# on:
+#   push:
+#     branches:
+#       - dorn-cicd
+#   pull_request:
+#     branches:
+#       - dorn-cicd
 
-jobs:
-  e2e:
-    runs-on: ubuntu-latest
+# jobs:
+#   e2e:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'  # ระบุเวอร์ชัน Node.js ที่ต้องการ
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '18'  # ระบุเวอร์ชัน Node.js ที่ต้องการ
 
-      - name: Display current directory
-        run: pwd
+#       - name: Display current directory
+#         run: pwd
 
-      - name: List files in current directory
-        run: ls -al
+#       - name: List files in current directory
+#         run: ls -al
 
-      - name: Install dependencies
-        run: npm install
+#       - name: Install dependencies
+#         run: npm install
 
-      - name: Run Playwright tests
-        run: npx playwright test
+#       - name: Run Playwright tests
+#         run: npx playwright test
 
-      # - name: Send email notification
-      #   if: steps.check_changes.outputs.changes != '' && steps.check_tests.outputs.new_tests_added == 'false'
-      #   uses: dawidd6/action-send-mail@v2
-      #   with:
-      #     server_address: smtp.gmail.com
-      #     server_port: 465
-      #     username: ${{secrets.EMAIL_USER}}
-      #     password: ${{secrets.EMAIL_PASS}}
-      #     subject: โค้ดมีการเปลี่ยนแปลง - ต้องการ E2E Test
-      #     body: โค้ดมีการเปลี่ยนแปลง แต่ยังไม่มี E2E test ใหม่ กรุณาเพิ่ม Playwright test สำหรับการเปลี่ยนแปลงนี้
-      #     to: krisd3214@gmail.com
-      #     from: GitHub Actions
+#       # - name: Send email notification
+#       #   if: steps.check_changes.outputs.changes != '' && steps.check_tests.outputs.new_tests_added == 'false'
+#       #   uses: dawidd6/action-send-mail@v2
+#       #   with:
+#       #     server_address: smtp.gmail.com
+#       #     server_port: 465
+#       #     username: ${{secrets.EMAIL_USER}}
+#       #     password: ${{secrets.EMAIL_PASS}}
+#       #     subject: โค้ดมีการเปลี่ยนแปลง - ต้องการ E2E Test
+#       #     body: โค้ดมีการเปลี่ยนแปลง แต่ยังไม่มี E2E test ใหม่ กรุณาเพิ่ม Playwright test สำหรับการเปลี่ยนแปลงนี้
+#       #     to: krisd3214@gmail.com
+#       #     from: GitHub Actions
