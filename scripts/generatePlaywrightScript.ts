@@ -1,26 +1,47 @@
-// generatePlaywrightScript.ts
 import * as fs from 'fs';
 import * as path from 'path';
 
-// ฟังก์ชันสำหรับการสร้างสคริปต์ Playwright
-export function generatePlaywrightScript(filePath: string) {
-    const scriptTemplate = `
-        import { test, expect } from '@playwright/test';
-
-        test('test for ${path.basename(filePath)}', async ({ page }) => {
+export function generatePlaywrightScript(filePath: string, functionName: string): string {
+    const newScriptTemplate = `
+        test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
             await page.goto('https://example.com');
-            // เขียนสคริปต์เพิ่มเติมที่นี่
+            // Add more test steps here
         });
     `;
 
-    // สร้างโฟลเดอร์สำหรับเก็บสคริปต์ทดสอบ
-    const testsFolder = path.join('./tests');
-    if (!fs.existsSync(testsFolder)) {
-        fs.mkdirSync(testsFolder);
+    // Determine the parent directory of the component directory
+    const componentDir = path.dirname(filePath);
+    const parentDir = path.dirname(componentDir);
+
+    // Create the E2E-Script folder one level above the component directory
+    const e2eDir = path.join(parentDir, 'E2E-Script');
+
+    if (!fs.existsSync(e2eDir)) {
+        fs.mkdirSync(e2eDir);
     }
 
-    // กำหนดตำแหน่งและชื่อไฟล์สำหรับสคริปต์ Playwright
-    const scriptPath = path.join(testsFolder, `${path.basename(filePath, '.ts')}.spec.ts`);
-    fs.writeFileSync(scriptPath, scriptTemplate);
-    console.log(`Playwright script generated at ${scriptPath}`);
+    // Create the scriptPath with the name of the component's .spec.ts file
+    const scriptPath = path.join(e2eDir, `${path.basename(componentDir)}.spec.ts`);
+
+    if (fs.existsSync(scriptPath)) {
+        const existingContent = fs.readFileSync(scriptPath, 'utf-8');
+
+        if (existingContent.includes(`test for ${functionName}`)) {
+            console.log(`Test for function ${functionName} already exists in ${scriptPath}.`);
+        } else {
+            const updatedContent = existingContent + `\n${newScriptTemplate.trim()}`;
+            fs.writeFileSync(scriptPath, updatedContent);
+            console.log(`Appended new test for function ${functionName} in ${scriptPath}.`);
+        }
+    } else {
+        const scriptTemplate = `
+            import { test, expect } from '@playwright/test';
+
+            ${newScriptTemplate.trim()}
+        `;
+        fs.writeFileSync(scriptPath, scriptTemplate.trim());
+        console.log(`Generated new Playwright script: ${scriptPath}`);
+    }
+
+    return scriptPath;
 }

@@ -1,18 +1,16 @@
-// runESLint.ts
-import { ESLint } from 'eslint';
+import { exec } from 'child_process';
 
-export async function runESLint(filePath: string): Promise<string> {
-    const eslint = new ESLint();
-    const results = await eslint.lintFiles([filePath]);
-    
-    let eslintErrors = '';
-    for (const result of results) {
-        for (const message of result.messages) {
-            if (message.severity === 2) { // 2 = Error
-                eslintErrors += `<li>${message.line}:${message.column} ${message.message} (${message.ruleId})</li>`;
+// ฟังก์ชันสำหรับการเรียกใช้ ESLint
+export function runESLint(filePath: string): Promise<{ filePath: string, errors: string[] }> {
+    return new Promise((resolve, reject) => {
+        exec(`npx eslint ${filePath}`, (error, stdout, stderr) => {
+            if (error) {
+                reject(stderr);
+                return;
             }
-        }
-    }
-    
-    return eslintErrors;
+
+            const errors = stdout.split('\n').filter(line => line.includes('error'));
+            resolve({ filePath, errors });
+        });
+    });
 }

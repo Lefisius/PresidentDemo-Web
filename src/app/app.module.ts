@@ -20,10 +20,13 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { TestComponent } from './test/test.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
+    TestComponent,
   ],
   imports: [
     HttpClientModule,
