@@ -45,7 +45,7 @@ test.describe('State Component Tests', () => {
   test('should display the correct date and time', async () => {
     const datetimeElement = page.locator('#datetime');
     const datetimeText = await datetimeElement.textContent();
-    
+
     // Check if datetime text is not empty
     expect(datetimeText).not.toBeNull();
     expect(datetimeText?.trim()).not.toBe('');
