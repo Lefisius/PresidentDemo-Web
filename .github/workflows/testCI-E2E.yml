@@ -89,3 +89,35 @@ jobs:
       - name: Run Playwright tests
         id: run-tests
         run: |
+          npx playwright test --output=results.json || exit 1
+          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
+            echo "Tests failed."
+            exit 1
+          else
+            echo "Tests passed."
+          fi
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-results
+          path: results.json
+
+  notify:
+    needs: run-web-and-test
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Playwright Test Failure Notification
+          to: ditoey2002@gmail.com
+          from: krisd3214@gmail.com
+          body: |
+            The Playwright tests have failed. Please check the attached results for more information.
+          attachments: results.json
