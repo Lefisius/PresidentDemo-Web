@@ -9,6 +9,7 @@
         "*.ts"
       ],
       "parserOptions": {
+        "sourceType": "module",
         "project": [
           "tsconfig.json"
         ],
@@ -41,7 +42,9 @@
       "files": [
         "*.html"
       ],
+      "plugins": ["@typescript-eslint"],
       "extends": [
+        "eslint:recommended",
         "plugin:@angular-eslint/template/recommended"
       ],
       "rules": {}
