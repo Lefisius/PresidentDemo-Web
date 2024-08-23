@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { AdminprvpService } from '../api/adminprvp.service';
+import { PrvpService } from '../api/prvp.service';
+
 
 @Component({
-  selector: 'app-adminprvp',
-  templateUrl: './adminprvp.component.html',
-  styleUrls: ['']
+  selector: 'app-prvp',
+  templateUrl: './prvp.component.html',
+  styleUrls: ['./prvp.component.scss']
 })
-export class AdminPrVpComponent implements OnInit {
+export class PrvpComponent implements OnInit {
+
   searchTerm: string = '';
   tableTitle: string = 'AdminPrVp';
   datetime: string = '';
   presidentsData: any[] = [];
   filteredData: any[] = [];
 
-  constructor(private AdminprvpService: AdminprvpService) { }
+  constructor(private PrvpService: PrvpService) { }
 
   ngOnInit(): void {
     this.updateDateTime();
@@ -22,7 +24,7 @@ export class AdminPrVpComponent implements OnInit {
   }
 
   loadAdminprvps(): void {
-    this.AdminprvpService.getAdminprvps().subscribe(data => {
+    this.PrvpService.getAdminprvps().subscribe(data => {
       console.log('Data received from API:', data);
       this.presidentsData = data;
       this.filteredData = data;

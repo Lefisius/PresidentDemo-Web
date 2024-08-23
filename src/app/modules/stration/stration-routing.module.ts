@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminPrVpComponent } from './adminprvp/adminprvp.component';
+import { StrationComponent } from './stration/stration.component';
 
 const routes: Routes = [
-  { path: '', component: AdminPrVpComponent }
+  { path: '', component: StrationComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AdminPrVpRoutingModule { }
+export class StrationRoutingModule { }
