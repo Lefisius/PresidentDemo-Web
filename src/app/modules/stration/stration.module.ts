@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { AdminPrVpRoutingModule } from './adminprvp-routing.module';
-import { AdminPrVpComponent } from './adminprvp/adminprvp.component';
+import { StrationRoutingModule } from './stration-routing.module';
+import { StrationComponent } from './stration/stration.component';
 
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -17,11 +17,11 @@ import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 @NgModule({
-  declarations: [AdminPrVpComponent],
+  declarations: [StrationComponent],
   imports: [
+    StrationRoutingModule,
     CommonModule,
     FormsModule,
-    AdminPrVpRoutingModule,
     NzLayoutModule,
     NzMenuModule,
     NzInputModule,
@@ -31,7 +31,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
     NzIconModule,
     NzDropDownModule,
     NzPageHeaderModule,
-    NzInputNumberModule
+    NzInputNumberModule,
   ]
 })
-export class AdminPrVpModule { }
+export class StrationModule { }

@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { AdministrationService } from '../api/administration.service';
+import { StrationService } from '../api/stration.service';
 
 @Component({
-  selector: 'app-administrations',
-  templateUrl: './administrations.component.html',
-  styleUrls: ['']
+  selector: 'app-stration',
+  templateUrl: './stration.component.html',
+  styleUrls: ['./stration.component.scss']
 })
-export class AdministrationsComponent implements OnInit {
+export class StrationComponent implements OnInit {
+
   searchTerm: string = '';
   tableTitle: string = 'Administration';
   datetime: string = '';
   presidentsData: any[] = [];
   filteredData: any[] = [];
 
-  constructor(private AdministrationService: AdministrationService) { }
+  constructor(private StrationService: StrationService) { }
 
   ngOnInit(): void {
     this.updateDateTime();
@@ -22,7 +23,7 @@ export class AdministrationsComponent implements OnInit {
   }
 
   loadAdministrations(): void {
-    this.AdministrationService.getAdministrations().subscribe(data => {
+    this.StrationService.getAdministrations().subscribe(data => {
       console.log('Data received from API:', data);
       this.presidentsData = data;
       this.filteredData = data;

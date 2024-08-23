@@ -5,12 +5,12 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class AdministrationService {
-  private apiUrl = 'http://localhost:9003/api/Administrations';
+export class PrvpService {
+  private apiUrl = 'http://localhost:9003/api/Adminprvp';
 
   constructor(private http: HttpClient) { }
 
-  getAdministrations(): Observable<any> {
+  getAdminprvps(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   }
 }
