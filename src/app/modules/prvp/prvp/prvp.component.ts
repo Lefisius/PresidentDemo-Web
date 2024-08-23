@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PrvpService } from '../api/prvp.service';
 
-
 @Component({
   selector: 'app-prvp',
   templateUrl: './prvp.component.html',
@@ -59,5 +58,27 @@ export class PrvpComponent implements OnInit {
 
   setTableTitle(title: string): void {
     this.tableTitle = title;
+  }
+
+  deleteRow(adminNr: string): void {
+    // ลบแถวจาก presidentsData
+    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
+
+    // ลบแถวจาก filteredData ด้วย (ถ้ามีการค้นหาเกิดขึ้น)
+    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
+
+    console.log('Row deleted with adminNr:', adminNr);
+    console.log('Updated data:', this.presidentsData);
+  }
+
+  deleteRow3(adminNr: string): void {
+    // ลบแถวจาก presidentsData
+    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
+
+    // ลบแถวจาก filteredData ด้วย (ถ้ามีการค้นหาเกิดขึ้น)
+    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
+
+    console.log('Row deleted with adminNr:', adminNr);
+    console.log('Updated data:', this.presidentsData);
   }
 }

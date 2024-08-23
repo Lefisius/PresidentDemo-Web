@@ -142,176 +142,48 @@ export class PresidentComponent implements OnInit {
   }
 
   applyFilterByRange(): void {
-    if (this.fromAge.trim() === '' || this.toAge.trim() === '') {
-      return;
-    }
-
     const from = parseInt(this.fromAge, 10);
     const to = parseInt(this.toAge, 10);
 
-    if (isNaN(from) || isNaN(to)) {
-      return;
-    }
-
     this.filteredData = this.presidentsData.filter((president) => {
-      const age = president.birthYr + president.deathAge;
-      return age >= from && age <= to;
+      const birthYr = president.birthYr;
+      return (!isNaN(from) ? birthYr >= from : true) &&
+             (!isNaN(to) ? birthYr <= to : true);
     });
   }
-  // #region function for กำหนดตัวTable
+
+  applyFilter(selectedRanges: string[]): void {
+    // Implement your filter logic here based on selectedRanges
+  }
+
+  deleteRow(index: number): void {
+    if (confirm('Are you sure you want to delete this record?')) {
+      this.filteredData.splice(index, 1);
+      this.presidentsData = [...this.filteredData]; // Update the original data as well
+    }
+  }
+
   initColumns(): void {
     this.listOfColumns = [
       {
-        name: 'PresName',
+        name: 'Name',
         sortOrder: null,
-        sortFn: (a: President, b: President) =>
-          a.presName.localeCompare(b.presName),
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
+        sortFn: (a, b) => a.presName.localeCompare(b.presName),
         listOfFilter: [],
         filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
       },
       {
-        name: 'BirthYr',
+        name: 'Birth Year',
         sortOrder: null,
-        sortFn: (a: President, b: President) => a.birthYr - b.birthYr,
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
-        listOfFilter: this.getBrithYr(),
-        filterFn: (list: string[], item: President) => {
-          const age = item.birthYr;
-          return list.some((value) => {
-            const [min, max] = value.split('-').map((num) => parseInt(num, 10));
-            return age >= min && age <= max;
-          });
-        },
-      },
-      {
-        name: 'YrsServ',
-        sortOrder: null,
-        sortFn: (a: President, b: President) => a.yrsServ - b.yrsServ,
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
-        listOfFilter: this.getYrsServ(),
-        filterFn: (list: string[], item: President) => {
-          const age = item.yrsServ;
-          return list.some((value) => {
-            const [min, max] = value.split('-').map((num) => parseInt(num, 10));
-            return age >= min && age <= max;
-          });
-        },
-      },
-      {
-        name: 'DeathAge',
-        sortOrder: null,
-        sortFn: (a: President, b: President) => a.deathAge - b.deathAge,
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
-        listOfFilter: this.getDeathAge(),
-        filterFn: (list: string[], item: President) => {
-          const age = item.deathAge;
-          return list.some((value) => {
-            const [min, max] = value.split('-').map((num) => parseInt(num, 10));
-            return age >= min && age <= max;
-          });
-        },
-      },
-      {
-        name: 'Party',
-        sortOrder: null,
-        sortFn: (a: President, b: President) =>
-          a.party.localeCompare(b.party),
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
+        sortFn: (a, b) => a.birthYr - b.birthYr,
         listOfFilter: [],
         filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
       },
-      {
-        name: 'StateBorn',
-        sortOrder: null,
-        sortFn: (a: President, b: President) =>
-          a.stateBorn.localeCompare(b.stateBorn),
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
-        listOfFilter: [],
-        filterFn: null,
-      },
-      {
-        name: 'Age Range',
-        sortOrder: null,
-        sortFn: (a: President, b: President) => {
-          const ageA = a.birthYr + a.deathAge;
-          const ageB = b.birthYr + b.deathAge;
-          return ageA - ageB;
-        },
-        sortDirections: ['ascend', 'descend', null],
-        filterMultiple: true,
-        listOfFilter: this.getAgeRanges(), // Initialize with age range filters
-        filterFn: (list: string[], item: President) => {
-          const age = item.birthYr + item.deathAge;
-          return list.some((value) => {
-            const [min, max] = value.split('-').map((num) => parseInt(num, 10));
-            return age >= min && age <= max;
-          });
-        },
-      },
+      // Define other columns similarly
     ];
-  }
-  // #endregion function for กำหนดตัวTable
-
-  // #region function for กำหนดตัวFilter
-  getAgeRanges(): NzTableFilterList {
-    const ranges: NzTableFilterList = [];
-    for (let year = 1800; year <= 2000; year += 50) {
-      ranges.push({ text: `${year}-${year + 49}`, value: `${year}-${year + 49}` });
-    }
-    return ranges;
-  }
-
-  getBrithYr(): NzTableFilterList {
-    const ranges: NzTableFilterList = [];
-    for (let year = 1730; year <= 1930; year += 1) {
-      ranges.push({ text: `${year}`, value: `${year}-${year}` });
-    }
-    return ranges;
-  }
-
-  getDeathAge(): NzTableFilterList {
-    const ranges: NzTableFilterList = [];
-    for (let year = 45; year <= 90; year += 1) {
-      ranges.push({ text: `${year}`, value: `${year}-${year}` });
-    }
-    return ranges;
-  }
-
-  getYrsServ(): NzTableFilterList {
-    const ranges: NzTableFilterList = [];
-    for (let year = 0; year <= 12; year += 1) {
-      ranges.push({ text: `${year}`, value: `${year}-${year}` });
-    }
-    return ranges;
-  }
-  // #endregion function for กำหนดตัวFilter
-
-  // #region function for applyFilter
-  applyFilter(selectedAgeRanges: string[]): void {
-    this.selectedAgeRanges = selectedAgeRanges;
-    if (this.selectedAgeRanges.length === 0) {
-      this.filteredData = [...this.presidentsData];
-      return;
-    }
-
-    this.filteredData = this.presidentsData.filter(president => {
-      const age = president.birthYr + president.deathAge;
-      return this.selectedAgeRanges.some(value => {
-        const [min, max] = value.split('-').map(num => parseInt(num, 10));
-        return age >= min && age <= max;
-      });
-    });
-  }
-  // #endregion function for applyFilter
-
-  setTableTitle(title: string): void {
-    this.tableTitle = title;
   }
 }
