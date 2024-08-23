@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: 'D:/Program File (x86)/E2E-frontend/PresidentDemo-Web/tests',
+  testDir: './src/app/modules', //D:/Program File (x86)/E2E-frontend/PresidentDemo-Web/tests
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     headless: true,
-    baseURL: '', //url ตั้งต้น 
+    baseURL: 'http://localhost:4200', //url ตั้งต้น 
     // trace: 'on-first-retry',
   },
   projects: [
