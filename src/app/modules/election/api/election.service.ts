@@ -20,15 +20,11 @@ export class ElectionService {
     return this.http.get<any>(this.printerApiUrl);
   }
 
-  addPrinter(name: string, ip: string, description: string, ppdBase64: string): Observable<any> {
-    const payload = {
-      name,
-      ip,
-      description,
-      ppdBase64
-    };
-    return this.http.post<any>(`${this.printerApiUrl}/add`, payload);
+  addPrinter(name: string, ip: string, description: string, ppdBase64: string, location: string): Observable<any> {
+    const body = { name, ip, description, ppdBase64, location };
+    return this.http.post(`${this.printerApiUrl}/add`, body); // <- ใช้ URL ที่ถูกต้อง
   }
+
 
   addPrinterDriver(file: File, name: string): Observable<any> {
     const formData = new FormData();
