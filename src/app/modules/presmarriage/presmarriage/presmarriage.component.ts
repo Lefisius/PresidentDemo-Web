@@ -61,26 +61,5 @@ export class PresmarriageComponent implements OnInit {
     this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
     this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
   }
-  deleteRow2(adminNr: string): void {
-    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
-    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
-  }
-  deleteRow23(adminNr: string): void {
-    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
-    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
-  }
-
-  deleteRow2sda(adminNr: string): void {
-    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
-    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
-  }
-  deleteRow2ddd(adminNr: string): void {
-    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
-    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
-  }
-  deleteRowfff2(adminNr: string): void {
-    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
-    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
-  }
 }
 

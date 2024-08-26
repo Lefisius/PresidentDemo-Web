@@ -10,7 +10,7 @@ export function generatePlaywrightScript(filePath: string, functionName: string)
 
   const newScriptTemplate = `
       test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
-          await page.goto('https://localhost4200/${componentName}');
+          await page.goto('https://localhost:4200/${componentName}');
           // Add more test steps here
       });
   `;
