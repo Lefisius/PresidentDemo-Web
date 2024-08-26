@@ -1,6 +1,8 @@
 import * as chokidar from 'chokidar';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as readline from 'readline';
+import * as glob from 'glob';
 import { notifyUser } from './notifyUser';
 import { generatePlaywrightScript } from './generatePlaywrightScript';
 import { runESLint } from './runESLint';
@@ -21,10 +23,12 @@ function runPlaywrightTests(): Promise<void> {
                 reject(error);
                 return;
             }
+            console.log(stdout);
             resolve();
         });
 
         testProcess.stdout?.pipe(process.stdout);
+        testProcess.stderr?.pipe(process.stderr);
     });
 }
 
@@ -34,36 +38,65 @@ function extractFunctions(content: string): string[] {
     const methodsPattern = /\b(\w+)\s*\([^)]*\)\s*:/g;
     const classPattern = /\bclass\s+\w+/g;
 
-    const matches = [];
-    let match;
+    const matches: string[] = [];
+    let match: RegExpExecArray | null;
 
-    // ตรวจจับฟังก์ชันที่ไม่อยู่ในบล็อก if-else และไม่ใช่ toLowerCase
+    // ตรวจจับฟังก์ชันที่เป็น Top Level
     while ((match = functionPattern.exec(content)) !== null) {
-        if (!isInsideConditionalBlock(match.index, content) && 
-            match[1] !== 'constructor' && 
-            !containsToLowerCaseUsage(match[0])) {
+        const functionCode = getFunctionCode(match.index, content);
+        if (functionCode && !isInsideConditionalBlock(match.index, content) &&
+            match[1] !== 'constructor' &&
+            !containsToLowerCaseUsage(functionCode) &&
+            isTopLevel(match.index, content)) {
             matches.push(match[1]);
         }
     }
 
-    // ตรวจจับฟังก์ชันลูกศรที่ไม่อยู่ในบล็อก if-else และไม่ใช่ toLowerCase
+    // ตรวจจับฟังก์ชันลูกศรที่เป็น Top Level
     while ((match = arrowFunctionPattern.exec(content)) !== null) {
-        if (!isInsideConditionalBlock(match.index, content) && 
-            !containsToLowerCaseUsage(match[0])) {
+        const functionCode = getArrowFunctionCode(match.index, content);
+        if (functionCode && !isInsideConditionalBlock(match.index, content) &&
+            !containsToLowerCaseUsage(functionCode) &&
+            isTopLevel(match.index, content)) {
             matches.push(match[1]);
         }
     }
 
-    // ตรวจจับเมธอดที่ไม่อยู่ในบล็อก if-else และไม่ใช่ toLowerCase และไม่เป็นการประกาศคลาส
+    // ตรวจจับเมธอดที่เป็น Top Level
     while ((match = methodsPattern.exec(content)) !== null) {
-        if (!classPattern.test(match.input.substring(0, match.index)) && 
-            !isInsideConditionalBlock(match.index, content) && 
-            !containsToLowerCaseUsage(match[0])) {
+        const functionCode = getMethodCode(match.index, content);
+        if (functionCode && !classPattern.test(content.substring(0, match.index)) &&
+            !isInsideConditionalBlock(match.index, content) &&
+            !containsToLowerCaseUsage(functionCode) &&
+            isTopLevel(match.index, content)) {
             matches.push(match[1]);
         }
     }
+
+    console.log('Detected functions:', matches); // เพิ่มบรรทัดนี้เพื่อตรวจสอบการจับฟังก์ชัน
 
     return matches;
+}
+
+// ฟังก์ชันเพื่อดึงโค้ดของฟังก์ชัน
+function getFunctionCode(index: number, content: string): string | null {
+    const functionPattern = /(?:public|private)?\s*(?:async\s+)?(?<!constructor\s+)(\w+)\s*\(([^)]*)\)\s*:\s*([^;{]+)?\s*{([\s\S]*?)\s*}/;
+    const match = functionPattern.exec(content.substring(index));
+    return match ? match[0] : null;
+}
+
+// ฟังก์ชันเพื่อดึงโค้ดของฟังก์ชันลูกศร
+function getArrowFunctionCode(index: number, content: string): string | null {
+    const arrowFunctionPattern = /const\s+(\w+)\s*=\s*\(.*\)\s*=>\s*{([\s\S]*?)\s*}/;
+    const match = arrowFunctionPattern.exec(content.substring(index));
+    return match ? match[0] : null;
+}
+
+// ฟังก์ชันเพื่อดึงโค้ดของเมธอด
+function getMethodCode(index: number, content: string): string | null {
+    const methodPattern = /\b(\w+)\s*\([^)]*\)\s*:\s*{([\s\S]*?)\s*}/;
+    const match = methodPattern.exec(content.substring(index));
+    return match ? match[0] : null;
 }
 
 // ฟังก์ชันเพื่อเช็คว่ามีการใช้ .toLowerCase() ในการแปลงตัวแปรหรือไม่
@@ -76,7 +109,7 @@ function containsToLowerCaseUsage(functionCode: string): boolean {
 function isInsideConditionalBlock(index: number, content: string): boolean {
     const before = content.substring(0, index);
     const ifElsePattern = /\b(if\s*\(.*?\)\s*{[\s\S]*?}|else\s*if\s*\(.*?\)\s*{[\s\S]*?}|else\s*{[\s\S]*?})/g;
-    let match;
+    let match: RegExpExecArray | null;
 
     while ((match = ifElsePattern.exec(before)) !== null) {
         if (index < ifElsePattern.lastIndex) {
@@ -87,10 +120,19 @@ function isInsideConditionalBlock(index: number, content: string): boolean {
     return false;
 }
 
+// ฟังก์ชันเพื่อเช็คว่าฟังก์ชันนั้นๆ อยู่ในระดับ Top Level หรือไม่
+function isTopLevel(index: number, content: string): boolean {
+    const lines = content.substring(0, index).split('\n');
+    const functionLine = lines.pop(); // แถวที่ฟังก์ชันถูกค้นพบ
 
+    if (!functionLine) return false;
 
+    // ค้นหาออบเจ็กต์ประเภท class หรือ function อื่นๆ ที่อยู่ในบล็อกเดียวกัน
+    const topLevelPattern = /^(class|function)\s|\bfunction\s/;
+    const isTopLevel = !topLevelPattern.test(functionLine.trim());
 
-
+    return isTopLevel;
+}
 
 function initializeWatch() {
     const files = fs.readdirSync(watchFolder);
@@ -98,7 +140,6 @@ function initializeWatch() {
     files.forEach(file => {
         const filePath = path.join(watchFolder, file);
 
-        // Only process files within 'src/app/modules' and exclude certain file types
         if (filePath.endsWith('.ts') && 
             !filePath.endsWith('.spec.ts') && 
             !filePath.endsWith('.service.ts') && 
@@ -117,17 +158,65 @@ function initializeWatch() {
     });
 }
 
+function promptUser(question: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise(resolve => {
+        rl.question(question, (answer) => {
+            rl.close();
+            resolve(answer);
+        });
+    });
+}
+
+async function runSpecificTest(testDir: string): Promise<void> {
+    const absoluteTestDir = path.resolve(testDir);
+    console.log(`Searching for tests in: ${absoluteTestDir}`);
+
+    const testFiles = glob.sync(path.join(absoluteTestDir));
+
+    if (testFiles.length === 0) {
+        console.log(`No test files found in: ${absoluteTestDir}`);
+        console.log('Skipping test execution.');
+        return;
+    }
+
+    console.log(`Found ${testFiles.length} test file(s):`, testFiles);
+
+    return new Promise((resolve, reject) => {
+        const testPattern = path.posix.join(absoluteTestDir, '**/*.spec.ts').replace(/\\/g, '/');
+        const command = `npx playwright test "${testPattern}" --reporter=list`;
+        console.log(`Executing command: ${command}`);
+
+        const testProcess = exec(command, (error, stdout, stderr) => {
+            if (error) {
+                const errorMessage = stderr || 'An error occurred during Playwright testing but no error details were available';
+                notifyUser(`Playwright test failed for ${absoluteTestDir}`);
+                console.error(`${errorMessage}`);
+                reject(error);
+                return;
+            }
+            console.log(stdout);
+            resolve();
+        });
+
+        testProcess.stdout?.pipe(process.stdout);
+        testProcess.stderr?.pipe(process.stderr);
+    });
+}
+
 const watcher = chokidar.watch(watchFolder, { persistent: true });
 
 watcher.on('add', (filePath) => {
     try {
-        // Ensure this block only runs for files in 'src/app/modules' and exclude specified file types
         if (!filePath.endsWith('.spec.ts') && !filePath.endsWith('.service.ts') && !filePath.endsWith('.module.ts')) {
             const currentContent = fs.readFileSync(filePath, 'utf-8');
             fileContents[filePath] = currentContent;
             componentFunctionMap[filePath] = extractFunctions(currentContent);
 
-            // Generate scripts for all existing functions on file add
             componentFunctionMap[filePath].forEach(fn => {
                 generatePlaywrightScript(filePath, fn);
             });
@@ -154,7 +243,7 @@ watcher.on('change', async (filePath) => {
 
         const newAddedFunctions = newFunctions.filter(fn => !oldFunctions.includes(fn));
 
-        if (newAddedFunctions.length > 0) {
+        if (newAddedFunctions.length > 0 || true) {
             console.log(`New functions detected in ${filePath}: ${newAddedFunctions.join(', ')}`);
 
             newAddedFunctions.forEach(fn => {
@@ -163,7 +252,6 @@ watcher.on('change', async (filePath) => {
                 notifyUser(`Test added for function ${fn} in ${filePath}`);
             });
 
-            // Update the function map with all detected functions
             componentFunctionMap[filePath] = newFunctions;
 
             const eslintResult = await runESLint(filePath);
@@ -172,11 +260,31 @@ watcher.on('change', async (filePath) => {
                 eslintResult.errors.forEach(error => console.error(error));
             }
 
-            try {
-                await runPlaywrightTests();
-                console.log('All Playwright tests passed successfully.');
-            } catch (testError) {
-                console.error(`Error running Playwright tests: ${testError}`);
+            // Get the specific test directory for the component
+            const componentDir = path.dirname(filePath);
+            const parentDir = path.dirname(componentDir);
+            const e2eDir = path.join(parentDir, 'E2E-Script').replace(/\\/g, '/');;
+
+            console.log(`Test directory: ${e2eDir}`);
+
+            // Ask user if they want to run all tests or just the specific component test
+            const answer = await promptUser('Do you want to run all tests in the modules? (y/n): ');
+
+            if (answer.toLowerCase() === 'y') {
+                try {
+                    await runPlaywrightTests();
+                    console.log('All Playwright tests passed successfully.');
+                } catch (testError) {
+                    console.error(`Error running all Playwright tests: ${testError}`);
+                }
+            } else {
+                // Run test for the specific component only
+                try {
+                    await runSpecificTest(e2eDir);
+                    console.log(`Playwright tests for ${e2eDir} passed successfully.`);
+                } catch (testError) {
+                    console.error(`Error running Playwright tests for ${e2eDir}: ${testError}`);
+                }
             }
         }
 
@@ -185,6 +293,7 @@ watcher.on('change', async (filePath) => {
         console.error(`Failed to read file ${filePath}: ${error}`);
     }
 });
+
 
 process.on('SIGINT', () => {
     watcher.close();
