@@ -2,12 +2,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export function generatePlaywrightScript(filePath: string, functionName: string): string {
-    const newScriptTemplate = `
-        test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
-            await page.goto('https://localhost4200/Dash');
-            // Add more test steps here
-        });
-    `;
+  // ดึงชื่อไฟล์โดยไม่รวมส่วนขยายไฟล์ (.ts)
+  const fileNameWithoutExtension = path.basename(filePath, path.extname(filePath));
+
+  // ตัด ".component" ออก ถ้ามี
+  const componentName = fileNameWithoutExtension.replace('.component', '');
+
+  const newScriptTemplate = `
+      test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
+          await page.goto('https://localhost4200/${componentName}');
+          // Add more test steps here
+      });
+  `;
 
     // Determine the parent directory of the component directory
     const componentDir = path.dirname(filePath);
