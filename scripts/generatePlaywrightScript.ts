@@ -4,23 +4,19 @@ import * as path from 'path';
 export function generatePlaywrightScript(filePath: string, functionName: string): string {
     const newScriptTemplate = `
         test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
-            await page.goto('https://localhost4200/Dash');
+            await page.goto('https://localhost:4200/Dash');
             // Add more test steps here
         });
     `;
 
-    // Determine the parent directory of the component directory
     const componentDir = path.dirname(filePath);
     const parentDir = path.dirname(componentDir);
-
-    // Create the E2E-Script folder one level above the component directory
     const e2eDir = path.join(parentDir, 'E2E-Script');
 
     if (!fs.existsSync(e2eDir)) {
         fs.mkdirSync(e2eDir);
     }
 
-    // Create the scriptPath with the name of the component's .spec.ts file
     const scriptPath = path.join(e2eDir, `${path.basename(componentDir)}.spec.ts`);
 
     if (fs.existsSync(scriptPath)) {
