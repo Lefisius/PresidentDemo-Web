@@ -62,3 +62,4 @@ export class PresmarriageComponent implements OnInit {
     this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
   }
 }
+
