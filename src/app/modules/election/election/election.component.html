@@ -37,6 +37,11 @@
                                 <input id="printerIP" nz-input [(ngModel)]="printerIP" name="printerIP" required />
                             </div>
                             <div>
+                                <label for="printerLocation">Printer Location</label> <!-- เพิ่มส่วนนี้ -->
+                                <input id="printerLocation" nz-input [(ngModel)]="printerLocation"
+                                    name="printerLocation" required /> <!-- เพิ่มส่วนนี้ -->
+                            </div>
+                            <div>
                                 <label for="printerDescription">Printer Description</label>
                                 <input id="printerDescription" nz-input [(ngModel)]="printerDescription"
                                     name="printerDescription" required />
@@ -51,11 +56,6 @@
                                 <button nz-button nzType="primary" type="submit">Add Printer</button>
                             </div>
                         </form>
-                        <div class="install-printer-section">
-                            <h2>Install Printers from JSON To Cups</h2>
-                            <button nz-button nzType="primary" (click)="installDriversFromJson()">Install
-                                Drivers</button>
-                        </div>
                     </div>
                     <nz-table #headerTable [nzData]="printersData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
                         <thead>
