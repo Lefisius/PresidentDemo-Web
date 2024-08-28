@@ -42,6 +42,11 @@
                                     name="printerDescription" required />
                             </div>
                             <div>
+                                <label for="printerLocation">Printer Location</label> <!-- เพิ่มส่วนนี้ -->
+                                <input id="printerLocation" nz-input [(ngModel)]="printerLocation"
+                                    name="printerLocation" required /> <!-- เพิ่มส่วนนี้ -->
+                            </div>
+                            <div>
                                 <label for="ppdFile">PPD File</label>
                                 <input type="file" id="ppdFile" #ppdFileInput (change)="handlePpdFileInput($event)"
                                     required />
