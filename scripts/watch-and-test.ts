@@ -43,39 +43,51 @@ function extractFunctions(content: string): string[] {
 
     // ตรวจจับฟังก์ชันที่เป็น Top Level
     while ((match = functionPattern.exec(content)) !== null) {
-        const functionCode = getFunctionCode(match.index, content);
-        if (functionCode && !isInsideConditionalBlock(match.index, content) &&
-            match[1] !== 'constructor' &&
-            !containsToLowerCaseUsage(functionCode) &&
-            isTopLevel(match.index, content)) {
-            matches.push(match[1]);
+        if (!isCommented(match.index, content)) {
+            const functionCode = getFunctionCode(match.index, content);
+            if (functionCode && !isInsideConditionalBlock(match.index, content) &&
+                match[1] !== 'constructor' &&
+                !containsToLowerCaseUsage(functionCode) &&
+                isTopLevel(match.index, content)) {
+                matches.push(match[1]);
+            }
         }
     }
-
     // ตรวจจับฟังก์ชันลูกศรที่เป็น Top Level
     while ((match = arrowFunctionPattern.exec(content)) !== null) {
-        const functionCode = getArrowFunctionCode(match.index, content);
-        if (functionCode && !isInsideConditionalBlock(match.index, content) &&
-            !containsToLowerCaseUsage(functionCode) &&
-            isTopLevel(match.index, content)) {
-            matches.push(match[1]);
+        if (!isCommented(match.index, content)) {
+            const functionCode = getArrowFunctionCode(match.index, content);
+            if (functionCode && !isInsideConditionalBlock(match.index, content) &&
+                !containsToLowerCaseUsage(functionCode) &&
+                isTopLevel(match.index, content)) {
+                matches.push(match[1]);
+            }
         }
     }
 
     // ตรวจจับเมธอดที่เป็น Top Level
     while ((match = methodsPattern.exec(content)) !== null) {
-        const functionCode = getMethodCode(match.index, content);
-        if (functionCode && !classPattern.test(content.substring(0, match.index)) &&
-            !isInsideConditionalBlock(match.index, content) &&
-            !containsToLowerCaseUsage(functionCode) &&
-            isTopLevel(match.index, content)) {
-            matches.push(match[1]);
+        if (!isCommented(match.index, content)) {
+            const functionCode = getMethodCode(match.index, content);
+            if (functionCode && !classPattern.test(content.substring(0, match.index)) &&
+                !isInsideConditionalBlock(match.index, content) &&
+                !containsToLowerCaseUsage(functionCode) &&
+                isTopLevel(match.index, content)) {
+                matches.push(match[1]);
+            }
         }
     }
 
     console.log('Detected functions:', matches); // เพิ่มบรรทัดนี้เพื่อตรวจสอบการจับฟังก์ชัน
 
     return matches;
+}
+
+// ฟังก์ชันเพื่อกันโค้ดcomment
+function isCommented(index: number, content: string): boolean {
+    const lines = content.substring(0, index).split('\n');
+    const lastLine = lines[lines.length - 1].trim();
+    return lastLine.startsWith('//') || lastLine.startsWith('/*');
 }
 
 // ฟังก์ชันเพื่อดึงโค้ดของฟังก์ชัน
@@ -176,19 +188,23 @@ async function runSpecificTest(testDir: string): Promise<void> {
     const absoluteTestDir = path.resolve(testDir);
     console.log(`Searching for tests in: ${absoluteTestDir}`);
 
-    const testFiles = glob.sync(path.join(absoluteTestDir));
+    // Search for the correct .spec.ts file pattern (e.g., state.spec.ts)
+    const testFiles = glob.sync('**/*.spec.ts', { cwd: absoluteTestDir });
 
     if (testFiles.length === 0) {
         console.log(`No test files found in: ${absoluteTestDir}`);
+        console.log('Directories and files in the test directory:');
+        fs.readdirSync(absoluteTestDir, { withFileTypes: true }).forEach(dirent => {
+            console.log(dirent.isDirectory() ? `[DIR] ${dirent.name}` : `[FILE] ${dirent.name}`);
+        });
         console.log('Skipping test execution.');
         return;
     }
 
     console.log(`Found ${testFiles.length} test file(s):`, testFiles);
-
     return new Promise((resolve, reject) => {
-        const testPattern = path.posix.join(absoluteTestDir, '**/*.spec.ts').replace(/\\/g, '/');
-        const command = `npx playwright test "${testPattern}" --reporter=list`;
+        // Construct the command to run Playwright tests
+        const command = `npx playwright test "${testFiles.join('" "')}" --reporter=list`;
         console.log(`Executing command: ${command}`);
 
         const testProcess = exec(command, (error, stdout, stderr) => {
@@ -241,9 +257,13 @@ watcher.on('change', async (filePath) => {
         const oldFunctions = componentFunctionMap[filePath] || [];
         const newFunctions = extractFunctions(currentContent);
 
+        console.log('All functions in file:', newFunctions);
+
         const newAddedFunctions = newFunctions.filter(fn => !oldFunctions.includes(fn));
 
-        if (newAddedFunctions.length > 0 || true) {
+        console.log('New added functions:', newAddedFunctions); 
+
+        if (newAddedFunctions.length > 0) {
             console.log(`New functions detected in ${filePath}: ${newAddedFunctions.join(', ')}`);
 
             newAddedFunctions.forEach(fn => {
@@ -263,13 +283,15 @@ watcher.on('change', async (filePath) => {
             // Get the specific test directory for the component
             const componentDir = path.dirname(filePath);
             const parentDir = path.dirname(componentDir);
-            const e2eDir = path.join(parentDir, 'E2E-Script').replace(/\\/g, '/');;
+            const e2eDir = path.join(parentDir, 'E2E-Script').replace(/\\/g, '/');
+            const specFilePath = path.join(e2eDir, path.basename(filePath).replace('.ts', '.spec.ts'));
 
             console.log(`Test directory: ${e2eDir}`);
+            console.log(`Spec file path: ${specFilePath}`);
 
             // Ask user if they want to run all tests or just the specific component test
             const answer = await promptUser('Do you want to run all tests in the modules? (y/n): ');
-
+            
             if (answer.toLowerCase() === 'y') {
                 try {
                     await runPlaywrightTests();
@@ -278,10 +300,10 @@ watcher.on('change', async (filePath) => {
                     console.error(`Error running all Playwright tests: ${testError}`);
                 }
             } else {
-                // Run test for the specific component only
+                // Run test for the specific component
                 try {
+                    console.log(`About to run specific test for directory: ${e2eDir}`);
                     await runSpecificTest(e2eDir);
-                    console.log(`Playwright tests for ${e2eDir} passed successfully.`);
                 } catch (testError) {
                     console.error(`Error running Playwright tests for ${e2eDir}: ${testError}`);
                 }
@@ -293,7 +315,6 @@ watcher.on('change', async (filePath) => {
         console.error(`Failed to read file ${filePath}: ${error}`);
     }
 });
-
 
 process.on('SIGINT', () => {
     watcher.close();

@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "test:e2e": "playwright test",
-    "run:watch-and-test": "npx ts-node scripts/watch-and-test.ts"
+    "run:watch-and-test": "npx playwright test --reporter=null || npm run run:watch",
+    "run:watch": "npx ts-node scripts/watch-and-test.ts"
   },
   "private": true,
   "dependencies": {

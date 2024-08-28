@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     headless: true,
-    baseURL: 'http://localhost:4200', //url ตั้งต้น 
+    baseURL: '', //url ตั้งต้น http://localhost:4200
     // trace: 'on-first-retry',
   },
   projects: [

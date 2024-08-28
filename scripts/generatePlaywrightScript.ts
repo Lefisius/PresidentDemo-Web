@@ -4,7 +4,7 @@ import * as path from 'path';
 export function generatePlaywrightScript(filePath: string, functionName: string): string {
     const newScriptTemplate = `
         test('test for ${functionName} in ${path.basename(filePath)}', async ({ page }) => {
-            await page.goto('https://localhost:4200/Dash');
+            await page.goto('https://example.com');
             // Add more test steps here
         });
     `;
