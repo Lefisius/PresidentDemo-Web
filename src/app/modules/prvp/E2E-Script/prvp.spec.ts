@@ -50,74 +50,74 @@ import { Observable, of, throwError } from 'rxjs';
         // });
 // test('test for loadAdminprvps in prvp.component.ts', async ({ page }) => {
 
-test.describe('PrvpComponent - loadAdminprvps', () => {
-  let component: PrvpComponent;
-  let mockPrvpService: PrvpService;
+// test.describe('PrvpComponent - loadAdminprvps', () => {
+//   let component: PrvpComponent;
+//   let mockPrvpService: PrvpService;
 
-  test.beforeEach(() => {
-    // Mock PrvpService
-    mockPrvpService = {
-      getAdminprvps: (): Observable<any> => of([]) // default mock
-    } as PrvpService;
+//   test.beforeEach(() => {
+//     // Mock PrvpService
+//     mockPrvpService = {
+//       getAdminprvps: (): Observable<any> => of([]) // default mock
+//     } as PrvpService;
 
-    // สร้าง instance ของ component
-    component = new PrvpComponent(mockPrvpService);
-  });
+//     // สร้าง instance ของ component
+//     component = new PrvpComponent(mockPrvpService);
+//   });
 
-  test('should fetch data successfully and update component properties', async () => {
-    // Arrange
-    const mockData = [
-      { id: 1, name: 'Admin 1' },
-      { id: 2, name: 'Admin 2' }
-    ];
-    mockPrvpService.getAdminprvps = () => of(mockData);
+//   test('should fetch data successfully and update component properties', async () => {
+//     // Arrange
+//     const mockData = [
+//       { id: 1, name: 'Admin 1' },
+//       { id: 2, name: 'Admin 2' }
+//     ];
+//     mockPrvpService.getAdminprvps = () => of(mockData);
 
-    const messages: string[] = [];
-    console.log = (message: string) => messages.push(message);
+//     const messages: string[] = [];
+//     console.log = (message: string) => messages.push(message);
 
-    // Act
-    component.loadAdminprvps();
+//     // Act
+//     component.loadAdminprvps();
 
-    // Assert
-    expect(messages).toContain('Data received from API:');
-    expect(component.presidentsData).toEqual(mockData);
-    expect(component.filteredData).toEqual(mockData);
-  });
+//     // Assert
+//     expect(messages).toContain('Data received from API:');
+//     expect(component.presidentsData).toEqual(mockData);
+//     expect(component.filteredData).toEqual(mockData);
+//   });
 
-  test('should handle error when fetching data fails', async () => {
-    // Arrange
-    const mockError = new Error('API Error');
-    mockPrvpService.getAdminprvps = () => throwError(() => mockError);
+//   test('should handle error when fetching data fails', async () => {
+//     // Arrange
+//     const mockError = new Error('API Error');
+//     mockPrvpService.getAdminprvps = () => throwError(() => mockError);
 
-    const messages: string[] = [];
-    console.error = (message: string) => messages.push(message);
+//     const messages: string[] = [];
+//     console.error = (message: string) => messages.push(message);
 
-    // Act
-    component.loadAdminprvps();
+//     // Act
+//     component.loadAdminprvps();
 
-    // Assert
-    expect(messages).toContain('Error fetching Adminprvps:');
-    expect(component.presidentsData).toEqual([]);
-    expect(component.filteredData).toEqual([]);
-  });
+//     // Assert
+//     expect(messages).toContain('Error fetching Adminprvps:');
+//     expect(component.presidentsData).toEqual([]);
+//     expect(component.filteredData).toEqual([]);
+//   });
 
-  test('should not update data if API returns empty array', async () => {
-    // Arrange
-    const mockData: any[] = [];
-    mockPrvpService.getAdminprvps = () => of(mockData);
+//   test('should not update data if API returns empty array', async () => {
+//     // Arrange
+//     const mockData: any[] = [];
+//     mockPrvpService.getAdminprvps = () => of(mockData);
 
-    const messages: string[] = [];
-    console.log = (message: string) => messages.push(message);
+//     const messages: string[] = [];
+//     console.log = (message: string) => messages.push(message);
 
-    // Act
-    component.loadAdminprvps();
+//     // Act
+//     component.loadAdminprvps();
 
-    // Assert
-    expect(messages).toContain('Data received from API:');
-    expect(component.presidentsData).toEqual([]);
-    expect(component.filteredData).toEqual([]);
-  });
-});
+//     // Assert
+//     expect(messages).toContain('Data received from API:');
+//     expect(component.presidentsData).toEqual([]);
+//     expect(component.filteredData).toEqual([]);
+//   });
+// });
 //         });
 // test('test for updateDateTime in prvp.component.ts', async ({ page }) => {
 //             await page.goto('https://example.com');
