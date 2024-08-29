@@ -40,7 +40,7 @@
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "4.28.2",
-    "@typescript-eslint/parser": "4.28.2",
+    "@typescript-eslint/parser": "8.3.0",
     "cypress": "^13.13.2",
     "eslint": "^7.26.0",
     "jasmine-core": "~3.8.0",
