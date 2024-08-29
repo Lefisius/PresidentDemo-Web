@@ -24,7 +24,7 @@
     "ag-grid-community": "^32.0.0",
     "ng-zorro-antd": "^12.1.1",
     "rxjs": "~6.6.0",
-    "tslib": "^2.3.0",
+    "tslib": "^2.7.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
