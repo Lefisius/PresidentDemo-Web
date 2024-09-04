@@ -45,10 +45,10 @@ export class PresmarriageComponent implements OnInit {
       this.filteredData = this.presidentsData.filter(president =>
         president.presName.toLowerCase().includes(term) ||
         president.spouseName.toLowerCase().includes(term) ||
-        president.prAge.toString().includes(term) ||  
-        president.spAge.toString().includes(term) || 
-        president.nrChildren.toString().includes(term) || 
-        president.marYear.toString().includes(term)  
+        president.prAge.toString().includes(term) ||
+        president.spAge.toString().includes(term) ||
+        president.nrChildren.toString().includes(term) ||
+        president.marYear.toString().includes(term)
       );
     }
   }
@@ -56,4 +56,10 @@ export class PresmarriageComponent implements OnInit {
   setTableTitle(title: string): void {
     this.tableTitle = title;
   }
+
+  deleteRow(adminNr: string): void {
+    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
+    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
+  }
 }
+

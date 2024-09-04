@@ -1,0 +1,10 @@
+.danger-button {
+  background-color: #ff4d4f; /* สีแดงสำหรับปุ่ม danger */
+  border-color: #ff4d4f;
+  color: white; /* เปลี่ยนสีข้อความเป็นขาว */
+}
+
+.danger-button:hover {
+  background-color: #ff7875; /* สีเมื่อ hover */
+  border-color: #ff7875;
+}
