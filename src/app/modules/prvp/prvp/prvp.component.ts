@@ -7,7 +7,7 @@ import { PrvpService } from '../api/prvp.service';
   styleUrls: ['./prvp.component.scss']
 })
 export class PrvpComponent implements OnInit {
-
+  errorMessage = 'Error fetching Adminprvps';
   searchTerm: string = '';
   tableTitle: string = 'AdminPrVp';
   datetime: string = '';
@@ -28,7 +28,7 @@ export class PrvpComponent implements OnInit {
       this.presidentsData = data;
       this.filteredData = data;
     }, error => {
-      console.error('Error fetching Adminprvps:', error);
+      console.error(this.errorMessage, error);
     });
   }
 
