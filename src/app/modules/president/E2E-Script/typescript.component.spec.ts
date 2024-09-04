@@ -63,5 +63,4 @@ test.describe('PresidentComponent Tests', () => {
       expect(component.listOfColumns[0].name).toBe('Name');
       expect(component.listOfColumns[1].name).toBe('Birth Year');
     });
-  // เพิ่มการทดสอบอื่นๆ ตามความต้องการ
 });
