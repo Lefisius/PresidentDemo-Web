@@ -1,17 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('should fetch and display correct data from API', async ({ page }) => {
-  // Intercept the network response
+test('should fetch and verify data from the API', async ({ page }) => {
+  // ดักจับ response จาก API
   page.on('response', async (response) => {
-    if (response.url().includes('/api/Adminprvp')) { // Adjust the condition based on your API endpoint
+    if (response.url().includes('/api/Adminprvp')) { // ปรับ URL ตาม path ของ API จริงที่ต้องการ
       const jsonResponse = await response.json();
-
-      // Log the response data
-      console.log('API Response:', jsonResponse);
-
-      // Perform your checks
-      expect(jsonResponse).toEqual([
-        
+      
+      // ข้อมูลที่คาดหวัง
+      const expectedData = [
         {"adminNr":1,"presName":"Washington G","vicePresName":"Adams J"},
         {"adminNr":2,"presName":"Washington G","vicePresName":"Adams J"},
         {"adminNr":46,"presName":"Nixon R M","vicePresName":"Agnew S T"},
@@ -63,26 +59,41 @@ test('should fetch and display correct data from API', async ({ page }) => {
         {"adminNr":39,"presName":"Roosevelt F D","vicePresName":"Wallace H A"},
         {"adminNr":23,"presName":"Hayes R B","vicePresName":"Wheeler W"},
         {"adminNr":22,"presName":"Grant U S","vicePresName":"Wilson H"}
+      ];
 
-      ]);
+      // ตรวจสอบว่าข้อมูลจาก API ตรงกับที่คาดหวัง
+      expect(jsonResponse).toEqual(expectedData);
     }
   });
 
-//   // Navigate to the page that makes the API call
-//   await page.goto('http://localhost:4200/Prvp');
+  // เรียก page ไปยังหน้าเว็บที่ทำการเรียก API
+  await page.goto('http://localhost:4200/Prvp'); // ปรับ URL ตามที่ต้องการ
 
-//   // Trigger the API call if it is not automatically called
-//   // await page.click('button:has-text("Load Data")');
+  // รอให้ API ถูกเรียกและ response กลับมา
+  await page.waitForTimeout(1000); // ปรับเวลาตามความเหมาะสม
 
-//   // Optionally, verify that the data is displayed correctly in the UI
-//   const rows = await page.locator('table tbody tr');
-//   await expect(rows).toHaveCount(2);
-
-//   // Verify first row data
-//   const firstRowData = await rows.first().locator('td').allTextContents();
-//   expect(firstRowData).toEqual(['1', 'John Doe', 'Jane Smith']);
-
-//   // Verify second row data
-//   const secondRowData = await rows.nth(1).locator('td').allTextContents();
-//   expect(secondRowData).toEqual(['2', 'Alice Johnson', 'Bob Brown']);
 });
+ test('should handle API error correctly', async ({ page }) => {
+    // Mock API ให้ส่งค่า error กลับมา
+    await page.route('**/api/Adminprvp', (route) => {
+      route.abort('failed'); // จำลองสถานการณ์ที่การเรียก API ล้มเหลว
+    });
+
+    // จับ log error
+    const errorLogs: string[] = [];
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        errorLogs.push(msg.text());
+        console.log('Logged error:', msg.text()); // แสดง error ใน console.log
+      }
+    });
+
+    // เรียก page ไปยังหน้าเว็บที่ทำการเรียก API
+    await page.goto('http://localhost:4200/Prvp'); // ปรับ URL ตามที่ต้องการ
+
+    // รอให้ API ถูกเรียกและ error เกิดขึ้น
+    await page.waitForTimeout(1000); // ปรับเวลาตามความเหมาะสม
+
+    // ตรวจสอบว่ามี error log ที่คาดหวัง
+    expect(errorLogs.some(log => log.includes('Error fetching Adminprvps'))).toBeTruthy();
+  });
