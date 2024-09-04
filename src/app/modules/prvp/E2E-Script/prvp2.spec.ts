@@ -7,7 +7,6 @@ test.describe('PrvpComponent', () => {
   let page: Page;
   let component: PrvpComponent;
   let mockPrvpService: PrvpService;
-  
 
   test.beforeEach(async ({ page }) => {
     // Mock PrvpService
@@ -25,6 +24,12 @@ test.describe('PrvpComponent', () => {
     await mountAngularComponent(page, PrvpComponent);
   });
 
+  test.afterEach(async () => {
+    // Cleanup code here if necessary, such as resetting component state or clearing up resources
+    // component = null;
+    // mockPrvpService = null;
+  });
+
   test('should initialize correctly', async () => {
     expect(component.searchTerm).toBe('');
     expect(component.tableTitle).toBe('AdminPrVp');
@@ -40,7 +45,7 @@ test.describe('PrvpComponent', () => {
         expect(component.presidentsData).toHaveLength(2);
         expect(component.filteredData).toHaveLength(2);
         expect(component.presidentsData[0].adminNr).toBe('1');
-        expect(component.presidentsData[1].presName).toBe('Alice Johnson');
+        expect(component.presidentsData[1].presName).toBe(' Johnson');
         resolve();
       }, 0);
     });
@@ -94,29 +99,28 @@ test.describe('PrvpComponent', () => {
     expect(component.filteredData[0].adminNr).toBe('2');
   });
 
-//อันนี้คือส่วน UI แล้ว
+  // UI tests (commented out)
+  // test('UI elements are rendered correctly', async ({ page }) => {
+  //   await expect(page.locator('input[placeholder="Search"]')).toBeVisible();
+  //   await expect(page.locator('h2:has-text("AdminPrVp")').first()).toBeVisible();
+  //   await expect(page.locator('table')).toBeVisible();
+  // });
 
-//   test('UI elements are rendered correctly', async ({ page }) => {
-//     await expect(page.locator('input[placeholder="Search"]')).toBeVisible();
-//     await expect(page.locator('h2:has-text("AdminPrVp")').first()).toBeVisible();
-//     await expect(page.locator('table')).toBeVisible();
-//   });
+  // test('Search functionality works in UI', async ({ page }) => {
+  //   await page.fill('input[placeholder="Search"]', 'John');
+  //   await page.click('button:has-text("Search")');
+    
+  //   await expect(page.locator('table tbody tr')).toHaveCount(1);
+  //   await expect(page.locator('table tbody tr td:has-text("John Doe")').first()).toBeVisible();
+  // });
 
-//   test('Search functionality works in UI', async ({ page }) => {
-//     await page.fill('input[placeholder="Search"]', 'John');
-//     await page.click('button:has-text("Search")');
+  // test('Delete functionality works in UI', async ({ page }) => {
+  //   const initialRowCount = await page.locator('table tbody tr').count();
     
-//     await expect(page.locator('table tbody tr')).toHaveCount(1);
-//     await expect(page.locator('table tbody tr td:has-text("John Doe")').first()).toBeVisible();
-//   });
-
-//   test('Delete functionality works in UI', async ({ page }) => {
-//     const initialRowCount = await page.locator('table tbody tr').count();
+  //   await page.click('table tbody tr:first-child button:has-text("Delete")');
     
-//     await page.click('table tbody tr:first-child button:has-text("Delete")');
-    
-//     await expect(page.locator('table tbody tr')).toHaveCount(initialRowCount - 1);
-//   });
+  //   await expect(page.locator('table tbody tr')).toHaveCount(initialRowCount - 1);
+  // });
 });
 
 // Helper function to mount Angular component (implementation depends on your setup)

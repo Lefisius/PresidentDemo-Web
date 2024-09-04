@@ -70,5 +70,22 @@ export class PrvpComponent implements OnInit {
     console.log('Row deleted with adminNr:', adminNr);
     console.log('Updated data:', this.presidentsData);
   }
+   calculateSum(a: number, b: number): number {
+    return a + b;
+  }
+
+  greet(name: string) {
+    return name ? `Hello, ${name}!` : 'Hello, Guest!';
+  }
+  
+  getLength(str: string) {
+    if (!str) throw new Error('Invalid input');
+    return str.length;
+}
+
+  add(a: number, b: number): number {
+  return a + b;
+}
+
 
 }
