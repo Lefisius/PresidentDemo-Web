@@ -15,7 +15,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "typeRoots": ["./node_modules/@types", "./src/app/module"],
-    "types": ["node", "nodemailer"],
+    "types": ["node", "nodemailer","jest"],
     // "target": "es2017",
     // "module": "es2020",
     "module": "commonjs",
@@ -34,8 +34,10 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
+  "files": ["src/test.ts"],
   "include": [
     "src/*/*.ts",
-    "scripts/**/*.ts"  // เพิ่มโฟลเดอร์ scripts
+    "scripts/**/*.ts",  // เพิ่มโฟลเดอร์ scripts
+    "src/**/*.spec.ts", "src/**/*.d.ts"
   ]
 }
