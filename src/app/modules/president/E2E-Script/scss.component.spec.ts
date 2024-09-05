@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-
 test('ทดสอบขนาดของกล่องข้อความ', async ({ page }) => {
     await page.goto('http://localhost:4200/President');
 
