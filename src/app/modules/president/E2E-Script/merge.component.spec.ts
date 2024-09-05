@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { PresidentComponent } from '../president/president.component';
 import { of } from 'rxjs';
 
+// ไฟล์นี้จะรวมทั้ง 3 ไฟล์แล้วรันทีเดียว
 test('E2E Tests for President Component', async ({ page }) => {
 
     // 1. ทดสอบการทำงานของหน้าเว็บ
@@ -48,7 +49,6 @@ test('E2E Tests for President Component', async ({ page }) => {
     }
 
     // 3. ทดสอบสไตล์ SCSS
-    await page.goto('http://localhost:4200/President');
     const tab = page.getByRole('button', { name: 'Search' }).first();
     await expect(tab).toHaveCSS('border', '1px solid rgb(24, 144, 255)');
     const tab2 = page.locator('button:has-text("Search")').first();
