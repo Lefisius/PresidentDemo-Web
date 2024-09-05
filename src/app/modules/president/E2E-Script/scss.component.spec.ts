@@ -54,7 +54,7 @@ test('ทดสอบขนาดของกล่องข้อความ',
 
 });
 
-test('ทดสอบสไตล์ SCSS ของหน้าจัดการคลังพัสดุ', async ({ page }) => {
+test('ทดสอบสไตล์ SCSS ข', async ({ page }) => {
     await page.goto('http://localhost:4200/President');
 
     const tab = page.getByRole('button', { name: 'Search' }).first();
