@@ -48,6 +48,7 @@ test('E2E Tests for President Component', async ({ page }) => {
     }
 
     // 3. ทดสอบสไตล์ SCSS
+    await page.goto('http://localhost:4200/President');
     const tab = page.getByRole('button', { name: 'Search' }).first();
     await expect(tab).toHaveCSS('border', '1px solid rgb(24, 144, 255)');
     const tab2 = page.locator('button:has-text("Search")').first();
