@@ -166,4 +166,9 @@ test('should fetch and verify data from the API', async ({ page }) => {
     ];
     // expect(logs.some(log => log.includes(JSON.stringify(expectedUpdatedData)))).toBeTruthy();
   });
+
+  test('updateDateTime', () => {
+    component.updateDateTime();
+    expect(component.datetime).not.toBe('');
+  });
 });
