@@ -148,7 +148,7 @@ export class PresidentComponent implements OnInit {
     this.filteredData = this.presidentsData.filter((president) => {
       const birthYr = president.birthYr;
       return (!isNaN(from) ? birthYr >= from : true) &&
-             (!isNaN(to) ? birthYr <= to : true);
+        (!isNaN(to) ? birthYr <= to : true);
     });
   }
 
@@ -183,7 +183,51 @@ export class PresidentComponent implements OnInit {
         filterMultiple: false,
         sortDirections: ['ascend', 'descend']
       },
-      // Define other columns similarly
+      {
+        name: 'Years Served',
+        sortOrder: null,
+        sortFn: (a, b) => a.yrsServ - b.yrsServ,
+        listOfFilter: [],
+        filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
+      },
+      {
+        name: 'Death Age',
+        sortOrder: null,
+        sortFn: (a, b) => a.deathAge - b.deathAge,
+        listOfFilter: [],
+        filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
+      },
+      {
+        name: 'Party',
+        sortOrder: null,
+        sortFn: (a, b) => a.party.localeCompare(b.party),
+        listOfFilter: [],
+        filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
+      },
+      {
+        name: 'State Born',
+        sortOrder: null,
+        sortFn: (a, b) => a.stateBorn.localeCompare(b.stateBorn),
+        listOfFilter: [],
+        filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
+      },
+      {
+        name: 'Sum of Birth Year and Death Age', // New column for sum
+        sortOrder: null,
+        sortFn: (a, b) => (a.birthYr + a.deathAge) - (b.birthYr + b.deathAge),
+        listOfFilter: [],
+        filterFn: null,
+        filterMultiple: false,
+        sortDirections: ['ascend', 'descend']
+      },
     ];
   }
 }
