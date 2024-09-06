@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { PresidentComponent } from '../president/president.component';
 import { of } from 'rxjs';
+import { PresidentComponent } from '../president/president.component';
 
-// ไฟล์นี้จะรวมทั้ง 3 ไฟล์แล้วรันทีเดียว
+// การทดสอบ E2E
 test('E2E Tests for President Component', async ({ page }) => {
 
     // 1. ทดสอบการทำงานของหน้าเว็บ
@@ -53,8 +53,11 @@ test('E2E Tests for President Component', async ({ page }) => {
     await expect(tab).toHaveCSS('border', '1px solid rgb(24, 144, 255)');
     const tab2 = page.locator('button:has-text("Search")').first();
     await expect(tab2).toHaveCSS('border', '1px solid rgb(24, 144, 255)');
+});
 
-    // 4. ทดสอบการทำงานของ PresidentComponent
+// การทดสอบ Unit
+test('Unit Tests for PresidentComponent', async () => {
+    // Mock ของ PresidentService
     const mockPresidentService = {
         getPresidents: () => of([
             { presName: 'John Adams', birthYr: 1735, yrsServ: 8, deathAge: 90, party: 'Federalist', stateBorn: 'Massachusetts' },

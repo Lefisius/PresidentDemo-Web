@@ -58,22 +58,46 @@ export class PresidentComponent implements OnInit {
     {
       title: '1850-1899',
       key: '1850-1899',
-      children: [],
+      children: [
+        { title: '1850-1859', key: '1850-1859' },
+        { title: '1860-1869', key: '1860-1869' },
+        { title: '1870-1879', key: '1870-1879' },
+        { title: '1880-1889', key: '1880-1889' },
+        { title: '1890-1899', key: '1890-1899' },
+      ],
     },
     {
       title: '1900-1949',
       key: '1900-1949',
-      children: [],
+      children: [
+        { title: '1900-1909', key: '1900-1909' },
+        { title: '1910-1919', key: '1910-1919' },
+        { title: '1920-1929', key: '1920-1929' },
+        { title: '1930-1939', key: '1930-1939' },
+        { title: '1940-1949', key: '1940-1949' },
+      ],
     },
     {
       title: '1950-1999',
       key: '1950-1999',
-      children: [],
+      children: [
+        { title: '1950-1959', key: '1950-1959' },
+        { title: '1960-1969', key: '1960-1969' },
+        { title: '1970-1979', key: '1970-1979' },
+        { title: '1980-1989', key: '1980-1989' },
+        { title: '1990-1999', key: '1990-1999' },
+      ],
     },
     {
       title: '2000-2049',
       key: '2000-2049',
-      children: [],
+      children: [
+        { title: '2000-2009', key: '2000-2009' },
+        { title: '2010-2019', key: '2010-2019' },
+        { title: '2020-2029', key: '2020-2029' },
+        { title: '2030-2039', key: '2030-2039' },
+        { title: '2040-2049', key: '2040-2049' },
+      ],
     },
   ];
   //#endregion Example age ranges
@@ -92,6 +116,7 @@ export class PresidentComponent implements OnInit {
       (data) => {
         this.presidentsData = data;
         this.filteredData = data;
+        console.log('Presidents Data Loaded:', this.presidentsData); // Debugging output
       },
       (error) => {
         console.error('Error fetching Presidents:', error);
@@ -145,35 +170,43 @@ export class PresidentComponent implements OnInit {
     const from = parseInt(this.fromAge, 10);
     const to = parseInt(this.toAge, 10);
 
+    console.log('From:', from); // Debugging output
+    console.log('To:', to);     // Debugging output
+
+    if (isNaN(from) || isNaN(to)) {
+        this.filteredData = [...this.presidentsData]; // Return all data if range is invalid
+        return;
+    }
+
     this.filteredData = this.presidentsData.filter((president) => {
-      const sum = president.birthYr + president.deathAge;
-      return (!isNaN(from) ? sum >= from : true) &&
-        (!isNaN(to) ? sum <= to : true);
+        const birthYear = president.birthYr;
+        console.log('Birth Year for', president.presName, ':', birthYear); // Debugging output
+        return birthYear >= from && birthYear <= to;
     });
+
+    console.log('Filtered Data:', this.filteredData); // Debugging output
   }
 
   applyFilter(selectedRanges: string[]): void {
     if (!selectedRanges.length) {
-      this.filteredData = [...this.presidentsData]; // ถ้าไม่มีการเลือก ให้คืนข้อมูลทั้งหมด
+      this.filteredData = [...this.presidentsData]; // Return all data if no ranges selected
       return;
     }
 
     this.filteredData = this.presidentsData.filter((president) => {
-      const sum = president.birthYr + president.deathAge; // ผลรวมของ birthYr และ deathAge
+      const sum = president.birthYr + president.deathAge;
 
-      // ตรวจสอบว่าค่าผลรวมอยู่ในช่วงที่เลือกหรือไม่
       return selectedRanges.some(range => {
-        const [from, to] = range.split('-').map(Number); // แปลงช่วงที่เลือกเป็นตัวเลข
+        const [from, to] = range.split('-').map(Number);
         return sum >= from && sum <= to;
       });
     });
   }
 
-
   deleteRow(index: number): void {
     if (confirm('Are you sure you want to delete this record?')) {
       this.filteredData.splice(index, 1);
-      // this.presidentsData = [...this.filteredData]; // Update the original data as well๐
+      // this.presidentsData = [...this.filteredData]; // Uncomment if you want to update the original data as well
     }
   }
 
@@ -246,5 +279,3 @@ export class PresidentComponent implements OnInit {
   }
 
 }
-//#region แก้ไขcode ขอความกรุณาดูด้วยว่าของเก่าหายไปไหม
-//#endregion แก้ไขcode ขอความกรุณาดูด้วยว่าของเก่าหายไปไหม
