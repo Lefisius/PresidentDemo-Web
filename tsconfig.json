@@ -14,8 +14,15 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
-    "module": "es2020",
+    "typeRoots": ["./node_modules/@types", "./src/app/module"],
+    "types": ["node", "nodemailer","jest"],
+    // "target": "es2017",
+    // "module": "es2020",
+    "module": "commonjs",
+    "target": "es6",
+    // "rootDir": "./src",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "lib": [
       "es2018",
       "dom"
@@ -26,5 +33,11 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "files": ["src/test.ts"],
+  "include": [
+    "src/*/*.ts",
+    "scripts/**/*.ts",  // เพิ่มโฟลเดอร์ scripts
+    "src/**/*.spec.ts", "src/**/*.d.ts"
+  ]
 }

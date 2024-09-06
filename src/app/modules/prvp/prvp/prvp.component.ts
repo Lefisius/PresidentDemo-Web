@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { PrvpService } from '../api/prvp.service';
 
-
 @Component({
   selector: 'app-prvp',
   templateUrl: './prvp.component.html',
   styleUrls: ['./prvp.component.scss']
 })
 export class PrvpComponent implements OnInit {
-
+  errorMessage = 'Error fetching Adminprvps';
   searchTerm: string = '';
   tableTitle: string = 'AdminPrVp';
   datetime: string = '';
@@ -29,7 +28,7 @@ export class PrvpComponent implements OnInit {
       this.presidentsData = data;
       this.filteredData = data;
     }, error => {
-      console.error('Error fetching Adminprvps:', error);
+      console.error(this.errorMessage, error);
     });
   }
 
@@ -60,4 +59,33 @@ export class PrvpComponent implements OnInit {
   setTableTitle(title: string): void {
     this.tableTitle = title;
   }
+
+  deleteRow(adminNr: string): void {
+    // ลบแถวจาก presidentsData
+    this.presidentsData = this.presidentsData.filter(president => president.adminNr !== adminNr);
+
+    // ลบแถวจาก filteredData ด้วย (ถ้ามีการค้นหาเกิดขึ้น)
+    this.filteredData = this.filteredData.filter(president => president.adminNr !== adminNr);
+
+    console.log('Row deleted with adminNr:', adminNr);
+    console.log('Updated data:', this.presidentsData);
+  }
+   calculateSum(a: number, b: number): number {
+    return a + b;
+  }
+
+  greet(name: string) {
+    return name ? `Hello, ${name}!` : 'Hello, Guest!';
+  }
+  
+  getLength(str: string) {
+    if (!str) throw new Error('Invalid input');
+    return str.length;
+}
+
+  add(a: number, b: number): number {
+  return a + b;
+}
+
+
 }
