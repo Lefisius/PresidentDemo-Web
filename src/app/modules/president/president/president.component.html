@@ -1,91 +1,94 @@
 <div>
-  <nz-layout>
-      <nz-header>
-          <div>
-              <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
-                  <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
-                  <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">Prvp</li>
-                  <li nz-menu-item routerLink="/Election" routerLinkActive="active">Election</li>
-                  <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
-                  <li nz-menu-item nzSelected routerLink="/President" routerLinkActive="active">President</li>
-                  <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
-                  <li nz-menu-item routerLink="/State" routerLinkActive="active">State</li>
-                  <div id="datetime" class="datetime">{{ datetime }}</div>
-              </ul>
-          </div>
-          <div class="example-input">
-              <!-- Search All -->
-              <input nz-input placeholder="Search President" nzSize="default" [(ngModel)]="searchTerm" (ngModelChange)="onSearch()" />
-              <button nz-button nzType="primary" (click)="onSearch()" class="botton-marginright">
-                  <i nz-icon nzType="search"></i>Search
-              </button>
-              <!-- end Search All -->
+    <nz-layout>
+        <nz-header>
+            <div>
+                <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+                    <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                    <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">Prvp</li>
+                    <li nz-menu-item routerLink="/Election" routerLinkActive="active">Election</li>
+                    <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
+                    <li nz-menu-item nzSelected routerLink="/President" routerLinkActive="active">President</li>
+                    <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
+                    <li nz-menu-item routerLink="/State" routerLinkActive="active">State</li>
+                    <div id="datetime" class="datetime">{{ datetime }}</div>
+                </ul>
+            </div>
+            <div class="example-input">
+                <!-- Search All -->
+                <input nz-input placeholder="Search President" nzSize="default" [(ngModel)]="searchTerm"
+                    (ngModelChange)="onSearch()" />
+                <button nz-button nzType="primary" (click)="onSearch()" class="botton-marginright">
+                    <i nz-icon nzType="search"></i>Search
+                </button>
+                <!-- end Search All -->
 
-              <!-- From To -->
-              <input nz-input placeholder="From" [(ngModel)]="fromAge" nzSize="default" />
-              <input nz-input placeholder="To" [(ngModel)]="toAge" nzSize="default" />
-              <button nz-button nzType="primary" (click)="applyFilterByRange()">Search</button>
-              <!-- end From To -->
+                <!-- From To -->
+                <input nz-input placeholder="From" [(ngModel)]="fromAge" nzSize="default" />
+                <input nz-input placeholder="To" [(ngModel)]="toAge" nzSize="default" />
+                <button nz-button nzType="primary" (click)="applyFilterByRange()">Search</button>
+                <!-- end From To -->
 
-              <!-- Select Age Range -->
-              <nz-tree-select style="width: 200px; margin-left: 10px;" nzPlaceHolder="Select Age Range"
-                  [nzNodes]="ageRangeNodes" [(ngModel)]="selectedAgeRanges" nzMultiple nzCheckable
-                  (ngModelChange)="applyFilter($event)">
-              </nz-tree-select>
-              <!-- end Select Age Range -->
+                <!-- Select Age Range -->
+                <nz-tree-select style="width: 200px; margin-left: 10px;" nzPlaceHolder="Select Age Range"
+                    [nzNodes]="ageRangeNodes" [(ngModel)]="selectedAgeRanges" nzMultiple nzCheckable
+                    (ngModelChange)="applyFilter($event)">
+                </nz-tree-select>
 
-              <!-- DropDown -->
-              <button class="botton-margin" nz-button nz-dropdown [nzDropdownMenu]="menu4">
-                  Select
-                  <i nz-icon nzType="down"></i>
-              </button>
-              <nz-dropdown-menu #menu4="nzDropdownMenu">
-                  <ul nz-menu nzMode="horizontal">
-                      <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
-                      <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">Prvp</li>
-                      <li nz-menu-item routerLink="/Election" routerLinkActive="active">Election</li>
-                      <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
-                      <li nz-menu-item nzSelected routerLink="/President" routerLinkActive="active">President</li>
-                      <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
-                      <li nz-menu-item routerLink="/State" routerLinkActive="active">State</li>
-                  </ul>
-              </nz-dropdown-menu>
-              <!-- end DropDown -->
-          </div>
-      </nz-header>
+                <!-- end Select Age Range -->
 
-      <nz-content>
-          <div class="table-container">
-              <h1 class="header-President">{{ tableTitle }}</h1>
+                <!-- DropDown -->
+                <button class="botton-margin" nz-button nz-dropdown [nzDropdownMenu]="menu4">
+                    Select
+                    <i nz-icon nzType="down"></i>
+                </button>
+                <nz-dropdown-menu #menu4="nzDropdownMenu">
+                    <ul nz-menu nzMode="horizontal">
+                        <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                        <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">Prvp</li>
+                        <li nz-menu-item routerLink="/Election" routerLinkActive="active">Election</li>
+                        <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
+                        <li nz-menu-item nzSelected routerLink="/President" routerLinkActive="active">President</li>
+                        <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
+                        <li nz-menu-item routerLink="/State" routerLinkActive="active">State</li>
+                    </ul>
+                </nz-dropdown-menu>
+                <!-- end DropDown -->
+            </div>
+        </nz-header>
 
-              <nz-table #filterTable [nzData]="filteredData" nzBordered [nzFrontPagination]="false">
-                  <thead>
-                      <tr>
-                          <th *ngFor="let column of listOfColumns" [nzSortFn]="column.sortFn"
-                              [nzSortOrder]="column.sortOrder" [nzSortDirections]="column.sortDirections"
-                              [nzFilters]="column.listOfFilter" [nzFilterFn]="column.filterFn">
-                              {{ column.name }}
-                          </th>
-                          <th>Actions</th> <!-- Add column for actions -->
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr *ngFor="let president of filterTable.data; let index = index">
-                          <td>{{ president.presName }}</td>
-                          <td>{{ president.birthYr }}</td>
-                          <td>{{ president.yrsServ }}</td>
-                          <td>{{ president.deathAge }}</td>
-                          <td>{{ president.party }}</td>
-                          <td>{{ president.stateBorn }}</td>
-                          <td>{{ president.birthYr + president.deathAge }}</td>
-                          <td>
-                            <button nz-button nzType="default" (click)="deleteRow(index)">Delete</button> <!-- Change 'danger' to 'default' -->
+        <nz-content>
+            <div class="table-container">
+                <h1 class="header-President">{{ tableTitle }}</h1>
 
-                          </td>
-                      </tr>
-                  </tbody>
-              </nz-table>
-          </div>
-      </nz-content>
-  </nz-layout>
+                <nz-table #filterTable [nzData]="filteredData" nzBordered [nzFrontPagination]="false">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let column of listOfColumns" [nzSortFn]="column.sortFn"
+                                [nzSortOrder]="column.sortOrder" [nzSortDirections]="column.sortDirections"
+                                [nzFilters]="column.listOfFilter" [nzFilterFn]="column.filterFn">
+                                {{ column.name }}
+                            </th>
+                            <th>Actions</th> <!-- Add column for actions -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let president of filterTable.data; let index = index">
+                            <td>{{ president.presName }}</td>
+                            <td>{{ president.birthYr }}</td>
+                            <td>{{ president.yrsServ }}</td>
+                            <td>{{ president.deathAge }}</td>
+                            <td>{{ president.party }}</td>
+                            <td>{{ president.stateBorn }}</td>
+                            <td>{{ president.birthYr + president.deathAge }}</td>
+                            <td>
+                                <button nz-button nzType="default" (click)="deleteRow(index)">Delete</button>
+                                <!-- Change 'danger' to 'default' -->
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </nz-content>
+    </nz-layout>
 </div>

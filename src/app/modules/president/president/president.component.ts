@@ -146,20 +146,34 @@ export class PresidentComponent implements OnInit {
     const to = parseInt(this.toAge, 10);
 
     this.filteredData = this.presidentsData.filter((president) => {
-      const birthYr = president.birthYr;
-      return (!isNaN(from) ? birthYr >= from : true) &&
-        (!isNaN(to) ? birthYr <= to : true);
+      const sum = president.birthYr + president.deathAge;
+      return (!isNaN(from) ? sum >= from : true) &&
+        (!isNaN(to) ? sum <= to : true);
     });
   }
 
   applyFilter(selectedRanges: string[]): void {
-    // Implement your filter logic here based on selectedRanges
+    if (!selectedRanges.length) {
+      this.filteredData = [...this.presidentsData]; // ถ้าไม่มีการเลือก ให้คืนข้อมูลทั้งหมด
+      return;
+    }
+
+    this.filteredData = this.presidentsData.filter((president) => {
+      const sum = president.birthYr + president.deathAge; // ผลรวมของ birthYr และ deathAge
+
+      // ตรวจสอบว่าค่าผลรวมอยู่ในช่วงที่เลือกหรือไม่
+      return selectedRanges.some(range => {
+        const [from, to] = range.split('-').map(Number); // แปลงช่วงที่เลือกเป็นตัวเลข
+        return sum >= from && sum <= to;
+      });
+    });
   }
+
 
   deleteRow(index: number): void {
     if (confirm('Are you sure you want to delete this record?')) {
       this.filteredData.splice(index, 1);
-      this.presidentsData = [...this.filteredData]; // Update the original data as well
+      // this.presidentsData = [...this.filteredData]; // Update the original data as well๐
     }
   }
 
@@ -230,4 +244,7 @@ export class PresidentComponent implements OnInit {
       },
     ];
   }
+
 }
+//#region แก้ไขcode ขอความกรุณาดูด้วยว่าของเก่าหายไปไหม
+//#endregion แก้ไขcode ขอความกรุณาดูด้วยว่าของเก่าหายไปไหม
