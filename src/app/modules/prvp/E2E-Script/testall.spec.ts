@@ -25,6 +25,12 @@ test.describe('PrvpComponent deleteRow function tests', () => {
     component.filteredData = [...component.presidentsData];
   });
 
+  test.afterEach(() => {
+    // Reset component and mock service after each test
+    component = null as any;
+    mockPrvpService = null as any;
+  });
+
 test('should fetch and verify data from the API', async ({ page }) => {
   // ดักจับ response จาก API
   page.on('response', async (response) => {
