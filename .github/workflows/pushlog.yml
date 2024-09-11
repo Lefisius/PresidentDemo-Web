@@ -48,7 +48,7 @@ jobs:
           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_OUTPUT
 
       - name: Upload Error Files
-        if: ${{ steps.build.outputs.error_files_present == 'true' || always()}}
+        if: ${{ steps.build.outputs.error_files_present == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: error-files
