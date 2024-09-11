@@ -41,7 +41,7 @@ jobs:
         run: npm config set registry https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build Project
         id: build
@@ -50,12 +50,16 @@ jobs:
           exit_code=$?
           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
 
+      - name: List files in the workspace
+        run: ls -la
+
       - name: Upload Error Files
         if: ${{ env.error_files_present == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: error-files
           path: build_errors.log
+
 
   push_to_registry:
     name: Push Docker image to Docker Hub
