@@ -2,7 +2,7 @@ name: commitlog
 
 on:
   schedule:
-    # รันทุก 15 นาที
+    - cron: '*/15 * * * *' # รันทุก 15 นาที
 
 jobs:
 
