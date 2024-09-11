@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # ระบุ path ของไดเรกทอรีที่มีไฟล์ package.json
+    schedule:
+      interval: "monthly" # ตั้งให้เช็คการอัปเดต dependencies ทุกเดือน
+    open-pull-requests-limit: 10  # จำนวน pull requests ที่เปิดอยู่พร้อมกันได้

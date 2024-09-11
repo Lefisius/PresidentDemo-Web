@@ -2,8 +2,8 @@
     <nz-layout>
         <nz-header>
             <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
-                <li nz-menu-item routerLink="/Administration" routerLinkActive="active">Administration</li>
-                <li nz-menu-item routerLink="/Adminprvp" routerLinkActive="active">AdminPrVp</li>
+                <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">Prvp</li>
                 <li nz-menu-item nzSelected routerLink="/Election" routerLinkActive="active">Election</li>
                 <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">PresHobby</li>
                 <li nz-menu-item routerLink="/President" routerLinkActive="active">President</li>
@@ -40,6 +40,11 @@
                                 <label for="printerDescription">Printer Description</label>
                                 <input id="printerDescription" nz-input [(ngModel)]="printerDescription"
                                     name="printerDescription" required />
+                            </div>
+                            <div>
+                                <label for="printerLocation">Printer Location</label> <!-- เพิ่มส่วนนี้ -->
+                                <input id="printerLocation" nz-input [(ngModel)]="printerLocation"
+                                    name="printerLocation" required /> <!-- เพิ่มส่วนนี้ -->
                             </div>
                             <div>
                                 <label for="ppdFile">PPD File</label>

@@ -19,6 +19,7 @@ export class ElectionComponent implements OnInit {
   printerName: string = '';
   printerIP: string = '';
   printerDescription: string = '';
+  printerLocation: string = '';
   printerPpdBase64: string = '';
   printersData: any[] = []; // เพิ่มตัวแปรสำหรับจัดเก็บข้อมูลเครื่องพิมพ์
 
@@ -109,13 +110,14 @@ export class ElectionComponent implements OnInit {
 
   addPrinter(printerForm: NgForm): void {
     if (printerForm.valid && this.printerPpdBase64) {
-      this.electionService.addPrinter(this.printerName, this.printerIP, this.printerDescription, this.printerPpdBase64).subscribe(response => {
+      this.electionService.addPrinter(this.printerName, this.printerIP, this.printerDescription, this.printerPpdBase64, this.printerLocation).subscribe(response => {
         console.log('Printer added successfully:', response);
         this.notification.success('Success', 'Printer added successfully.');
         this.loadPrinters(); // รีโหลดข้อมูลเครื่องพิมพ์หลังจากเพิ่ม
         this.loadElections(); // รีโหลดข้อมูลของ Elections
         this.printerName = '';
         this.printerIP = '';
+        this.printerLocation = ''; // รีเซ็ตข้อมูลของ Location
         this.printerDescription = '';
         this.printerPpdBase64 = ''; // รีเซ็ตข้อมูลของ PPD file
         if (this.ppdFileInput) {
