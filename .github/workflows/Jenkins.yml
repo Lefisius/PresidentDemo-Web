@@ -1,0 +1,18 @@
+name: Trigger Jenkins Job
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  trigger-jenkins-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "https://0e50-61-7-146-25.ngrok-free.app/job/jenkinpipeline/build" \
+          --user "user:11b20d5f21817203f0fb4db12e13b2402e"
