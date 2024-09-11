@@ -16,4 +16,3 @@ jobs:
         run: |
           curl -X POST "https://6f5c-61-7-146-25.ngrok-free.app/job/jenkinpipeline/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
-#testpull
