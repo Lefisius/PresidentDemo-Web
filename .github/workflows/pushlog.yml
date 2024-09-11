@@ -39,15 +39,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install -g @angular/cli
           npm install --legacy-peer-deps
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
       - name: Build Project
         id: build
         run: |
-          npm run build 2> build_errors.log
+          npm install -g @angular/cli
+          npm install --legacy-peer-deps
+          npm run build --verbose 2> build_errors.log
           exit_code=$?
-          echo "error_files_present=${{ steps.build.outputs.error_files_present }}" >> $GITHUB_ENV
+          echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_OUTPUT
 
       - name: Upload Error Files
         if: ${{ steps.build.outputs.error_files_present == 'true' || always()}}
