@@ -14,7 +14,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # ปรับปรุงการรันคำสั่ง npm run build ให้มีการรายงานข้อผิดพลาด
-RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1
+RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนการสร้างภาพ Docker สำหรับ production
 FROM nginx:alpine
