@@ -1,5 +1,5 @@
 # เลือกฐานข้อมูลของภาพเริ่มต้นที่มี Node.js
-FROM node:18 as builder
+FROM node:16.20.2 as builder
 
 # ตั้งค่าโฟลเดอร์ทำงาน
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # ติดตั้ง dependencies โดยใช้ npm
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # คัดลอกโค้ด Angular app เข้าไปยังโฟลเดอร์ทำงาน
 COPY . .
