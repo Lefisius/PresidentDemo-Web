@@ -28,7 +28,7 @@ jobs:
   dependabot:
     name: Dependabot Updates
     runs-on: ubuntu-latest
-    needs: lint  # ทำให้ Dependabot ทำงานหลังจาก lint
+    needs: lint
     steps:
       - name: Dependabot Configuration
         run: |
@@ -36,11 +36,12 @@ jobs:
           version: 2
           updates:
             - package-ecosystem: "npm"
-              directory: "/" # ระบุ path ของไดเรกทอรีที่มีไฟล์ package.json
+              directory: "/" 
               schedule:
-                interval: "monthly" # ตั้งให้เช็คการอัปเดต dependencies ทุกเดือน
-              open-pull-requests-limit: 10  # จำนวน pull requests ที่เปิดอยู่พร้อมกันได้
+                interval: "monthly"
+              open-pull-requests-limit: 10
           EOF
+
 
   build:
     name: Build Project
