@@ -80,7 +80,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: dockerfile
+          dockerfile: dockerfile 
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -113,8 +113,8 @@ jobs:
         run: |
           AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=${AUTHOR_EMAIL}" >> $GITHUB_OUTPUT
-          echo "changed_files=${CHANGED_FILES}" >> $GITHUB_OUTPUT
+          echo "commit_author_email=${AUTHOR_EMAIL}" >> $GITHUB_ENV
+          echo "changed_files=${CHANGED_FILES}" >> $GITHUB_ENV
 
   send_failure_notification:
     name: Send Failure Notification
@@ -139,7 +139,7 @@ jobs:
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
 
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+          echo "error_paths=$error_paths" >> $GITHUB_ENV
 
           check_file_for_errors() {
             local file=$1
@@ -154,19 +154,9 @@ jobs:
             fi
           done
 
-
-          echo "ค่าของ non_error_files: '$non_error_files'"
-
-          if [ -n "$non_error_files" ]; then
-            echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
-          else
-            echo "non_error_files=ไม่มีไฟล์ที่ไม่มีข้อผิดพลาด" >> $GITHUB_OUTPUT
-          fi
-
-          changed_files_text="ไฟล์ที่มีการแก้ไข: $changed_files"
-
-          echo "changed_files_text=$changed_files_text" >> $GITHUB_OUTPUT
-          echo "commit_author_email=$commit_author_email" >> $GITHUB_OUTPUT
+          echo "non_error_files=$non_error_files" >> $GITHUB_ENV
+          echo "changed_files_text=ไฟล์ที่มีการแก้ไข: $changed_files" >> $GITHUB_ENV
+          echo "commit_author_email=$commit_author_email" >> $GITHUB_ENV
 
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
@@ -182,12 +172,12 @@ jobs:
             รายละเอียดข้อผิดพลาดอยู่ในไฟล์แนบ
 
             ไฟล์ที่มีข้อผิดพลาด :
-            ${{ steps.error_info.outputs.error_paths }}
+            ${{ env.error_paths }}
 
-            ไฟล์ที่แก้แล้ว complete: ${{ steps.error_info.outputs.non_error_files }}
+            ไฟล์ที่แก้แล้ว complete: ${{ env.non_error_files }}
 
-            ${{ steps.error_info.outputs.changed_files_text }}
-          to: ${{ steps.error_info.outputs.commit_author_email }}
+            ${{ env.changed_files_text }}
+          to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
@@ -207,8 +197,8 @@ jobs:
         run: |
           commit_author_email=$(git log -1 --pretty=format:'%ae')
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=$commit_author_email" >> $GITHUB_OUTPUT
-          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+          echo "commit_author_email=${commit_author_email}" >> $GITHUB_ENV
+          echo "changed_files=${changed_files}" >> $GITHUB_ENV
 
       - name: Send email on success
         if: ${{ needs.build.result == 'success' }}
@@ -220,9 +210,8 @@ jobs:
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: งาน ${{ github.job }} ของ ${{ github.repository }} สำเร็จ
           body: |
-            งาน `build` ของ ${{ github.repository }}
-            commit successssssssssssss
+            งาน `build` ของ ${{ github.repository }} สำเร็จ
             ไฟล์ที่ถูก commit และ push คือ:
-            ${{ steps.commit_info.outputs.changed_files }}
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+            ${{ env.changed_files }}
+          to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
