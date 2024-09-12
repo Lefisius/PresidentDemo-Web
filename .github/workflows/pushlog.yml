@@ -28,7 +28,7 @@ jobs:
   dependabot:
     name: Dependabot Updates
     runs-on: ubuntu-latest
-    needs: build  # ทำให้ Dependabot ทำงานหลังจาก build สำเร็จ
+    needs: lint  # ทำให้ Dependabot ทำงานหลังจาก lint
     steps:
       - name: Dependabot Configuration
         run: |
