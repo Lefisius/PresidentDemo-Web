@@ -223,7 +223,7 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [lint, build, push_to_registry, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
