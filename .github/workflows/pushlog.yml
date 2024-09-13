@@ -158,7 +158,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: build
+    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
