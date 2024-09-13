@@ -124,6 +124,16 @@ jobs:
           NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
           git checkout -b $NEW_BRANCH_NAME
           git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+  
+  trigger_jenkins_job:
+    name: Trigger Jenkins Job
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "https://1d8a-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          --user "user:11b20d5f21817203f0fb4db12e13b2402e"
 
   get_commit_author_email:
     name: Get Commit Author Email
