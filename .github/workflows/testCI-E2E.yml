@@ -3,10 +3,10 @@ name: Run API, Web, and Playwright Tests
 on:
   push:
     branches:
-      - main
+      - dorn-ci
   pull_request:
     branches:
-      - main
+      - dorn-ci
       
   workflow_dispatch:
     inputs:
@@ -17,7 +17,7 @@ on:
       web_branch:
         description: 'Web branch to checkout'
         required: true
-        default: 'main'
+        default: 'dorn-ci'
 
 jobs:
   run-api:
@@ -46,7 +46,7 @@ jobs:
         with:
           repository: Theerapat-dev/PresidentDemo-Web
           token: ${{ secrets.GH_PAT }}
-          ref: ${{ github.event.inputs.web_branch || 'main' }}
+          ref: ${{ github.event.inputs.web_branch || 'dorn-ci' }}
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -54,7 +54,7 @@ jobs:
       - name: Set npm registry
         run: npm config set registry https://registry.npmjs.org/
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install --force
       - name: Start the app
         run: |
           npm start &
