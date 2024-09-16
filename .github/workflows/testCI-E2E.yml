@@ -3,10 +3,10 @@ name: Run API, Web, and Playwright Tests
 on:
   push:
     branches:
-      - dorn-ci
+      - main
   pull_request:
     branches:
-      - dorn-ci
+      - main
       
   workflow_dispatch:
     inputs:
@@ -17,7 +17,7 @@ on:
       web_branch:
         description: 'Web branch to checkout'
         required: true
-        default: 'dorn-ci'
+        default: 'main'
 
 jobs:
   run-api:
@@ -46,7 +46,7 @@ jobs:
         with:
           repository: Theerapat-dev/PresidentDemo-Web
           token: ${{ secrets.GH_PAT }}
-          ref: ${{ github.event.inputs.web_branch || 'dorn-ci' }}
+          ref: ${{ github.event.inputs.web_branch || 'main' }}
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
