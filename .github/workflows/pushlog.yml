@@ -156,6 +156,8 @@ jobs:
 
       - name: Check for ZAP Report
         run: |
+          echo "Checking if ZAP report file exists..."
+          ls -la
           if [ -f zap_report.log ]; then
             echo "ZAP report file exists"
           else
