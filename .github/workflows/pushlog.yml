@@ -148,8 +148,10 @@ jobs:
           docker_name: 'lefisius/dockerbuild:main'
           report: 'zap_report.json'
 
-      - name: List Files in Current Directory
-        run: ls -al
+      - name: List Files in Directory
+        run: |
+          echo "Current directory contents:"
+          ls -la
 
       - name: Check for ZAP Report
         run: |
