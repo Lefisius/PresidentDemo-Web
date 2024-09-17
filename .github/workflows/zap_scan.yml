@@ -23,11 +23,11 @@ jobs:
       - name: Start Angular App
         run: |
           nohup ng serve --port 4200 --host 0.0.0.0 &
-          sleep 30
+          sleep 60
 
       - name: Run OWASP ZAP
         uses: zaproxy/action-full-scan@v0.2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
-          docker_name: 'owasp/zap2docker-stable'
+          docker_name: 'owasp/zap2docker:latest'
