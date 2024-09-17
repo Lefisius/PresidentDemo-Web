@@ -81,7 +81,7 @@ jobs:
         if: ${{ env.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: error-files-Project
+          name: error-files
           path: build_errors.log
 
   push_to_registry:
@@ -131,7 +131,7 @@ jobs:
 
       - name: Start Angular App
         run: |
-          nohup ng serve --port 4200 --host 0.0.0.0 & 
+          nohup ng serve --port 4200 --host 0.0.0.0 &
           sleep 60
 
       - name: Log in to Docker Hub
@@ -146,31 +146,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
-          report: './zap_report.log'
-          format: 'xml'
-
-      - name: List Files in Directory After ZAP Scan
-        run: |
-          echo "Contents of directory after ZAP scan:"
-          ls -la
-
-      - name: Check for ZAP Report
-        run: |
-          echo "Checking if ZAP report file exists..."
-          ls -la
-          if [ -f zap_report.log ]; then
-            echo "ZAP report file exists"
-          else
-            echo "ZAP report file does not exist"
-            exit 1
-          fi
-
-      - name: Upload OWASP ZAP Report
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-report
-          path: zap_report.log
 
   trigger_jenkins:
     name: Trigger Jenkins Job
