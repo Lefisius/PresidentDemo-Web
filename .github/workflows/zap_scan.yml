@@ -1,0 +1,33 @@
+name: OWASP ZAP Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.20.2'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Start Angular App
+        run: |
+          nohup ng serve --port 4200 --host 0.0.0.0 &
+          sleep 30
+
+      - name: Run OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:4200/'
+          docker_name: 'owasp/zap2docker-stable'
