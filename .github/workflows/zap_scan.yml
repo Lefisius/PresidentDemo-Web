@@ -8,7 +8,6 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -23,7 +22,7 @@ jobs:
 
       - name: Start Angular App
         run: |
-          nohup ng serve --port 4200 --host 0.0.0.0 & 
+          nohup ng serve --port 4200 --host 0.0.0.0 &> angular.log &
           sleep 60
 
       - name: Log in to Docker Hub
@@ -32,29 +31,25 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Run OWASP ZAP
-        uses: zaproxy/action-full-scan@v0.2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://localhost:4200/'
-          docker_name: 'lefisius/dockerbuild:main'
-          report: 'zap_report.json'
-
-      - name: List Files in Current Directory
-        run: ls -al
-
-      - name: Check for ZAP Report
+      - name: Check if ZAP reports exist
         run: |
-          if [ -f zap_report.json ]; then
-            echo "ZAP report file exists"
-          else
-            echo "ZAP report file does not exist"
+          if [ ! -f zap-report.log ]; then
+            echo "zap-report.log not found!"
+            exit 1
+          fi
+          if [ ! -f zap-report.html ]; then
+            echo "zap-report.html not found!"
             exit 1
           fi
 
-      - name: Upload OWASP ZAP Report
-        if: ${{ always() }}
+      - name: Upload ZAP Logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-logs
+          path: zap-report.log
+
+      - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap_report.json
+          path: zap-report.html
