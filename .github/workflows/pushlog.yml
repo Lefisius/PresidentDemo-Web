@@ -131,7 +131,7 @@ jobs:
 
       - name: Start Angular App
         run: |
-          nohup ng serve --port 4200 --host 0.0.0.0 &> angular.log &
+          nohup ng serve --port 4200 --host 0.0.0.0 &
           sleep 60
 
       - name: Log in to Docker Hub
@@ -140,23 +140,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Run OWASP ZAP Scan
-        run: |
-          docker run -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:4200 -r zap-report.log -J zap-report.json
-          sleep 60
-
-      - name: Check if ZAP log exists
-        run: |
-          if [ ! -f zap-report.log ]; then
-            echo "zap-report.log not found!"
-            exit 1
-          fi
-
-      - name: Upload ZAP Log
-        uses: actions/upload-artifact@v3
+      - name: Run OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.2.0
         with:
-          name: zap-log
-          path: zap-report.log
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:4200/'
+          docker_name: 'lefisius/dockerbuild:main'
 
   trigger_jenkins:
     name: Trigger Jenkins Job
