@@ -88,7 +88,6 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: build
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -114,21 +113,38 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Create New Branch with Commit Hash
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+  zap_scan:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.20.2'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Start Angular App
         run: |
-          git config user.name Theerapat-dev
-          git config user.email theerapat1302@gmail.com
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
-          git checkout -b $NEW_BRANCH_NAME
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
-  
+          nohup ng serve --port 4200 --host 0.0.0.0 &
+          sleep 60
+
+      - name: Run OWASP ZAP
+        uses: zaproxy/action-full-scan@v0.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'http://localhost:4200/'
+          docker_name: 'owasp/zap2docker:latest'
+
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
-    needs: push_to_registry
+    needs: zap_scan
     steps:
       - name: Trigger Jenkins Job
         run: |
@@ -187,6 +203,7 @@ jobs:
           }
 
           non_error_files=""
+
           for file in $changed_files; do
             if ! check_file_for_errors "$file"; then
               non_error_files+="$file "
@@ -259,4 +276,3 @@ jobs:
             ${{ env.changed_files }}
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
-          
