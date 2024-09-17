@@ -131,7 +131,7 @@ jobs:
 
       - name: Start Angular App
         run: |
-          nohup ng serve --port 4200 --host 0.0.0.0 &
+          nohup ng serve --port 4200 --host 0.0.0.0 &> ng-serve.log &
           sleep 60
 
       - name: Log in to Docker Hub
@@ -146,13 +146,25 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
-      
+
+      - name: List OWASP ZAP Reports
+        run: ls -al /zap-reports
+
+      - name: Check ZAP Report File
+        run: |
+          if [ -f /zap-reports/zap_report.json ]; then
+            echo "ZAP Report file exists"
+          else
+            echo "ZAP Report file does not exist"
+            exit 1
+          fi
+
       - name: Upload OWASP ZAP Report
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap_report.json
+          path: /zap-reports/zap_report.json
 
   trigger_jenkins:
     name: Trigger Jenkins Job
