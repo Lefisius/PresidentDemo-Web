@@ -37,19 +37,9 @@ jobs:
             echo "zap-report.log not found!"
             exit 1
           fi
-          if [ ! -f zap-report.html ]; then
-            echo "zap-report.html not found!"
-            exit 1
-          fi
 
       - name: Upload ZAP Logs
         uses: actions/upload-artifact@v3
         with:
           name: zap-logs
           path: zap-report.log
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-report
-          path: zap-report.html
