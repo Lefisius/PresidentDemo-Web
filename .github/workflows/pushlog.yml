@@ -12,7 +12,6 @@ jobs:
   dependabot:
     name: Dependabot Updates
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -43,7 +42,6 @@ jobs:
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
-    if: false
     needs: dependabot
     steps:
       - name: Checkout Code
@@ -58,7 +56,6 @@ jobs:
   build:
     name: Build Project
     runs-on: ubuntu-latest
-    if: false
     needs: lint
     steps:
       - name: Checkout Code
@@ -90,7 +87,6 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    if: false
     needs: build
     steps:
       - name: Checkout Code
@@ -170,7 +166,6 @@ jobs:
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
-    if: false
     needs: zap_scan
     steps:
       - name: Trigger Jenkins Job
@@ -181,7 +176,6 @@ jobs:
   get_commit_author_email:
     name: Get Commit Author Email
     runs-on: ubuntu-latest
-    if: false
     outputs:
       commit_author_email: ${{ steps.get_commit_info.outputs.commit_author_email }}
       changed_files: ${{ steps.get_commit_info.outputs.changed_files }}
@@ -202,7 +196,6 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    if: false
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
@@ -269,7 +262,6 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    if: false
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
