@@ -146,6 +146,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
+          report: 'zap_report.json'
+
+      - name: List Files
+        run: ls -al .
       
       - name: Upload OWASP ZAP Report
         if: ${{ always() }}
@@ -198,7 +202,7 @@ jobs:
       - name: Download Error Files
         uses: actions/download-artifact@v3
         with:
-          name: error-files01
+          name: error-files
 
       - name: Get Error Log and Commit Info
         id: error_info
