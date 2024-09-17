@@ -148,9 +148,18 @@ jobs:
           docker_name: 'lefisius/dockerbuild:main'
           report: 'zap_report.json'
 
-      - name: List Files
-        run: ls -al .
-      
+      - name: List Files in Current Directory
+        run: ls -al
+
+      - name: Check for ZAP Report
+        run: |
+          if [ -f zap_report.json ]; then
+            echo "ZAP report file exists"
+          else
+            echo "ZAP report file does not exist"
+            exit 1
+          fi
+
       - name: Upload OWASP ZAP Report
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
