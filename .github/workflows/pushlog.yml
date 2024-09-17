@@ -146,16 +146,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
-          report: 'zap_report.json'
+          report: 'zap_report.html'
+          format: 'html'  # ใช้ format ที่ต้องการ เช่น 'html', 'xml'
 
-      - name: List Files in Directory
+      - name: List Files in Directory After ZAP Scan
         run: |
-          echo "Current directory contents:"
+          echo "Contents of directory after ZAP scan:"
           ls -la
 
       - name: Check for ZAP Report
         run: |
-          if [ -f zap_report.json ]; then
+          if [ -f zap_report.html ]; then
             echo "ZAP report file exists"
           else
             echo "ZAP report file does not exist"
@@ -167,7 +168,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: zap_report.json
+          path: zap_report.html
 
   trigger_jenkins:
     name: Trigger Jenkins Job
