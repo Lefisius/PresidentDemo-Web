@@ -145,7 +145,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
-          docker_name: 'owasp/zap2docker-stable'
+          docker_name: 'lefisius/dockerbuild'
           issue_title: ZAP Full Scan Report
           fail_action: false
 
