@@ -17,3 +17,4 @@ jobs:
         run: |
           curl -X POST "https://adef-61-7-146-25.ngrok-free.app/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
+          
