@@ -81,7 +81,7 @@ jobs:
         if: ${{ env.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: error-files
+          name: error-files-Project
           path: build_errors.log
 
   push_to_registry:
@@ -152,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: /zap-reports/zap_report.json
+          path: zap_report.json
 
   trigger_jenkins:
     name: Trigger Jenkins Job
@@ -198,7 +198,7 @@ jobs:
       - name: Download Error Files
         uses: actions/download-artifact@v3
         with:
-          name: error-files
+          name: error-files01
 
       - name: Get Error Log and Commit Info
         id: error_info
