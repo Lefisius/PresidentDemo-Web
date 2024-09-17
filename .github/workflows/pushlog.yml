@@ -146,6 +146,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
+      
+      - name: Upload OWASP ZAP Report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: /path/to/zap-report-directory
 
   trigger_jenkins:
     name: Trigger Jenkins Job
