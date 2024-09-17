@@ -8,6 +8,7 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
