@@ -146,7 +146,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
           docker_name: 'lefisius/dockerbuild:main'
-          report: 'zap_report.log'
+          report: './zap_report.log'
           format: 'xml'
 
       - name: List Files in Directory After ZAP Scan
