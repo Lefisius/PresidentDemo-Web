@@ -42,7 +42,7 @@ jobs:
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
-    needs: dependabot
+    # needs: dependabot
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -181,7 +181,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
@@ -247,7 +247,7 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
