@@ -121,9 +121,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: List files to verify Dockerfile.zap location
+        run: |
+          ls -la
+          ls -la dockerfiles
+
       - name: Build ZAP Docker Image
         run: |
-          docker build -t zap-scan-image -f Dockerfile.zap .
+          docker build -t zap-scan-image -f dockerfiles/Dockerfile.zap .
 
       - name: Run ZAP Container
         run: |
