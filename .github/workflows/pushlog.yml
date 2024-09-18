@@ -128,8 +128,8 @@ jobs:
 
       - name: Build ZAP Docker Image
         run: |
-          docker pull lefisius/dockerbuild
-          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild
+          docker pull lefisius/dockerbuild:main
+          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild:main
 
       - name: Run ZAP Container
         run: |
@@ -155,8 +155,28 @@ jobs:
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://your-ngrok-url.ngrok-free.app/job/testpipe/build" \
-          --user "user:jenkins-token"
+          curl -X POST "https://9569-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          --user "user:11b20d5f21817203f0fb4db12e13b2402e"
+
+  get_commit_author_email:
+    name: Get Commit Author Email
+    runs-on: ubuntu-latest
+    outputs:
+      commit_author_email: ${{ steps.get_commit_info.outputs.commit_author_email }}
+      changed_files: ${{ steps.get_commit_info.outputs.changed_files }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Get Commit Info
+        id: get_commit_info
+        run: |
+          AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          echo "commit_author_email=${AUTHOR_EMAIL}" >> $GITHUB_ENV
+          echo "changed_files=${CHANGED_FILES}" >> $GITHUB_ENV
 
   send_failure_notification:
     name: Send Failure Notification
@@ -164,6 +184,43 @@ jobs:
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Download Error Files
+        uses: actions/download-artifact@v3
+        with:
+          name: error-files
+
+      - name: Get Error Log and Commit Info
+        id: error_info
+        run: |
+          commit_author_email=$(git log -1 --pretty=format:'%ae')
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+
+          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          echo "error_paths=$error_paths" >> $GITHUB_ENV
+
+          check_file_for_errors() {
+            local file=$1
+            grep -q "$file" build_errors.log
+            return $?
+          }
+
+          non_error_files=""
+
+          for file in $changed_files; do
+            if ! check_file_for_errors "$file"; then
+              non_error_files+="$file "
+            fi
+          done
+
+          echo "non_error_files=$non_error_files" >> $GITHUB_ENV
+          echo "changed_files_text=ไฟล์ที่มีการแก้ไข: $changed_files" >> $GITHUB_ENV
+          echo "commit_author_email=$commit_author_email" >> $GITHUB_ENV
+
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -171,9 +228,21 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งานล้มเหลว
-          body: มีข้อผิดพลาดในขั้นตอนการ build
-          to: ${{ secrets.EMAIL }}
+          subject: งาน ${{ github.job }} ของ ${{ github.repository }} ล้มเหลว
+          body: |
+            ข้อความ: งาน `build` ของ ${{ github.repository }} ล้มเหลว
+
+            รายละเอียดข้อผิดพลาดอยู่ในไฟล์แนบ
+
+            ไฟล์ที่มีข้อผิดพลาด :
+            ${{ env.error_paths }}
+
+            ไฟล์ที่แก้แล้ว complete: ${{ env.non_error_files }}
+
+            ${{ env.changed_files_text }}
+          to: ${{ env.commit_author_email }}
+          from: ${{ secrets.GMAIL_USERNAME }}
+          attachments: build_errors.log
 
   send_success_notification:
     name: Send Success Notification
@@ -181,6 +250,19 @@ jobs:
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Get Commit Info
+        id: commit_info
+        run: |
+          commit_author_email=$(git log -1 --pretty=format:'%ae')
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          echo "commit_author_email=${commit_author_email}" >> $GITHUB_ENV
+          echo "changed_files=${changed_files}" >> $GITHUB_ENV
+
       - name: Send email on success
         uses: dawidd6/action-send-mail@v3
         with:
@@ -188,6 +270,12 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งานสำเร็จ
-          body: งานสำเร็จแล้ว
-          to: ${{ secrets.EMAIL }}
+          subject: งาน ${{ github.job }} ของ ${{ github.repository }} สำเร็จ
+          body: |
+            ข้อความ: งาน `build` ของ ${{ github.repository }} สำเร็จ
+
+            ไฟล์ที่มีการแก้ไข: ${{ env.changed_files }}
+
+            ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
+          to: ${{ env.commit_author_email }}
+          from: ${{ secrets.GMAIL_USERNAME }}
