@@ -39,7 +39,6 @@ jobs:
               console.log('Dependabot configuration already exists');
             }
 
-  # ขั้นตอน Lint Code
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
@@ -54,7 +53,6 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-  # ขั้นตอน Build Angular App
   build:
     name: Build Project
     runs-on: ubuntu-latest
@@ -86,7 +84,6 @@ jobs:
           name: error-files
           path: build_errors.log
 
-  # ขั้นตอน Push Docker image ไปที่ Docker Hub
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -116,7 +113,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # ขั้นตอน Run ZAP Scan
   zap_scan:
     name: Run ZAP Scan
     runs-on: ubuntu-latest
@@ -152,7 +148,6 @@ jobs:
           name: zap-report
           path: zap_report.html
 
-  # ขั้นตอน Trigger Jenkins Job
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
@@ -163,7 +158,6 @@ jobs:
           curl -X POST "https://your-ngrok-url.ngrok-free.app/job/testpipe/build" \
           --user "user:jenkins-token"
 
-  # ขั้นตอนส่งการแจ้งเตือนเมื่อเกิดความล้มเหลว
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
@@ -181,7 +175,6 @@ jobs:
           body: มีข้อผิดพลาดในขั้นตอนการ build
           to: ${{ secrets.EMAIL }}
 
-  # ขั้นตอนส่งการแจ้งเตือนเมื่อสำเร็จ
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
