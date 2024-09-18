@@ -34,6 +34,9 @@ CMD ["nginx", "-g", "daemon off;"]
 # ติดตั้ง OWASP ZAP บน Docker image ที่มีแท็ก main
 FROM lefisius/dockerbuild:main as zap
 
+# ตรวจสอบการติดตั้ง ZAP
+RUN apt-get update && apt-get install -y zaproxy
+
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
 
