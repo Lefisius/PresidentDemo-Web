@@ -123,7 +123,13 @@ jobs:
 
       - name: Build and Run ZAP Docker container
         run: |
+          # ตรวจสอบว่า Dockerfile.zap มีอยู่ใน repository
+          ls -l
+
+          # สร้างภาพ Docker สำหรับ ZAP
           docker build -t zap-scan-image -f Dockerfile.zap .
+
+          # เรียกใช้ ZAP
           docker run -d --name zap -p 8080:8080 zap-scan-image
           sleep 60  # ให้ ZAP เริ่มทำงาน
 
