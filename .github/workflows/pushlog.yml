@@ -97,7 +97,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: ' https://349d-61-7-146-25.ngrok-free.app' # URL ของแอปที่ต้องการสแกน
           rules_file_name: '.zap/rules-md.json' # ไฟล์กฎในการสแกนที่กำหนดเอง
-          docker_name: 'owasp/zap2docker-stable'
+          docker_name: 'lefisius/dockerbuild:main'
           fail_action: true
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
