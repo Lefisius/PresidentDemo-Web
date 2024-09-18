@@ -5,13 +5,13 @@ FROM node:16.20.2 as builder
 WORKDIR /app
 
 # คัดลอกไฟล์ package.json และ package-lock.json เข้าไปยังโฟลเดอร์ทำงาน
-COPY package*.json ./
+COPY package*.json ./ 
 
 # ติดตั้ง dependencies โดยใช้ npm
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps 
 
 # คัดลอกโค้ด Angular app เข้าไปยังโฟลเดอร์ทำงาน
-COPY . .
+COPY . . 
 
 # ปรับปรุงการรันคำสั่ง npm run build ให้มีการรายงานข้อผิดพลาด
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
@@ -31,8 +31,8 @@ EXPOSE 80
 # คำสั่งเริ่มต้นของ Nginx เมื่อ container ถูกเรียกใช้
 CMD ["nginx", "-g", "daemon off;"]
 
-# ติดตั้ง OWASP ZAP บน Alpine Linux
-FROM owasp/zap2docker-stable as zap
+# ติดตั้ง OWASP ZAP บน Docker image ที่มีแท็ก main
+FROM lefisius/dockerbuild:main as zap
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
