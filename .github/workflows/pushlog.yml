@@ -9,13 +9,13 @@ on:
       - main
 
 jobs:
+  # ขั้นตอน Dependabot Updates
   dependabot:
     name: Dependabot Updates
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: Set up Dependabot Configuration
         uses: actions/github-script@v6
         with:
@@ -31,14 +31,13 @@ jobs:
                   interval: "monthly"
                 open-pull-requests-limit: 10
             `;
-
             if (!fs.existsSync(path)) {
               fs.writeFileSync(path, config);
               console.log('Dependabot configuration created');
             } else {
               console.log('Dependabot configuration already exists');
-            }
 
+  # ขั้นตอน Lint Code
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
@@ -46,13 +45,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: false
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
+  # ขั้นตอน Build Angular App
   build:
     name: Build Project
     runs-on: ubuntu-latest
@@ -60,15 +59,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16.20.2'
-
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-
       - name: Build Project
         id: build
         run: |
@@ -76,7 +72,6 @@ jobs:
           exit_code=$?
           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
           exit $exit_code
-
       - name: Upload Error Files
         if: ${{ env.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
@@ -84,6 +79,7 @@ jobs:
           name: error-files
           path: build_errors.log
 
+  # ขั้นตอน Push Docker image ไปที่ Docker Hub
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -91,19 +87,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: lefisius/dockerbuild
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -113,6 +106,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # ขั้นตอน Run ZAP Scan
   zap_scan:
     name: Run ZAP Scan
     runs-on: ubuntu-latest
@@ -120,33 +114,29 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
       - name: List files to verify dockerfile location
         run: |
           ls -la
           ls -la dockerfile
-
       - name: Build ZAP Docker Image
         run: |
           docker build -t zap-scan-image -f dockerfile .
-
       - name: Run ZAP Container
         run: |
           docker run -d --name zap -p 8080:8080 zap-scan-image
           sleep 60
-
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t https://349d-61-7-146-25.ngrok-free.app -r zap_report.html
+          docker exec zap zap-baseline.py -t https://your-ngrok-url.ngrok-free.app -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
           path: zap_report.html
 
+  # ขั้นตอน Trigger Jenkins Job
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
@@ -154,72 +144,16 @@ jobs:
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://9569-61-7-146-25.ngrok-free.app/job/testpipe/build" \
-          --user "user:11b20d5f21817203f0fb4db12e13b2402e"
+          curl -X POST "https://your-ngrok-url.ngrok-free.app/job/testpipe/build" \
+          --user "user:jenkins-token"
 
-  get_commit_author_email:
-    name: Get Commit Author Email
-    runs-on: ubuntu-latest
-    outputs:
-      commit_author_email: ${{ steps.get_commit_info.outputs.commit_author_email }}
-      changed_files: ${{ steps.get_commit_info.outputs.changed_files }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
-      - name: Get Commit Info
-        id: get_commit_info
-        run: |
-          AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=${AUTHOR_EMAIL}" >> $GITHUB_ENV
-          echo "changed_files=${CHANGED_FILES}" >> $GITHUB_ENV
-
+  # ขั้นตอนส่งการแจ้งเตือนเมื่อเกิดความล้มเหลว
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
-      - name: Download Error Files
-        uses: actions/download-artifact@v3
-        with:
-          name: error-files
-
-      - name: Get Error Log and Commit Info
-        id: error_info
-        run: |
-          commit_author_email=$(git log -1 --pretty=format:'%ae')
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
-          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_ENV
-
-          check_file_for_errors() {
-            local file=$1
-            grep -q "$file" build_errors.log
-            return $?
-          }
-
-          non_error_files=""
-
-          for file in $changed_files; do
-            if ! check_file_for_errors "$file"; then
-              non_error_files+="$file "
-            fi
-          done
-
-          echo "non_error_files=$non_error_files" >> $GITHUB_ENV
-          echo "changed_files_text=ไฟล์ที่มีการแก้ไข: $changed_files" >> $GITHUB_ENV
-          echo "commit_author_email=$commit_author_email" >> $GITHUB_ENV
-
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -227,41 +161,17 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งาน ${{ github.job }} ของ ${{ github.repository }} ล้มเหลว
-          body: |
-            ข้อความ: งาน `build` ของ ${{ github.repository }} ล้มเหลว
+          subject: งานล้มเหลว
+          body: มีข้อผิดพลาดในขั้นตอนการ build
+          to: ${{ secrets.EMAIL }}
 
-            รายละเอียดข้อผิดพลาดอยู่ในไฟล์แนบ
-
-            ไฟล์ที่มีข้อผิดพลาด :
-            ${{ env.error_paths }}
-
-            ไฟล์ที่แก้แล้ว complete: ${{ env.non_error_files }}
-
-            ${{ env.changed_files_text }}
-          to: ${{ env.commit_author_email }}
-          from: ${{ secrets.GMAIL_USERNAME }}
-          attachments: build_errors.log
-
+  # ขั้นตอนส่งการแจ้งเตือนเมื่อสำเร็จ
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
     needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-
-      - name: Get Commit Info
-        id: commit_info
-        run: |
-          commit_author_email=$(git log -1 --pretty=format:'%ae')
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=${commit_author_email}" >> $GITHUB_ENV
-          echo "changed_files=${changed_files}" >> $GITHUB_ENV
-
       - name: Send email on success
         uses: dawidd6/action-send-mail@v3
         with:
@@ -269,12 +179,6 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งาน ${{ github.job }} ของ ${{ github.repository }} สำเร็จ
-          body: |
-            ข้อความ: งาน `build` ของ ${{ github.repository }} สำเร็จ
-
-            ไฟล์ที่มีการแก้ไข: ${{ env.changed_files }}
-
-            ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
-          to: ${{ env.commit_author_email }}
-          from: ${{ secrets.GMAIL_USERNAME }}
+          subject: งานสำเร็จ
+          body: งานสำเร็จแล้ว
+          to: ${{ secrets.EMAIL }}
