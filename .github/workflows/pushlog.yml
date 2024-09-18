@@ -9,40 +9,40 @@ on:
       - main
 
 jobs:
-  # dependabot:
-  #   name: Dependabot Updates
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
+  dependabot:
+    name: Dependabot Updates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-  #     - name: Set up Dependabot Configuration
-  #       uses: actions/github-script@v6
-  #       with:
-  #         script: |
-  #           const fs = require('fs');
-  #           const path = '.github/dependabot.yml';
-  #           const config = `
-  #           version: 2
-  #           updates:
-  #             - package-ecosystem: "npm"
-  #               directory: "/" 
-  #               schedule:
-  #                 interval: "monthly"
-  #               open-pull-requests-limit: 10
-  #           `;
+      - name: Set up Dependabot Configuration
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '.github/dependabot.yml';
+            const config = `
+            version: 2
+            updates:
+              - package-ecosystem: "npm"
+                directory: "/" 
+                schedule:
+                  interval: "monthly"
+                open-pull-requests-limit: 10
+            `;
 
-  #           if (!fs.existsSync(path)) {
-  #             fs.writeFileSync(path, config);
-  #             console.log('Dependabot configuration created');
-  #           } else {
-  #             console.log('Dependabot configuration already exists');
-  #           }
+            if (!fs.existsSync(path)) {
+              fs.writeFileSync(path, config);
+              console.log('Dependabot configuration created');
+            } else {
+              console.log('Dependabot configuration already exists');
+            }
 
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
-    # needs: dependabot
+    needs: dependabot
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -181,7 +181,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
@@ -247,7 +247,7 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
