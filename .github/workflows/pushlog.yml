@@ -94,7 +94,7 @@ jobs:
       
       - name: Run ZAP Docker container
         run: |
-          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
+          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild:main
           sleep 20  # ให้ ZAP เริ่มทำงาน
 
       - name: Start ZAP Scan
