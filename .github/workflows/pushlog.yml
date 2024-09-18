@@ -95,9 +95,10 @@ jobs:
         uses: zaproxy/action-baseline@v0.7.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://localhost:4002' # URL ของแอปที่ต้องการสแกน
+          target: ' https://349d-61-7-146-25.ngrok-free.app' # URL ของแอปที่ต้องการสแกน
           rules_file_name: '.zap/rules-md.json' # ไฟล์กฎในการสแกนที่กำหนดเอง
-          fail_on_warning: true
+          docker_name: 'owasp/zap2docker-stable'
+          fail_action: true
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
