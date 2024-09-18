@@ -22,7 +22,8 @@ jobs:
           script: |
             const fs = require('fs');
             const path = '.github/dependabot.yml';
-            const config = `version: 2
+            const config = `
+            version: 2
             updates:
               - package-ecosystem: "npm"
                 directory: "/" 
@@ -83,10 +84,36 @@ jobs:
           name: error-files
           path: build_errors.log
 
+  zap_scan:
+    name: Run ZAP Scan
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Run ZAP Docker container
+        run: |
+          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
+          sleep 20  # ให้ ZAP เริ่มทำงาน
+
+      - name: Start ZAP Scan
+        run: |
+          docker exec zap zap-baseline.py -t https://349d-61-7-146-25.ngrok-free.app -r zap_report.html
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
+
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: build
+    needs: zap_scan
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -102,44 +129,35 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: lefisius/dockerbuild
-          tags: 'main'
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: dockerfile
+          dockerfile: dockerfile 
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  zap_scan:
-      name: ZAP Scan
-      runs-on: ubuntu-latest
-      needs: push_to_registry
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v3
-
-        - name: Run ZAP Baseline Scan
-          uses: zaproxy/action-baseline@v0.7.0
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            target: 'https://349d-61-7-146-25.ngrok-free.app' # URL ของแอปที่ต้องการสแกน
-            rules_file_name: '.zap/rules-md.json' # ไฟล์กฎในการสแกนที่กำหนดเอง
-            docker_name: 'lefisius/dockerbuild:main'
-            fail_action: true
-          env:
-            ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-
+      - name: Create New Branch with Commit Hash
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name Theerapat-dev
+          git config user.email theerapat1302@gmail.com
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
+          git checkout -b $NEW_BRANCH_NAME
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+  
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
-    needs: zap_scan
+    needs: push_to_registry
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://0a6a-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          curl -X POST "https://9569-61-7-146-25.ngrok-free.app/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
 
   get_commit_author_email:
@@ -165,7 +183,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
@@ -194,7 +212,6 @@ jobs:
           }
 
           non_error_files=""
-
           for file in $changed_files; do
             if ! check_file_for_errors "$file"; then
               non_error_files+="$file "
@@ -231,7 +248,7 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
