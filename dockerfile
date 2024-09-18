@@ -42,9 +42,8 @@ RUN apt-get update && \
     apt-get install -y wget openjdk-11-jdk
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
-RUN wget https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2.12.0_Linux.tar.gz && \
-    tar -xzf ZAP_2.12.0_Linux.tar.gz && \
-    mv ZAP_2.12.0 /zap && \
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
+    unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
     ln -s /zap/zap.sh /usr/local/bin/zap
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
