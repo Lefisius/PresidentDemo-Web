@@ -39,7 +39,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # ติดตั้ง dependencies ที่จำเป็น
 RUN apt-get update && \
-    apt-get install -y wget unzip openjdk-11-jdk python3
+    apt-get install -y wget unzip openjdk-11-jdk python3 python3-pip
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
@@ -50,5 +50,8 @@ RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WE
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
 
+# สร้าง directory สำหรับรายงาน
+RUN mkdir -p /zap/wrk
+
 # ตั้งค่า default command ให้เป็นการรัน OWASP ZAP
-CMD ["zap-full-scan.py", "-t", "http://localhost:80", "-J", "/zap/wrk/report_json.json", "-r", "/zap/wrk/report_html.html"]
+CMD ["python3", "/usr/local/bin/zap-full-scan.py", "-t", "http://localhost:80", "-J", "/zap/wrk/report_json.json", "-r", "/zap/wrk/report_html.html"]
