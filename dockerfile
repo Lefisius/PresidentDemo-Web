@@ -39,7 +39,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # ติดตั้ง dependencies ที่จำเป็น
 RUN apt-get update && \
-    apt-get install -y wget openjdk-11-jdk
+    apt-get install -y wget unzip openjdk-11-jdk
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
