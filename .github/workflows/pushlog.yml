@@ -104,7 +104,7 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: ZAP Scan
+    needs: zap_scan
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
