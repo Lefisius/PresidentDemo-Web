@@ -32,6 +32,9 @@ RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WE
     ln -s /zap/ZAP_*/zap.sh /usr/local/bin/zap && \
     ln -s /zap/ZAP_*/zap-full-scan.py /usr/local/bin/zap-full-scan.py 
 
+# Verify ZAP installation
+RUN ls -l /usr/local/bin/zap /usr/local/bin/zap-full-scan.py
+
 # Create directory for ZAP reports
 RUN mkdir -p /zap/wrk 
 
