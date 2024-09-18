@@ -107,8 +107,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: . # path to Dockerfile
-          dockerfile: dockerfile 
+          context: .
+          file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -121,17 +121,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Build and Run ZAP Docker container
+      - name: Build ZAP Docker Image
         run: |
-          # ตรวจสอบว่า Dockerfile.zap มีอยู่ใน repository
-          ls -l
-
-          # สร้างภาพ Docker สำหรับ ZAP
           docker build -t zap-scan-image -f Dockerfile.zap .
 
-          # เรียกใช้ ZAP
+      - name: Run ZAP Container
+        run: |
           docker run -d --name zap -p 8080:8080 zap-scan-image
-          sleep 60  # ให้ ZAP เริ่มทำงาน
+          sleep 60
 
       - name: Start ZAP Scan
         run: |

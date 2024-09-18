@@ -1,4 +1,4 @@
-# เลือกฐานข้อมูลของภาพเริ่มต้นที่มี Node.js
+# ขั้นตอนที่ 1: สร้างภาพสำหรับ Angular app
 FROM node:16.20.2 as builder
 
 # ตั้งค่าโฟลเดอร์ทำงาน
@@ -16,7 +16,29 @@ COPY . .
 # ปรับปรุงการรันคำสั่ง npm run build ให้มีการรายงานข้อผิดพลาด
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
-# ขั้นตอนการสร้างภาพ Docker สำหรับ production
+# ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
+FROM lefisius/dockerbuild:main
+
+# ติดตั้ง OWASP ZAP
+RUN apk add --no-cache wget && \
+    wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.0/ZAP_2.11.0_Docker.tar.gz && \
+    tar -xzf ZAP_2.11.0_Docker.tar.gz -C /zap && \
+    rm ZAP_2.11.0_Docker.tar.gz
+
+# ตั้งค่า working directory สำหรับ ZAP
+WORKDIR /zap
+
+# คัดลอกไฟล์สคริปต์การสแกนของคุณ (ถ้ามี)
+COPY . /zap
+
+# กำหนด entrypoint
+ENTRYPOINT ["/zap/zap.sh"]
+
+# Expose port ที่ ZAP ใช้งาน (ตามปกติคือ 8080)
+EXPOSE 8080
+
+# ขั้นตอนที่ 3: การรวม Nginx และไฟล์ Angular build
+# ใช้ภาพพื้นฐาน Nginx
 FROM nginx:alpine
 
 # คัดลอกไฟล์ build จากภาพ builder มายังโฟลเดอร์ที่เหมาะสมใน Nginx
@@ -30,16 +52,3 @@ EXPOSE 80
 
 # คำสั่งเริ่มต้นของ Nginx เมื่อ container ถูกเรียกใช้
 CMD ["nginx", "-g", "daemon off;"]
-
-# Dockerfile.zap
-# ใช้ภาพพื้นฐานของ OWASP ZAP
-FROM owasp/zap2docker-stable
-
-# ตั้งค่า working directory
-WORKDIR /zap
-
-# คัดลอกไฟล์สคริปต์การสแกนหรือการตั้งค่าอื่น ๆ ถ้ามี
-COPY zap-baseline.py /zap/
-
-# กำหนดคำสั่งเริ่มต้น
-ENTRYPOINT ["/zap/zap.sh"]
