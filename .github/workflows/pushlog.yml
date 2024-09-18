@@ -127,9 +127,9 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: เริ่มต้น Angular App
+      - name: Start Angular App
         run: |
-          docker-compose up -d my-angular-app
+          nohup ng serve --port 4200 --host 0.0.0.0 & 
           sleep 60
 
       - name: รัน OWASP ZAP Scan
@@ -152,7 +152,7 @@ jobs:
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://adef-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          curl -X POST "https://0a6a-61-7-146-25.ngrok-free.app/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
 
   get_commit_author_email:
