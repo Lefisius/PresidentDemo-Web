@@ -31,7 +31,7 @@ EXPOSE 80
 # คำสั่งเริ่มต้นของ Nginx เมื่อ container ถูกเรียกใช้
 CMD ["nginx", "-g", "daemon off;"]
 
-# ติดตั้ง OWASP ZAP บน Docker image ที่มีแท็ก main
+# ขั้นตอนการสร้างภาพ Docker สำหรับ OWASP ZAP
 FROM ubuntu:20.04 as zap
 
 # ตั้งค่า environment
@@ -39,15 +39,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # ติดตั้ง dependencies ที่จำเป็น
 RUN apt-get update && \
-    apt-get install -y wget unzip openjdk-11-jdk
+    apt-get install -y wget unzip openjdk-11-jdk python3
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
-    ln -s /zap/zap.sh /usr/local/bin/zap
+    ln -s /zap/ZAP_*/zap.sh /usr/local/bin/zap && \
+    ln -s /zap/ZAP_*/zap-full-scan.py /usr/local/bin/zap-full-scan.py
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
 
 # ตั้งค่า default command ให้เป็นการรัน OWASP ZAP
-CMD ["zap", "-cmd", "-quickurl", "http://localhost:80", "-quickout", "/zap/wrk/report_html.html", "-quickreport", "/zap/wrk/report_json.json"]
+CMD ["zap-full-scan.py", "-t", "http://localhost:80", "-J", "/zap/wrk/report_json.json", "-r", "/zap/wrk/report_html.html"]

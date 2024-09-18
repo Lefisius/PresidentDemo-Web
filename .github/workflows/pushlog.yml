@@ -22,8 +22,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = '.github/dependabot.yml';
-            const config = `
-            version: 2
+            const config = `version: 2
             updates:
               - package-ecosystem: "npm"
                 directory: "/" 
@@ -108,7 +107,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: dockerfile 
+          dockerfile: dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
