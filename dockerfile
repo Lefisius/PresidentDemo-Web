@@ -37,12 +37,18 @@ FROM ubuntu:20.04 as zap
 # ตั้งค่า environment
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ติดตั้ง ZAP และ dependencies ที่จำเป็น
+# ติดตั้ง dependencies ที่จำเป็น
 RUN apt-get update && \
-    apt-get install -y zaproxy
+    apt-get install -y wget openjdk-11-jdk
+
+# ดาวน์โหลดและติดตั้ง OWASP ZAP
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/v2.12.0/ZAP_2.12.0_Linux.tar.gz && \
+    tar -xzf ZAP_2.12.0_Linux.tar.gz && \
+    mv ZAP_2.12.0 /zap && \
+    ln -s /zap/zap.sh /usr/local/bin/zap
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
 
 # ตั้งค่า default command ให้เป็นการรัน OWASP ZAP
-CMD ["zap-full-scan.py", "-t", "http://localhost:80", "-J", "/zap/wrk/report_json.json", "-r", "/zap/wrk/report_html.html"]
+CMD ["zap", "-cmd", "-quickurl", "http://localhost:80", "-quickout", "/zap/wrk/report_html.html", "-quickreport", "/zap/wrk/report_json.json"]
