@@ -132,7 +132,8 @@ jobs:
 
       - name: Build ZAP Docker Image
         run: |
-          docker build -t zap-scan-image -f dockerfile .
+          docker pull owasp/zap2docker-stable
+          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
 
       - name: Run ZAP Container
         run: |
@@ -141,10 +142,10 @@ jobs:
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t https://your-ngrok-url.ngrok-free.app -r zap_report.html
+          docker exec zap zap-baseline.py -t http://localhost:4200/ -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-          
+
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
