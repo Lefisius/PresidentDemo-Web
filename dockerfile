@@ -30,3 +30,15 @@ EXPOSE 80
 
 # คำสั่งเริ่มต้นของ Nginx เมื่อ container ถูกเรียกใช้
 CMD ["nginx", "-g", "daemon off;"]
+
+# ใช้ภาพพื้นฐานของ OWASP ZAP
+FROM lefisius/dockerbuild:main
+
+# ตั้งค่า working directory
+WORKDIR /zap
+
+# คัดลอกไฟล์สคริปต์การสแกนหรือการตั้งค่าอื่น ๆ ถ้ามี
+COPY . /zap
+
+# กำหนดคำสั่งเริ่มต้น
+ENTRYPOINT ["/zap/zap.sh"]

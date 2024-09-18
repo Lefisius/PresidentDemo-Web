@@ -84,36 +84,10 @@ jobs:
           name: error-files
           path: build_errors.log
 
-  zap_scan:
-    name: Run ZAP Scan
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      
-      - name: Run ZAP Docker container
-        run: |
-          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild:main
-          sleep 20  # ให้ ZAP เริ่มทำงาน
-
-      - name: Start ZAP Scan
-        run: |
-          docker exec zap zap-baseline.py -t https://349d-61-7-146-25.ngrok-free.app -r zap_report.html
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-report
-          path: zap_report.html
-
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: zap_scan
-
+    needs: build
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -133,27 +107,42 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: . # path to Dockerfile
           dockerfile: dockerfile 
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Create New Branch with Commit Hash
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+  zap_scan:
+    name: Run ZAP Scan
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build and Run ZAP Docker container
         run: |
-          git config user.name Theerapat-dev
-          git config user.email theerapat1302@gmail.com
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
-          git checkout -b $NEW_BRANCH_NAME
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
-  
+          docker build -t zap-scan-image -f Dockerfile.zap .
+          docker run -d --name zap -p 8080:8080 zap-scan-image
+          sleep 60  # ให้ ZAP เริ่มทำงาน
+
+      - name: Start ZAP Scan
+        run: |
+          docker exec zap zap-baseline.py -t https://349d-61-7-146-25.ngrok-free.app -r zap_report.html
+        env:
+          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
+
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
-    needs: push_to_registry
+    needs: zap_scan
     steps:
       - name: Trigger Jenkins Job
         run: |
@@ -183,7 +172,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
@@ -212,6 +201,7 @@ jobs:
           }
 
           non_error_files=""
+
           for file in $changed_files; do
             if ! check_file_for_errors "$file"; then
               non_error_files+="$file "
@@ -248,7 +238,7 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, trigger_jenkins]
+    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
@@ -264,13 +254,7 @@ jobs:
           echo "commit_author_email=${commit_author_email}" >> $GITHUB_ENV
           echo "changed_files=${changed_files}" >> $GITHUB_ENV
 
-      - name: Debug commit info
-        run: |
-          echo "Commit Author Email: ${{ env.commit_author_email }}"
-          echo "Changed Files: ${{ env.changed_files }}"
-
       - name: Send email on success
-        if: ${{ needs.build.result == 'success' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -279,8 +263,10 @@ jobs:
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
           subject: งาน ${{ github.job }} ของ ${{ github.repository }} สำเร็จ
           body: |
-            งาน `build` ของ ${{ github.repository }} สำเร็จ
-            ไฟล์ที่ถูก commit และ push คือ:
-            ${{ env.changed_files }}
+            ข้อความ: งาน `build` ของ ${{ github.repository }} สำเร็จ
+
+            ไฟล์ที่มีการแก้ไข: ${{ env.changed_files }}
+
+            ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
