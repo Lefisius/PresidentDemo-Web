@@ -102,6 +102,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: lefisius/dockerbuild
+          tags: 'main'
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -127,7 +128,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'http://localhost:4200/'
-          docker_name: 'lefisius/dockerbuild'
+          docker_name: 'lefisius/dockerbuild:main'
           issue_title: ZAP Full Scan Report
           fail_action: false
 
