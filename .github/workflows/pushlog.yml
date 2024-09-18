@@ -131,37 +131,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # zap_scan:
-  #   name: OWASP ZAP Scan
-  #   runs-on: ubuntu-latest
-  #   needs: push_to_registry
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
-
-  #     - name: Install Docker Compose
-  #       run: |
-  #         sudo curl -L "https://github.com/docker/compose/releases/download/2.19.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  #         sudo chmod +x /usr/local/bin/docker-compose
-
-  #     - name: Start Angular App
-  #       run: |
-  #         docker-compose up -d my-angular-app
-  #         sleep 60
-
-  #     - name: Run OWASP ZAP Scan
-  #       run: |
-  #         docker run --rm -v $(pwd):/zap/wrk --network=host -t lefisius/dockerbuild:main zap-full-scan.py -t http://localhost:4200/ -J /zap/wrk/report_json.json -w /zap/wrk/report_md.md -r /zap/wrk/report_html.html
-
-  #     - name: Upload ZAP Reports
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: zap-reports
-  #         path: |
-  #           report_json.json
-  #           report_md.md
-  #           report_html.html
-
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
