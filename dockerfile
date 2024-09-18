@@ -34,8 +34,12 @@ CMD ["nginx", "-g", "daemon off;"]
 # ติดตั้ง OWASP ZAP บน Docker image ที่มีแท็ก main
 FROM ubuntu:20.04 as zap
 
-# ติดตั้ง ZAP
-RUN apt-get update && apt-get install -y zaproxy
+# ตั้งค่า environment
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ติดตั้ง ZAP และ dependencies ที่จำเป็น
+RUN apt-get update && \
+    apt-get install -y zaproxy
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
 COPY --from=production /usr/share/nginx/html /usr/share/nginx/html
