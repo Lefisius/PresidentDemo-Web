@@ -128,8 +128,8 @@ jobs:
 
       - name: Build ZAP Docker Image
         run: |
-          docker pull owasp/zap2docker-stable
-          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
+          docker pull lefisius/dockerbuild
+          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild
 
       - name: Run ZAP Container
         run: |
