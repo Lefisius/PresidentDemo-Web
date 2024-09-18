@@ -32,9 +32,9 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
 # ติดตั้ง OWASP ZAP บน Docker image ที่มีแท็ก main
-FROM lefisius/dockerbuild:main as zap
+FROM ubuntu:20.04 as zap
 
-# ตรวจสอบการติดตั้ง ZAP
+# ติดตั้ง ZAP
 RUN apt-get update && apt-get install -y zaproxy
 
 # คัดลอกไฟล์จาก production stage มายัง OWASP ZAP stage
