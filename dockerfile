@@ -6,12 +6,13 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
-# ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP (ใช้ lefisius/dockerbuild)
-FROM lefisius/dockerbuild as zap
+# ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
+FROM owasp/zap2docker-stable
 WORKDIR /zap
 COPY . /zap
+RUN chmod +x /zap/zap.sh
 EXPOSE 8081
-ENTRYPOINT ["/zap/zap.sh"]  # หรือใช้ ENTRYPOINT อื่นที่เหมาะสมกับ image ของคุณ
+ENTRYPOINT ["/zap/zap.sh"]
 
 # ขั้นตอนที่ 3: รวม Angular build กับ Nginx
 FROM nginx:alpine
