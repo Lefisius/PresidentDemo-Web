@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM debian:bookworm-slim as zap
+FROM ubuntu:22.04 as zap
 WORKDIR /zap
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP และ Java
