@@ -8,34 +8,36 @@ on:
     branches:
       - main
 
-  zap_scan:
-    name: Run ZAP Scan
+jobs:
+  dependabot:
+    name: Dependabot Updates
     runs-on: ubuntu-latest
-    needs: push_to_registry
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Pull Custom Docker Image
-        run: |
-          docker pull lefisius/dockerbuild:latest
-
-      - name: Start ZAP Container
-        run: |
-          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:latest
-          sleep 60
-
-      - name: Start ZAP Scan
-        run: |
-          docker exec zap java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r zap_report.html
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
+      - name: Set up Dependabot Configuration
+        uses: actions/github-script@v6
         with:
-          name: zap-report
-          path: zap_report.html
+          script: |
+            const fs = require('fs');
+            const path = '.github/dependabot.yml';
+            const config = `
+            version: 2
+            updates:
+              - package-ecosystem: "npm"
+                directory: "/" 
+                schedule:
+                  interval: "monthly"
+                open-pull-requests-limit: 10
+            `;
+
+            if (!fs.existsSync(path)) {
+              fs.writeFileSync(path, config);
+              console.log('Dependabot configuration created');
+            } else {
+              console.log('Dependabot configuration already exists');
+            }
 
   lint:
     name: Lint Code Base
@@ -120,7 +122,7 @@ on:
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t http://localhost:80/ -r zap_report.html
+          docker exec zap java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
@@ -261,3 +263,4 @@ on:
             ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
+          
