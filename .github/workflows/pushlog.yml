@@ -111,10 +111,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Build ZAP Docker Image
+      - name: Pull Custom ZAP Docker Image
         run: |
-          docker pull owasp/zap2docker-stable
-          docker run -d --name zap -p 8081:8081 owasp/zap2docker-stable
+          docker pull lefisius/dockerbuild:main
+
+      - name: Start ZAP Container
+        run: |
+          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild
           sleep 60
 
       - name: Start ZAP Scan

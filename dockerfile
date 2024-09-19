@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM owasp/zap2docker-stable
+FROM lefisius/dockerbuild
 WORKDIR /zap
 COPY . /zap
 RUN chmod +x /zap/zap.sh
