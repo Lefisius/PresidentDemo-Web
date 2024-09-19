@@ -98,20 +98,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: lefisius/dockerbuild
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build Docker image
+        run: |
+          docker build -t lefisius/dockerbuild:latest .
+          docker push lefisius/dockerbuild:latest
 
   zap_scan:
     name: Run ZAP Scan
@@ -123,13 +113,13 @@ jobs:
 
       - name: Build ZAP Docker Image
         run: |
-          docker pull lefisius/dockerbuild:main
-          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:main
+          docker pull lefisius/dockerbuild:latest
+          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:latest
           sleep 60
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t http://localhost:4200/ -r zap_report.html
+          docker exec zap /zap/zap-baseline.py -t http://localhost:4200/ -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
