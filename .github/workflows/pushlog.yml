@@ -111,16 +111,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Pull Custom ZAP Docker Image
+      - name: Pull Custom Docker Image
         run: |
-          docker pull owasp/zap2docker-stable
+          docker pull lefisius/dockerbuild:latest
 
       - name: Start ZAP Container
         run: |
-          docker run -d --name zap -p 8081:8081 owasp/zap2docker-stable
+          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:latest
           sleep 60
 
-      - name: Run ZAP Baseline Scan
+      - name: Start ZAP Scan
         run: |
           docker exec zap zap-baseline.py -t http://localhost:4200/ -r zap_report.html
         env:

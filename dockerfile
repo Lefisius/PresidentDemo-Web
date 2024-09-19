@@ -7,12 +7,13 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM owasp/zap2docker-stable
+FROM lefisius/dockerbuild as zap
 WORKDIR /zap
-COPY . /zap
-EXPOSE 8081
 
-# ตรวจสอบว่ามี zap-baseline.py และกำหนด PATH
+# ติดตั้ง OWASP ZAP CLI (หากยังไม่ได้ติดตั้ง)
+RUN apt-get update && apt-get install -y zaproxy
+
+# ตรวจสอบว่ามี zap-baseline.py
 RUN ls -l /zap/ && \
     ls -l /zap/zap-baseline.py || true
 
