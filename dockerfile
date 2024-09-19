@@ -11,7 +11,7 @@ FROM python:3.11-slim as zap
 WORKDIR /zap
 
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
-RUN apt-get update && apt-get install -y wget unzip
+RUN apt-get update && apt-get install -y wget unzip default-jre
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
 RUN unzip zap.zip
 RUN rm zap.zip
