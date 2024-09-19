@@ -107,7 +107,7 @@ jobs:
           docker run -d --name my-container -p 80:80 -p 8081:8081 lefisius/dockerbuild:latest
 
       - name: Wait for Nginx to start
-        run: sleep 60
+        run: sleep 600
 
       - name: Start ZAP Scan
         run: |
