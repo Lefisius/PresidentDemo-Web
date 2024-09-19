@@ -7,11 +7,15 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM lefisius/dockerbuild
+FROM owasp/zap2docker-stable
 WORKDIR /zap
 COPY . /zap
 RUN chmod +x /zap/zap.sh
 EXPOSE 8081
+
+# ติดตั้ง OWASP ZAP CLI
+RUN apt-get update && apt-get install -y zaproxy
+
 ENTRYPOINT ["/zap/zap.sh"]
 
 # ขั้นตอนที่ 3: รวม Angular build กับ Nginx
