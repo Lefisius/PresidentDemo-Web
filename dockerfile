@@ -14,7 +14,6 @@ WORKDIR /zap
 RUN apt-get update && apt-get install -y wget unzip
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
 RUN unzip zap.zip -d /zap/zap_files
-RUN ls /zap/zap_files
 RUN rm zap.zip
 
 # ขั้นตอนที่ 3: รวม Angular build กับ ZAP และ Nginx
@@ -31,4 +30,4 @@ RUN apk add --no-cache openjdk11-jre
 EXPOSE 80 8081
 
 # สคริปต์สำหรับการเริ่มต้น
-CMD ["sh", "-c", "nginx -g 'daemon off;' & sleep 90 && java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
+CMD ["sh", "-c", "nginx -g 'daemon off;' & sleep 90 && java -jar /zap/zap_files/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
