@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   dependabot:
@@ -17,27 +14,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Dependabot Configuration
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const path = '.github/dependabot.yml';
-            const config = `
-            version: 2
-            updates:
-              - package-ecosystem: "npm"
-                directory: "/" 
-                schedule:
-                  interval: "monthly"
-                open-pull-requests-limit: 10
-            `;
-
-            if (!fs.existsSync(path)) {
-              fs.writeFileSync(path, config);
-              console.log('Dependabot configuration created');
-            } else {
-              console.log('Dependabot configuration already exists');
-            }
+        run: |
+          echo "version: 2" > .github/dependabot.yml
+          echo "updates:" >> .github/dependabot.yml
+          echo "  - package-ecosystem: \"npm\"" >> .github/dependabot.yml
+          echo "    directory: \"/\"" >> .github/dependabot.yml
+          echo "    schedule:" >> .github/dependabot.yml
+          echo "      interval: \"monthly\"" >> .github/dependabot.yml
+          echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
+          echo "Dependabot configuration created"
+        shell: bash
+        continue-on-error: true
 
   lint:
     name: Lint Code Base
