@@ -22,7 +22,7 @@ FROM nginx:alpine
 # คัดลอกไฟล์ที่สร้างจากขั้นตอนก่อนหน้า
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/build.log /usr/share/nginx/html/
-COPY --from=zap /zap/zap_files /zap
+COPY --from=zap /zap/zap_files /zap/zap_files
 
 # ติดตั้ง Java ที่จำเป็นสำหรับ ZAP
 RUN apk add --no-cache openjdk11-jre

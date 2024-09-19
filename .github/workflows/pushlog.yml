@@ -123,7 +123,7 @@ jobs:
 
       - name: Start ZAP Scan
         run: |
-          if docker exec my-container java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html; then
+          if docker exec my-container java -jar /zap/zap_files/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html; then
             echo "ZAP Scan completed successfully"
           else
             echo "ZAP Scan failed"
