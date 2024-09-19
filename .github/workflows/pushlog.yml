@@ -105,23 +105,32 @@ jobs:
       - name: Start Container
         run: |
           docker run -d --name my-container -p 80:80 -p 8081:8081 lefisius/dockerbuild:latest
-          sleep 100
+          sleep 60  # เพิ่มการรอเวลาหลังจากเริ่ม Container
 
-      - name: Check Container Logs
+      - name: Check if Container is Running
+        run: |
+          running=$(docker inspect -f '{{.State.Running}}' my-container)
+          if [ "$running" != "true" ]; then
+            echo "Container failed to start"
+            exit 1
+          fi
+          echo "Container is running successfully"
+
+      - name: Check Container Logs (If Failed)
+        if: failure()
         run: |
           docker logs my-container
 
       - name: Start ZAP Scan
         run: |
-          docker exec my-container java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html
+          if docker exec my-container java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html; then
+            echo "ZAP Scan completed successfully"
+          else
+            echo "ZAP Scan failed"
+            exit 1
+          fi
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: zap-report
-          path: zap_report.html
 
   trigger_jenkins:
     name: Trigger Jenkins Job
