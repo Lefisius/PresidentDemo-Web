@@ -10,13 +10,14 @@ RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat bu
 FROM python:3.11-slim as zap
 WORKDIR /zap
 
-# ติดตั้ง OWASP ZAP CLI
-RUN apt-get update && apt-get install -y python3-pip
-RUN pip install owasp-zap-v2.10
+# ดาวน์โหลดและติดตั้ง OWASP ZAP
+RUN apt-get update && apt-get install -y wget unzip
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
+RUN unzip zap.zip
+RUN rm zap.zip
 
 # ตรวจสอบการติดตั้ง
-RUN zap-cli --version
-RUN ls -l $(which zap-baseline.py) || true
+RUN ls -l zap/zap.jar || true
 
 # ขั้นตอนที่ 3: รวม Angular build กับ Nginx
 FROM nginx:alpine
