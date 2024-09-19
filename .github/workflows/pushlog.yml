@@ -105,7 +105,7 @@ jobs:
       - name: Start Container
         run: |
           docker run -d --name my-container -p 80:80 -p 8081:8081 lefisius/dockerbuild:latest
-          sleep 60
+          sleep 100
 
       - name: Check Container Logs
         run: |
