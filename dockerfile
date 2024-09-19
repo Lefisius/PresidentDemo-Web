@@ -13,7 +13,7 @@ WORKDIR /zap
 # ดาวน์โหลดและติดตั้ง OWASP ZAP
 RUN apt-get update && apt-get install -y wget unzip
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
-RUN unzip zap.zip
+RUN unzip zap.zip -d /zap/zap_files
 RUN rm zap.zip
 
 # ขั้นตอนที่ 3: รวม Angular build กับ ZAP และ Nginx
@@ -22,7 +22,7 @@ FROM nginx:alpine
 # คัดลอกไฟล์ที่สร้างจากขั้นตอนก่อนหน้า
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/build.log /usr/share/nginx/html/
-COPY --from=zap /zap /zap
+COPY --from=zap /zap/zap_files /zap
 
 # ติดตั้ง Java ที่จำเป็นสำหรับ ZAP
 RUN apk add --no-cache openjdk11-jre
