@@ -123,13 +123,13 @@ jobs:
 
       - name: Build ZAP Docker Image
         run: |
-          docker pull owasp/zap2docker-stable
-          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
+          docker pull lefisius/dockerbuild:main
+          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:main
           sleep 60
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t http://localhost:80/ -r zap_report.html
+          docker exec zap zap-baseline.py -t http://localhost:4200/ -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
