@@ -131,10 +131,10 @@ jobs:
           docker pull lefisius/dockerbuild:main
           docker run -d --name zap -p 8080:8080 lefisius/dockerbuild:main
 
-      - name: Run ZAP Container
-        run: |
-          docker run -d --name zap -p 8080:8080 zap-scan-image
-          sleep 60
+      # - name: Run ZAP Container
+      #   run: |
+      #     docker run -d --name zap -p 8080:8080 zap-scan-image
+      #     sleep 60
 
       - name: Start ZAP Scan
         run: |
@@ -279,4 +279,3 @@ jobs:
             ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
-          
