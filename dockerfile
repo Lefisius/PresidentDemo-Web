@@ -1,23 +1,20 @@
 # ขั้นตอนที่ 1: สร้างภาพสำหรับ Angular app
 FROM node:16.20.2 as builder
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json ./ 
 RUN npm install --legacy-peer-deps
-COPY . .
+COPY . . 
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM lefisius/dockerbuild as zap
+FROM python:3.11-slim as zap
 WORKDIR /zap
 
-# ติดตั้ง OWASP ZAP CLI (หากยังไม่ได้ติดตั้ง)
-RUN apt-get update && apt-get install -y zaproxy
+# ติดตั้ง OWASP ZAP CLI
+RUN pip install owasp-zap-v2.10
 
-# ตรวจสอบว่ามี zap-baseline.py
-RUN ls -l /zap/ && \
-    ls -l /zap/zap-baseline.py || true
-
-ENTRYPOINT ["/zap/zap.sh"]
+# ตรวจสอบการติดตั้ง
+RUN which zap-baseline.py || echo "OWASP ZAP CLI not found"
 
 # ขั้นตอนที่ 3: รวม Angular build กับ Nginx
 FROM nginx:alpine
