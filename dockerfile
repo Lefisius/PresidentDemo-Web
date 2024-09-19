@@ -10,11 +10,11 @@ RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat bu
 FROM owasp/zap2docker-stable
 WORKDIR /zap
 COPY . /zap
-RUN chmod +x /zap/zap.sh
 EXPOSE 8081
 
-# ติดตั้ง OWASP ZAP CLI
-RUN apt-get update && apt-get install -y zaproxy
+# ตรวจสอบว่ามี zap-baseline.py และกำหนด PATH
+RUN ls -l /zap/ && \
+    ls -l /zap/zap-baseline.py || true
 
 ENTRYPOINT ["/zap/zap.sh"]
 

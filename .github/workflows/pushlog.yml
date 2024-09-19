@@ -113,11 +113,11 @@ jobs:
 
       - name: Pull Custom ZAP Docker Image
         run: |
-          docker pull lefisius/dockerbuild:latest
+          docker pull owasp/zap2docker-stable
 
       - name: Start ZAP Container
         run: |
-          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:latest
+          docker run -d --name zap -p 8081:8081 owasp/zap2docker-stable
           sleep 60
 
       - name: Run ZAP Baseline Scan
