@@ -121,24 +121,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: List files to verify dockerfile location
-        run: |
-          ls -la
-          ls -la dockerfile
-
       - name: Build ZAP Docker Image
         run: |
-          docker pull lefisius/dockerbuild:main
-          docker run -d --name zap -p 8080:8080 lefisius/dockerbuild:main
-
-      # - name: Run ZAP Container
-      #   run: |
-      #     docker run -d --name zap -p 8080:8080 zap-scan-image
-      #     sleep 60
+          docker pull owasp/zap2docker-stable
+          docker run -d --name zap -p 8080:8080 owasp/zap2docker-stable
+          sleep 60
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap zap-baseline.py -t http://localhost:4200/ -r zap_report.html
+          docker exec zap zap-baseline.py -t http://localhost:80/ -r zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
@@ -279,3 +270,4 @@ jobs:
             ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
+          

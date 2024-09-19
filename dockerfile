@@ -7,11 +7,11 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # ขั้นตอนที่ 2: สร้างภาพสำหรับ OWASP ZAP
-FROM lefisius/dockerbuild:main
+FROM owasp/zap2docker-stable as zap
 WORKDIR /zap
 COPY . /zap
-ENTRYPOINT ["/zap/zap.sh"]
 EXPOSE 8080
+ENTRYPOINT ["/zap/zap.sh"]
 
 # ขั้นตอนที่ 3: รวม Angular build กับ Nginx
 FROM nginx:alpine
