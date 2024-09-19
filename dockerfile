@@ -16,14 +16,18 @@ RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WE
 RUN unzip zap.zip
 RUN rm zap.zip
 
-# ตรวจสอบการติดตั้ง
-RUN java -version
-RUN ls -l zap/zap.jar || true
-
-# ขั้นตอนที่ 3: รวม Angular build กับ Nginx
+# ขั้นตอนที่ 3: รวม Angular build กับ ZAP และ Nginx
 FROM nginx:alpine
+
+# คัดลอกไฟล์ที่สร้างจากขั้นตอนก่อนหน้า
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/build.log /usr/share/nginx/html/
 COPY --from=zap /zap /zap
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# ติดตั้ง Java ที่จำเป็นสำหรับ ZAP
+RUN apk add --no-cache openjdk11-jre
+
+EXPOSE 80 8081
+
+# สคริปต์สำหรับการเริ่มต้น
+CMD ["sh", "-c", "nginx -g 'daemon off;' & java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
