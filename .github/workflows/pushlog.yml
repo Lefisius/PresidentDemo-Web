@@ -102,14 +102,16 @@ jobs:
         run: |
           docker pull lefisius/dockerbuild:latest
 
-      - name: Start ZAP Container
+      - name: Start Container
         run: |
-          docker run -d --name zap -p 8081:8081 lefisius/dockerbuild:latest
-          sleep 60
+          docker run -d --name my-container -p 80:80 -p 8081:8081 lefisius/dockerbuild:latest
+
+      - name: Wait for Nginx to start
+        run: sleep 60
 
       - name: Start ZAP Scan
         run: |
-          docker exec zap java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r zap_report.html
+          docker exec my-container java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 

@@ -30,4 +30,4 @@ RUN apk add --no-cache openjdk11-jre
 EXPOSE 80 8081
 
 # สคริปต์สำหรับการเริ่มต้น
-CMD ["sh", "-c", "nginx -g 'daemon off;' & java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
+CMD ["sh", "-c", "nginx -g 'daemon off;' & sleep 30 && java -jar /zap/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
