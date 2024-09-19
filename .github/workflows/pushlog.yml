@@ -113,7 +113,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  jobs:
     zap_scan:
       name: Run ZAP Scan
       runs-on: ubuntu-latest
