@@ -95,33 +95,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: push_to_registry
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Pull Custom Docker Image
+      - name: Start Docker container
         run: |
-          docker pull lefisius/dockerbuild:latest
+          docker run -d --name my-container lefisius/dockerbuild
 
-      - name: Start Container
+      - name: Verify ZAP installation
         run: |
-          docker run -d --name my-container -p 80:80 -p 8081:8081 lefisius/dockerbuild:latest
-          sleep 60  # เพิ่มการรอเวลาหลังจากเริ่ม Container
+          docker exec my-container ls /zap/zap_files
+        shell: /bin/bash
 
-      - name: Check if Container is Running
-        run: |
-          running=$(docker inspect -f '{{.State.Running}}' my-container)
-          if [ "$running" != "true" ]; then
-            echo "Container failed to start"
-            exit 1
-          fi
-          echo "Container is running successfully"
-
-      - name: Check Container Logs (If Failed)
-        if: failure()
-        run: |
-          docker logs my-container
-
-      - name: Start ZAP Scan
+      - name: Run ZAP scan
         run: |
           if docker exec my-container java -jar /zap/zap_files/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html; then
             echo "ZAP Scan completed successfully"
@@ -129,6 +112,7 @@ jobs:
             echo "ZAP Scan failed"
             exit 1
           fi
+        shell: /bin/bash
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
