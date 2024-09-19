@@ -98,7 +98,7 @@ jobs:
       - name: Run ZAP scan
         run: |
           docker run --rm lefisius/dockerbuild java -jar /zap/zap_files/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html
-        shell: /bin/bash
+        shell: bash
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
 
