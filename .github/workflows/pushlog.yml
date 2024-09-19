@@ -102,7 +102,6 @@ jobs:
       - name: Verify ZAP installation
         run: |
           docker exec my-container ls /zap/zap_files
-        shell: /bin/bash
 
       - name: Run ZAP scan
         run: |
