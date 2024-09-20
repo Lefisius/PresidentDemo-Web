@@ -46,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: ./zap_report.html
+          path: ./output/zap_report.html
