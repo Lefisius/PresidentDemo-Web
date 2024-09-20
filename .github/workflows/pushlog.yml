@@ -122,7 +122,7 @@ jobs:
 
       - name: Run ZAP scan
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:8081/ -quickout /output/zap_report.html
+          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200/ -quickout /output/zap_report.html
 
       - name: Check output directory
         run: ls -l output
@@ -140,7 +140,7 @@ jobs:
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://9569-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          curl -X POST "https://3991-61-7-146-25.ngrok-free.app/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
 
   get_commit_author_email:
