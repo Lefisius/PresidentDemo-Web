@@ -1,11 +1,3 @@
-# Step 1: Build Angular app
-FROM node:16.20.2 as builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
-COPY . .
-RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
-
 # Step 2: Set up ZAP and other dependencies
 FROM ubuntu:20.04
 
@@ -21,8 +13,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install ZAP
-RUN sudo apt update && sudo apt install unzip -y && \
-    wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
     rm ZAP_WEEKLY_D-2024-09-17.zip && \
     ls ZAP_D-2024-09-17/zap-D-2024-09-17.jar || { echo "ZAP installation failed"; exit 1; }
