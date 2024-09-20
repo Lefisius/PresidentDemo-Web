@@ -1,36 +1,53 @@
-# Step 1: Build Angular app
-FROM node:16.20.2 as builder
+# Start from an official Ubuntu base image
+FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_VERSION=16.20.2
+ENV ZAP_VERSION=2.13.0
+
+# Update and install necessary packages
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    git \
+    npm \
+    default-jdk \
+    python3 \
+    python3-pip \
+    wget \
+    unzip \
+    ca-certificates \
+    && apt-get clean
+
+# Install Node.js
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
+
+# Install Super-Linter for linting
+RUN npm install -g super-linter
+
+# Install ZAP
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/v${ZAP_VERSION}/ZAP_${ZAP_VERSION}.zip && \
+    unzip ZAP_${ZAP_VERSION}.zip -d /zap && \
+    rm ZAP_${ZAP_VERSION}.zip
+
+# Add a user for Docker Hub credentials and permissions
+RUN useradd -ms /bin/bash appuser
+USER appuser
+
+# Set up working directory
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
+
+# Copy your application code into the container
 COPY . .
-RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
-# Step 2: Download and install OWASP ZAP
-FROM openjdk:11-jre-slim as zap
-WORKDIR /zap
+# Install npm dependencies
+RUN npm install --legacy-peer-deps
 
-# Install necessary tools
-RUN apt-get update && apt-get install -y wget unzip
+# Expose necessary ports for both Node.js and ZAP
+EXPOSE 80 8081 8080
 
-# Download and unzip ZAP
-RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
-RUN unzip zap.zip -d /zap/zap_files && ls -R /zap/zap_files
-RUN rm zap.zip
-
-# Check the location of zap.jar
-RUN ls -R /zap/zap_files
-
-# Step 3: Combine Angular build with ZAP and Nginx
-FROM nginx:alpine
-
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY --from=builder /app/build.log /usr/share/nginx/html/
-COPY --from=zap /zap/zap_files /zap/zap_files
-
-RUN apk add --no-cache openjdk11-jre
-
-EXPOSE 80 8081
-
-# Adjust the correct path for zap.jar based on the output of ls
-CMD ["sh", "-c", "nginx -g 'daemon off;' & sleep 90 && java -jar /zap/zap_files/<correct_path>/zap.jar -cmd -quickurl http://localhost:80/ -r /zap/zap_report.html"]
+# Command to run ZAP in the background and then start Node.js server
+CMD /zap/zap.sh -daemon -config api.key=$ZAP_API_KEY -port 8080 & npm run build && npm run start
