@@ -24,7 +24,7 @@ RUN apt-get update && \
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
     rm ZAP_WEEKLY_D-2024-09-17.zip && \
-    ls /zap/ZAP_WEEKLY_D-2024-09-17 || { echo "ZAP installation failed"; exit 1; }
+    ls /zap/ZAP_WEEKLY_D-2024-09-17/ZAP_D-2024-09-17/zap-D-2024-09-17.jar || { echo "ZAP installation failed"; exit 1; }
 
 # Add a user for Docker Hub credentials and permissions
 RUN useradd -ms /bin/bash appuser
