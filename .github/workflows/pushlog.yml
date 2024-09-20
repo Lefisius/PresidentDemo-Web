@@ -44,3 +44,9 @@ jobs:
         shell: bash
         env:
           ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+
+      - name: Upload ZAP report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: /tmp/zap_report.html
