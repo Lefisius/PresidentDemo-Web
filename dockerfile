@@ -1,3 +1,11 @@
+# Step 1: Build Angular app
+FROM node:16.20.2 as builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+COPY . .
+RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
+
 # Step 2: Set up ZAP and other dependencies
 FROM ubuntu:20.04
 
