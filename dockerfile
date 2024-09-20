@@ -30,10 +30,11 @@ RUN apt-get update && \
 # Install ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
+    ls /zap && \
     rm ZAP_WEEKLY_D-2024-09-17.zip
 
 # ตรวจสอบตำแหน่งของ zap.jar
-RUN ls /zap/zap_files
+RUN ls /zap
 
 # Add a user for Docker Hub credentials and permissions
 RUN useradd -ms /bin/bash appuser
