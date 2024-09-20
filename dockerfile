@@ -11,7 +11,7 @@ FROM ubuntu:20.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ZAP_VERSION=2.13.0
+ENV ZAP_VERSION=w2024-09-17
 ENV ZAP_API_KEY=r3poq3ds12b37u8899pglgee91
 
 # Update and install necessary packages
@@ -28,9 +28,9 @@ RUN apt-get update && \
     && apt-get clean
 
 # Install ZAP
-RUN wget https://github.com/zaproxy/zaproxy/releases/download/v${ZAP_VERSION}/ZAP_${ZAP_VERSION}.zip && \
-    unzip ZAP_${ZAP_VERSION}.zip -d /zap && \
-    rm ZAP_${ZAP_VERSION}.zip
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/${ZAP_VERSION}/ZAP_WEEKLY_D-${ZAP_VERSION}.zip && \
+    unzip ZAP_WEEKLY_D-${ZAP_VERSION}.zip -d /zap && \
+    rm ZAP_WEEKLY_D-${ZAP_VERSION}.zip
 
 # Add a user for Docker Hub credentials and permissions
 RUN useradd -ms /bin/bash appuser
