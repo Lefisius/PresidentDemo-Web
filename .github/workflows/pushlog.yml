@@ -89,7 +89,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: krisneonploy/dockerbuild
+          images: lefisius/dockerbuild
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
