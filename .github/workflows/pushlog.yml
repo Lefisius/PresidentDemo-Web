@@ -40,13 +40,10 @@ jobs:
     steps:
       - name: Run ZAP scan
         run: |
-          docker run --rm lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:8081/ -quickout /tmp/zap_report.html
-        shell: bash
-        env:
-          ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
+          docker run --rm -v $(pwd):/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:8081/ -quickout /output/zap_report.html
 
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: /tmp/zap_report.html
+          path: ./zap_report.html
