@@ -38,9 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: push_to_registry
     steps:
+      - name: Create output directory
+        run: mkdir -p output
+
       - name: Run ZAP scan
         run: |
-          docker run --rm -v $(pwd):/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:8081/ -quickout /output/zap_report.html
+          docker run --rm -v $(pwd)/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:8081/ -quickout /output/zap_report.html
 
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
