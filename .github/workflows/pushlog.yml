@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   dependabot:
@@ -140,7 +143,7 @@ jobs:
     steps:
       - name: Trigger Jenkins Job
         run: |
-          curl -X POST "https://3991-61-7-146-25.ngrok-free.app/job/testpipe/build" \
+          curl -X POST "https://0524-61-7-146-25.ngrok-free.app/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e"
 
   get_commit_author_email:
