@@ -103,8 +103,8 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git config user.name dornrock123
-          git config user.email krisd3214@gmail.com
+          git config user.name Lefisius
+          git config user.email lephiafuri@gmail.com
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
           git checkout -b $NEW_BRANCH_NAME

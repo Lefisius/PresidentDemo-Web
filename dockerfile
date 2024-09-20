@@ -28,7 +28,7 @@ RUN apt-get update && \
     && apt-get clean
 
 # Install ZAP
-RUN wget https://github.com/zaproxy/zaproxy/releases/download/${ZAP_VERSION}/ZAP_WEEKLY_D-${ZAP_VERSION}.zip && \
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-${ZAP_VERSION}.zip -d /zap && \
     rm ZAP_WEEKLY_D-${ZAP_VERSION}.zip
 
