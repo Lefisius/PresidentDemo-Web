@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y wget unzip
 
 # Download and unzip ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip -O zap.zip
-RUN unzip zap.zip -d /zap/zap_files
+RUN unzip zap.zip -d /zap/zap_files && ls -R /zap/zap_files
 RUN rm zap.zip
 
 # Check the location of zap.jar
