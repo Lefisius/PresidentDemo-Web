@@ -20,11 +20,15 @@ RUN apt-get update && \
     curl git default-jdk python3 python3-pip wget unzip ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
+# Create writable directory for ZAP
+RUN mkdir -p /zap && chown -R appuser:appuser /zap
+
 # Install ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
     rm ZAP_WEEKLY_D-2024-09-17.zip && \
     ls /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar || { echo "ZAP installation failed"; exit 1; }
+
 
 # Add a user for Docker Hub credentials and permissions
 RUN useradd -ms /bin/bash appuser
