@@ -16,25 +16,15 @@ ENV ZAP_API_KEY=r3poq3ds12b37u8899pglgee91
 
 # Update and install necessary packages
 RUN apt-get update && \
-    apt-get install -y \
-    curl \
-    git \
-    default-jdk \
-    python3 \
-    python3-pip \
-    wget \
-    unzip \
-    ca-certificates \
-    && apt-get clean
+    apt-get install -y --no-install-recommends \
+    curl git default-jdk python3 python3-pip wget unzip ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install ZAP
 RUN wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip && \
     unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap && \
-    ls /zap && \
-    rm ZAP_WEEKLY_D-2024-09-17.zip
-
-# ตรวจสอบตำแหน่งของ zap.jar
-RUN ls /zap
+    rm ZAP_WEEKLY_D-2024-09-17.zip && \
+    ls /zap/ZAP_WEEKLY_D-2024-09-17 || { echo "ZAP installation failed"; exit 1; }
 
 # Add a user for Docker Hub credentials and permissions
 RUN useradd -ms /bin/bash appuser
@@ -47,4 +37,4 @@ COPY --from=builder /app/dist /app/dist
 EXPOSE 80 8081 8080
 
 # Command to run ZAP in the background and then start the server
-CMD /zap/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8080 && npm run start
+CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8080 && npm run start
