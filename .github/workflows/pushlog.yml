@@ -20,6 +20,10 @@ jobs:
           mkdir -p output
           chmod 777 output
 
+      - name: Run ZAP spider
+        run: |
+            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -spider -quickurl http://localhost:4200 -quickout /output/zap_spider_report.html
+
       - name: Run ZAP scan
         run: |
             docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200 -quickout /output/zap_report.html
@@ -27,8 +31,10 @@ jobs:
       - name: Check output directory
         run: ls -l output
 
-      - name: Upload ZAP report as artifact
+      - name: Upload ZAP reports as artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: zap-report
-          path: ./output/zap_report.html
+          name: zap-reports
+          path: |
+            ./output/zap_report.html
+            ./output/zap_spider_report.html
