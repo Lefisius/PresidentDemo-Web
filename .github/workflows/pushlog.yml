@@ -48,8 +48,9 @@ jobs:
           git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
   zap_scan:
+    name: Run ZAP Scan
     runs-on: ubuntu-latest
-    need: push_to_registry
+    needs: push_to_registry
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
