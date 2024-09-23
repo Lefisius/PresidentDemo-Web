@@ -68,7 +68,6 @@ jobs:
       - name: Run ZAP in daemon mode
         run: |
             docker run -d --name zap -p 8081:8081 -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main
-            sleep 30
 
       - name: Wait for ZAP to start
         run: |
