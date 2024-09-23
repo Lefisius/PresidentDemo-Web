@@ -26,40 +26,9 @@ jobs:
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP in daemon mode
+      - name: Run ZAP scan
         run: |
-            docker run -d --name zap -p 8081:8081 -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main
-
-      - name: Wait for ZAP to start
-        run: |
-          for i in {1..6}; do
-            if curl -s "http://localhost:8081" > /dev/null; then
-              echo "ZAP is up and running!"
-              break
-            fi
-            echo "Waiting for ZAP to start..."
-            sleep 10
-          done
-
-          if [ $? -ne 0 ]; then
-            echo "ZAP failed to start. Checking logs..."
-            docker logs zap || echo "No logs available"
-            exit 1
-          fi
-
-      - name: Run Spider
-        run: |
-            curl "http://localhost:8081/JSON/spider/action/scan/?url=http://localhost:4200&maxDepth=1&apikey=${{ secrets.ZAP_API_KEY }}"
-            sleep 30
-
-      - name: Generate Report
-        run: |
-            curl "http://localhost:8081/OTHER/htmlreport/generate/?apikey=${{ secrets.ZAP_API_KEY }}" -o /output/zap_report.html
-
-      - name: Stop ZAP
-        run: |
-            docker stop zap
-            docker rm zap
+            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200 -quickout /output/zap_report.html
 
       - name: Check output directory
         run: ls -l output
