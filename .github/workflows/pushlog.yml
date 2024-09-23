@@ -125,7 +125,7 @@ jobs:
         run: |
           npm install --legacy-peer-deps
           npm run start &
-          sleep 60  # รอให้แอปพลิเคชันเริ่มทำงาน
+          sleep 120  # รอให้แอปพลิเคชันเริ่มทำงาน
 
       - name: Check application response
         run: |
@@ -138,11 +138,13 @@ jobs:
 
       - name: Run ZAP scan (Spider)
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output owasp/zap2docker-stable zap-baseline.py -t http://localhost:4200 -r /output/zap_report.html --spider
+          docker run --rm -v ${{ github.workspace }}/output:/output owasp/zap2docker-stable \
+          zap-baseline.py -t http://localhost:4200 -r /output/zap_report.html --spider
 
       - name: Run Active Scan
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output owasp/zap2docker-stable zap-cli -p 8080 active-scan -t http://localhost:4200
+          docker run --rm -v ${{ github.workspace }}/output:/output owasp/zap2docker-stable \
+          zap-cli -p 8080 active-scan -t http://localhost:4200
 
       - name: Check output directory
         run: ls -l output
