@@ -83,12 +83,12 @@ jobs:
 
       - name: Run Spider
         run: |
-            curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxDepth=1&apikey=your_api_key"
+            curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxDepth=1&apikey=${{ secrets.ZAP_API_KEY }}"
             sleep 30  # wait for spider to finish
 
       - name: Generate Report
         run: |
-            curl "http://localhost:8080/OTHER/htmlreport/generate/?apikey=your_api_key" -o /output/zap_report.html
+            curl "http://localhost:8080/OTHER/htmlreport/generate/?apikey=${{ secrets.ZAP_API_KEY }}" -o /output/zap_report.html
 
       - name: Stop ZAP
         run: |
