@@ -15,27 +15,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Start Application
+      - name: Create output directory
         run: |
-          npm install --legacy-peer-deps
-          npm run start &
-          sleep 60
+          mkdir -p output
+          chmod 777 output
 
-      - name: Run ZAP in Daemon Mode
+      - name: Run ZAP scan
         run: |
-          wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip
-          unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap
-          docker run --rm -d -p 8080:8080 -v /zap:/zap lefisius/dockerbuild:main zap.sh -daemon -host 0.0.0.0 -port 8080
+            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200 -quickout /output/zap_report.html
 
-      - name: Run ZAP Spider and Active Scan using API
-        run: |
-          curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxChildren=10"
-          sleep 30 
-          curl "http://localhost:8080/JSON/ascan/action/scan/?url=http://localhost:4200"
-
-      - name: Save ZAP Report
-        run: |
-          curl "http://localhost:8080/OTHER/core/other/htmlreport/" -o ./output/zap_report.html
+      - name: Check output directory
+        run: ls -l output
 
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
