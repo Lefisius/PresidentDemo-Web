@@ -31,6 +31,17 @@ jobs:
             docker run -d --name zap -p 8080:8080 -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main
             sleep 30  # wait for ZAP to start
 
+      - name: Wait for ZAP to start
+        run: |
+          for i in {1..5}; do
+            if curl -s "http://localhost:8080" > /dev/null; then
+              echo "ZAP is up and running!"
+              break
+            fi
+            echo "Waiting for ZAP to start..."
+            sleep 10
+          done
+
       - name: Run Spider
         run: |
             curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxDepth=1&apikey=your_api_key"
