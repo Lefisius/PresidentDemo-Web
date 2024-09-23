@@ -10,9 +10,7 @@ on:
 
 jobs:
   zap_scan:
-    # name: Run ZAP Scan
     runs-on: ubuntu-latest
-    needs: push_to_registry
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
