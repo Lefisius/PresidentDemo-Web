@@ -26,9 +26,10 @@ jobs:
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP scan
+      - name: Run ZAP spider
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200/State -quickout /output/zap_report.html
+          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -spider -quickurl http://localhost:4200 -quickout /output/zap_spider_report.html
+
       - name: Check output directory
         run: ls -l output
 

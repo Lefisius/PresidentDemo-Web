@@ -1,24 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vulnerable Test Page</title>
-</head>
-<body>
-    <h1>Test for Vulnerabilities</h1>
-
-    <!-- SQL Injection Test -->
-    <form action="/submit" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="admin' OR '1'='1">
-        <button type="submit">Submit</button>
-    </form>
-
-    <!-- XSS Test -->
-    <script>
-        const xssPayload = "<script>alert('XSS Vulnerability!');</script>";
-        document.body.innerHTML += xssPayload;
-    </script>
-</body>
-</html>
+<div>
+    <nz-layout>
+        <nz-header>
+            <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+                <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">
+                    Prvp</li>
+                <li nz-menu-item routerLink="/Election" routerLinkActive="active">
+                    Election</li>
+                <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">
+                    PresHobby</li>
+                <li nz-menu-item routerLink="/President" routerLinkActive="active">
+                    President</li>
+                <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
+                <li nz-menu-item nzSelected routerLink="/State" routerLinkActive="active">State
+                </li>
+                <div id="datetime" class="datetime">{{ datetime }}</div>
+            </ul>
+            <div class="example-input">
+                <input nz-input placeholder="Search State" nzSize="default" [(ngModel)]="searchTerm"
+                    (ngModelChange)="onSearch()" />
+                <button nz-button nzType="primary" (click)="onSearch()">
+                    <i nz-icon nzType="search"></i>
+                    Search
+                </button>
+                <button class="botton-margin" nz-button nz-dropdown [nzDropdownMenu]="menu4">
+                    Select
+                    <i nz-icon nzType="down"></i>
+                </button>
+                <nz-dropdown-menu #menu4="nzDropdownMenu">
+                    <ul nz-menu nzMode="horizontal">
+                        <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                        <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">
+                            Prvp</li>
+                        <li nz-menu-item routerLink="/Election" routerLinkActive="active">
+                            Election</li>
+                        <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">
+                            PresHobby</li>
+                        <li nz-menu-item routerLink="/President" routerLinkActive="active">
+                            President</li>
+                        <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
+                        <li nz-menu-item nzSelected routerLink="/State" routerLinkActive="active">State
+                        </li>
+                    </ul>
+                </nz-dropdown-menu>
+            </div>
+        </nz-header>
+        <nz-layout class="inner-layout">
+            <nz-content>
+                <div>
+                    <h1 class="header">{{ tableTitle }}</h1>
+                    <nz-table #headerTable [nzData]="filteredData" [nzPageSize]="50" [nzScroll]="{ y: 'auto' }">
+                        <thead>
+                            <tr>
+                                <th>StateName</th>
+                                <th>AdminEntered</th>
+                                <th>YearEntered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let president of filteredData">
+                                <td>{{ president.stateName }}</td>
+                                <td>{{ president.adminEntered }}</td>
+                                <td>{{ president.yearEntered }}</td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+            </nz-content>
+        </nz-layout>
+    </nz-layout>
+</div>
