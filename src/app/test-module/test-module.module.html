@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vulnerable Test Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vulnerable Page</title>
 </head>
 <body>
-    <h1>Test for Vulnerabilities</h1>
+  <h1>This is a vulnerable page</h1>
 
-    <!-- SQL Injection Test -->
-    <form action="/submit" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="admin' OR '1'='1">
-        <button type="submit">Submit</button>
-    </form>
+  <!-- ช่องโหว่ Cross-Site Scripting (XSS) -->
+  <form action="/vulnerable" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+    <button type="submit">Submit</button>
+  </form>
 
-    <!-- XSS Test -->
-    <script>
-        const xssPayload = "<script>alert('XSS Vulnerability!');</script>";
-        document.body.innerHTML += xssPayload;
-    </script>
+  <!-- ช่องโหว่ลิงค์ไม่ปลอดภัย -->
+  <a href="http://example.com">Click me to go to an insecure site</a>
 </body>
 </html>
