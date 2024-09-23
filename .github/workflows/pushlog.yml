@@ -125,16 +125,18 @@ jobs:
         run: |
           npm install --legacy-peer-deps
           npm run start &
-          sleep 60
+          sleep 60 # เพิ่มเวลารอให้แอปเริ่มทำงานเต็มที่
 
       - name: Create output directory
         run: |
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP scan
+      - name: Run ZAP spidering and active scan
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200/Election -quickout /output/zap_report.html
+          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main \
+          zap-baseline.py -t http://localhost:4200 -r /output/zap_report.html --spider \
+          && zap-cli active-scan -t http://localhost:4200
 
       - name: Check output directory
         run: ls -l output
