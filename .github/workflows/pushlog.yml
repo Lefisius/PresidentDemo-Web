@@ -28,7 +28,11 @@ jobs:
 
       - name: Run ZAP scan
         run: |
-          docker run --rm -v /home/runner/work/PresidentDemo-Web/PresidentDemo-Web/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200/ -quickout /output/zap_report.html -zap -quickprogress
+          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -newsession /zap/session.session \
+          -quickurl http://localhost:4200/ \
+          -spider http://localhost:4200/ \
+          -scantype active \
+          -outputfile /output/zap_report.html
 
       - name: Check output directory
         run: ls -l output
@@ -36,5 +40,4 @@ jobs:
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: zap-report
-          path: ./output/zap_report.html
+          name: zap
