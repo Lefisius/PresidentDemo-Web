@@ -26,9 +26,9 @@ jobs:
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP in daemon mode
+      - name: Start ZAP in daemon mode
         run: |
-          docker run -u zap -p 8081:8081 -d lefisius/dockerbuild java -jar /zap/ZAP_D-2024-09-17/zap.jar -daemon -host 0.0.0.0 -port 8081
+          docker run -u zap -p 8081:8081 lefisius/dockerbuild java -jar /zap/ZAP_D-2024-09-17/zap.jar -daemon -host 0.0.0.0 -port 8081
 
       - name: Run ZAP spider
         run: |
