@@ -36,5 +36,5 @@ COPY --from=builder /app/dist /app/dist
 # Expose necessary ports for both Node.js and ZAP
 EXPOSE 80 8081 8080
 
-# Command to run ZAP in the background and then start the server
-CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8080 && npm run start
+# Command to run ZAP on port 8081 and Angular app on port 8080
+CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && npm run start -- --port 8080
