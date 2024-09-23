@@ -36,5 +36,7 @@ COPY --from=builder /app/dist /app/dist
 # Expose necessary ports for both Node.js and ZAP
 EXPOSE 80 8081
 
-# Command to run ZAP in the background and then start the server
-CMD npm run start & /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081
+# Command to run ZAP in the background and wait for it to start
+CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
+    until curl -s http://localhost:8081 > /dev/null; do sleep 5; done && \
+    npm run start
