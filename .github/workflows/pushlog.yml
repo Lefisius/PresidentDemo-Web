@@ -15,26 +15,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Create output directory
+      - name: Start Application
         run: |
-          mkdir -p output
-          chmod 777 output
+          npm install --legacy-peer-deps
+          npm run start &
+          sleep 60
 
-      - name: Run ZAP spider
+      - name: Run ZAP in Daemon Mode
         run: |
-            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -spider -quickurl http://localhost:4200 -quickout /output/zap_spider_report.html
+          wget https://github.com/zaproxy/zaproxy/releases/download/w2024-09-17/ZAP_WEEKLY_D-2024-09-17.zip
+          unzip ZAP_WEEKLY_D-2024-09-17.zip -d /zap
+          docker run --rm -d -p 8080:8080 -v /zap:/zap lefisius/dockerbuild:main zap.sh -daemon -host 0.0.0.0 -port 8080
 
-      - name: Run ZAP scan
+      - name: Run ZAP Spider and Active Scan using API
         run: |
-            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200 -quickout /output/zap_report.html
+          curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxChildren=10"
+          sleep 30 
+          curl "http://localhost:8080/JSON/ascan/action/scan/?url=http://localhost:4200"
 
-      - name: Check output directory
-        run: ls -l output
+      - name: Save ZAP Report
+        run: |
+          curl "http://localhost:8080/OTHER/core/other/htmlreport/" -o ./output/zap_report.html
 
-      - name: Upload ZAP reports as artifacts
+      - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: zap-reports
-          path: |
-            ./output/zap_report.html
-            ./output/zap_spider_report.html
+          name: zap-report
+          path: ./output/zap_report.html
