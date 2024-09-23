@@ -7,8 +7,7 @@ COPY . .
 RUN npm run build -- --output-hashing=none --verbose > build.log 2>&1 || (cat build.log && exit 1)
 
 # Step 2: Set up ZAP and other dependencies
-FROM node:16.20.2
-WORKDIR /app
+FROM ubuntu:20.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
@@ -37,5 +36,5 @@ COPY --from=builder /app/dist /app/dist
 # Expose necessary ports for both Node.js and ZAP
 EXPOSE 80 8081 8080
 
-# Command to run ZAP in the background and then start the Angular app
-CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8080 && npm run start --prefix /app
+# Command to run ZAP in the background and then start the server
+CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8080 && npm run start
