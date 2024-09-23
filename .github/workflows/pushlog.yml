@@ -18,7 +18,7 @@ jobs:
       - name: Start Application
         run: |
           npm install --legacy-peer-deps
-          npm run start &
+          npm run start & 
           sleep 60
 
       - name: Create output directory
@@ -26,13 +26,28 @@ jobs:
           mkdir -p output
           chmod 777 output
 
+      - name: Run ZAP in daemon mode
+        run: |
+          docker run -u zap -p 8081:8081 -d owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8081
+
       - name: Run ZAP spider
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -spider -quickurl http://localhost:4200 -quickout /output/zap_spider_report.html
+          sleep 30  # Wait for ZAP to start
+          curl "http://localhost:8081/JSON/spider/action/scan/?url=http://localhost:4200"
+          sleep 30  # Wait for spidering to complete
+
+      - name: Run ZAP active scan
+        run: |
+          curl "http://localhost:8081/JSON/ascan/action/scan/?url=http://localhost:4200"
+          sleep 30  # Wait for active scan to complete
 
       - name: Check output directory
         run: ls -l output
 
+      - name: Upload ZAP report as artifact
+        run: |
+          curl "http://localhost:8081/OTHER/core/other/htmlreport/?baseurl=http://localhost:4200" -o ./output/zap_report.html
+          
       - name: Upload ZAP report as artifact
         uses: actions/upload-artifact@v3
         with:
