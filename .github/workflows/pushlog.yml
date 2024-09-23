@@ -26,10 +26,29 @@ jobs:
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP Spider and Active Scan
+      - name: Run ZAP in daemon mode
         run: |
-            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickurl http://localhost:4200 -quickout /output/zap_spider_report.html
-            docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd -quickout /output/zap_active_report.html -config api.disablekey=true -spider http://localhost:4200 -scan http://localhost:4200
+            docker run -d --name zap -p 8080:8080 -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main
+            sleep 30  # wait for ZAP to start
+
+      - name: Run Spider
+        run: |
+            curl "http://localhost:8080/JSON/spider/action/scan/?url=http://localhost:4200&maxDepth=1&apikey=your_api_key"
+            sleep 30  # wait for spider to finish
+
+      - name: Active Scan
+        run: |
+            curl "http://localhost:8080/JSON/ascan/action/scan/?url=http://localhost:4200&apikey=your_api_key"
+            sleep 30  # wait for active scan to finish
+
+      - name: Generate Report
+        run: |
+            curl "http://localhost:8080/OTHER/htmlreport/generate/?apikey=your_api_key" -o /output/zap_report.html
+
+      - name: Stop ZAP
+        run: |
+            docker stop zap
+            docker rm zap
 
       - name: Check output directory
         run: ls -l output
@@ -38,4 +57,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: ./output/
+          path: ./output/zap_report.html
