@@ -139,13 +139,10 @@ jobs:
           mkdir -p output
           chmod 777 output
 
-      - name: Run ZAP scan
+      - name: Run ZAP scan with timeout
         run: |
-          docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar \
-          -quickurl https://996c-61-7-146-25.ngrok-free.app -quickout /output/zap_report.html
-        
-      - name: Wait for ZAP scan to complete
-        run: sleep 60
+          timeout 60s docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar \
+          -daemon -quickurl https://996c-61-7-146-25.ngrok-free.app -quickout /output/zap_report.html
 
       - name: Check output directory
         run: ls -l output
