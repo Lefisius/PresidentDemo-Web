@@ -144,7 +144,7 @@ jobs:
 
       - name: Run ZAP Baseline Scan
         run: |
-          docker run --network="host" -v ${{ github.workspace }}/output:/zap/wrk owasp/zap2docker-stable \
+          docker run --network="host" -v ${{ github.workspace }}/output:/zap/wrk lefisius/dockerbuild:main \
           zap-baseline.py -t http://localhost:4200 -r /zap/wrk/zap_report.html || true
 
       - name: Check output directory
