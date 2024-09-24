@@ -124,7 +124,7 @@ jobs:
 
       - name: Build Angular Application
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
 
       - name: Run Angular Application
