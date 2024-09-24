@@ -136,7 +136,7 @@ jobs:
         run: |
           npm run start &
           sleep 15
-          
+
       - name: Create output directory
         run: |
           mkdir -p output
@@ -154,7 +154,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
-          path: output/zap_report.html
+          path: ./output/zap_report.html
 
   # trigger_jenkins:
   #   name: Trigger Jenkins Job
