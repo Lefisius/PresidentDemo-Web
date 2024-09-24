@@ -118,7 +118,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+        
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -145,7 +145,7 @@ jobs:
       - name: Run ZAP Baseline Scan
         run: |
           docker run --network="host" -v ${{ github.workspace }}/output:/zap/wrk owasp/zap2docker-stable \
-          zap-baseline.py -t http://localhost:4200 -r zap_report.html || true
+          zap-baseline.py -t http://localhost:4200 -r /zap/wrk/zap_report.html || true
 
       - name: Check output directory
         run: ls -l output
