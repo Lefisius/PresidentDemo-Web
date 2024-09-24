@@ -37,6 +37,9 @@ COPY --from=builder /app/dist /app/dist
 EXPOSE 80 8081
 
 # Command to run ZAP in the background and wait for it to start
+# Command to run ZAP in the background and wait for it to start
 CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
     until curl -s http://localhost:8081 > /dev/null; do sleep 5; done && \
-    npm run start
+    npm run start & \
+    until curl -s http://localhost:4200 > /dev/null; do sleep 5; done && \
+    wait
