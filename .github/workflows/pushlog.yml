@@ -136,6 +136,11 @@ jobs:
         run: |
           npm run start &
           sleep 15
+          
+      - name: Create output directory
+        run: |
+          mkdir -p output
+          chmod 777 output
 
       - name: Run ZAP Baseline Scan
         run: |
