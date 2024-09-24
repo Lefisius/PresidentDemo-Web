@@ -25,6 +25,22 @@ export class ElectionService {
     return this.http.post(`${this.printerApiUrl}/add`, body); // <- ใช้ URL ที่ถูกต้อง
   }
 
+  getVulnerableCORSData(): Observable<any> {
+    return this.http.get<any>(this.apiUrl, {
+      headers: { 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+
+  getSensitiveDataExposure(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/login?username=admin&password=123456`);
+  }
+
+  submitCSRFVulnerableForm(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/vulnerable-endpoint`, {
+      username: 'admin',
+      password: '123456'
+    });
+  }
 
   addPrinterDriver(file: File, name: string): Observable<any> {
     const formData = new FormData();
