@@ -74,48 +74,48 @@ jobs:
   #         name: error-files
   #         path: build_errors.log
 
-  push_to_registry:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    # needs: build
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
+  # push_to_registry:
+  #   name: Push Docker image to Docker Hub
+  #   runs-on: ubuntu-latest
+  #   # needs: build
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: lefisius/dockerbuild
+  #     - name: Extract metadata for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@v4
+  #       with:
+  #         images: lefisius/dockerbuild
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         push: true
+  #         tags: ${{ steps.meta.outputs.tags }}
+  #         labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Create New Branch with Commit Hash
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git config user.name Lefisius
-          git config user.email lephiafuri@gmail.com
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
-          git checkout -b $NEW_BRANCH_NAME
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+  #     - name: Create New Branch with Commit Hash
+  #       env:
+  #         GH_PAT: ${{ secrets.GH_PAT }}
+  #       run: |
+  #         git config user.name Lefisius
+  #         git config user.email lephiafuri@gmail.com
+  #         COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+  #         NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
+  #         git checkout -b $NEW_BRANCH_NAME
+  #         git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
   zap_scan:
     runs-on: ubuntu-latest
-    needs: push_to_registry
+    # needs: push_to_registry
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -142,7 +142,9 @@ jobs:
       - name: Run ZAP scan
         run: |
           docker run --rm -v ${{ github.workspace }}/output:/output lefisius/dockerbuild:main java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar \
-          -daemon -quickurl https://996c-61-7-146-25.ngrok-free.app -quickout /output/zap_report.html
+          -daemon -quickurl https://996c-61-7-146-25.ngrok-free.app -quickout /output/zap_report.html && \
+          echo "ZAP scan completed successfully." || \
+          { echo "ZAP scan failed!"; exit 1; }
 
       - name: Check output directory
         run: ls -l output
