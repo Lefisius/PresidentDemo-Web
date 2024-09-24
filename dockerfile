@@ -39,6 +39,6 @@ EXPOSE 80 8081
 # Command to run ZAP in the background and start Angular app
 CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
     until curl -s http://localhost:8081 > /dev/null; do sleep 5; done && \
-    npm run start -- --host 0.0.0.0 & \
+    npm run start -- --host 0.0.0.0 --disable-host-check & \
     until curl -s https://996c-61-7-146-25.ngrok-free.app > /dev/null; do sleep 5; done && \
     wait
