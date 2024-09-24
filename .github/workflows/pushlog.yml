@@ -54,7 +54,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16.20.2'
+          node-version: "16.20.2"
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
@@ -112,7 +112,7 @@ jobs:
           NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
           git checkout -b $NEW_BRANCH_NAME
           git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
-  
+
   zap_scan:
     runs-on: ubuntu-latest
     needs: push_to_registry
@@ -152,7 +152,6 @@ jobs:
           name: zap-report
           path: ./output/zap_report.html
 
-
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
@@ -186,7 +185,8 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs:
+      [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ failure() }}
     steps:
       - name: Checkout Code
@@ -252,7 +252,8 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
+    needs:
+      [dependabot, lint, build, push_to_registry, zap_scan, trigger_jenkins]
     if: ${{ always() }}
     steps:
       - name: Checkout Code
