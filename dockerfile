@@ -13,11 +13,12 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ZAP_VERSION=w2024-09-17
 ENV ZAP_API_KEY=r3poq3ds12b37u8899pglgee91
+ENV NGROK_URL=https://acec-61-7-146-25.ngrok-free.app/
 
 # Update and install necessary packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    curl git default-jdk python3 python3-pip wget unzip ca-certificates && \
+    curl git default-jdk python3 python3-pip wget unzip ca-certificates nginx && \
     rm -rf /var/lib/apt/lists/*
 
 # Install ZAP
@@ -31,12 +32,14 @@ RUN useradd -ms /bin/bash appuser
 USER appuser
 
 # Copy built Angular app from builder stage
-COPY --from=builder /app/dist /app/dist
+COPY --from=builder /app/dist /var/www/html
 
-# Expose necessary ports for both Node.js and ZAP
+# Expose necessary ports for both Angular (Nginx) and ZAP
 EXPOSE 80 8081
 
-# Command to run ZAP in the background and start Angular app
-CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
-    npm run start -- --host 0.0.0.0 --disable-host-check & \
+# Command to run Nginx and OWASP ZAP scan
+CMD service nginx start && \
+    /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
+    until curl -s http://localhost:8081 > /dev/null; do sleep 5; done && \
+    zap-cli quick-scan --self-contained --api-key ${ZAP_API_KEY} ${NGROK_URL} && \
     wait
