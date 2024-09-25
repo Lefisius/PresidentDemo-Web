@@ -7,8 +7,8 @@ import { LoginService } from '../api/login.service';
 })
 export class LoginComponent {
 
-  username: string = '';
-  password: string = '';
+  username: string = "admin' OR '1'='1";  // ข้อมูลทดสอบ SQL Injection
+  password: string = 'anything';           // ข้อมูลทดสอบ
 
   constructor(private loginService: LoginService) {}
 
