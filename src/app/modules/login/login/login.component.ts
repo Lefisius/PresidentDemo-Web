@@ -7,8 +7,8 @@ import { LoginService } from '../api/login.service';
 })
 export class LoginComponent {
 
-  username: string = "admin' OR '1'='1";  // ข้อมูลทดสอบ SQL Injection
-  password: string = 'anything';           // ข้อมูลทดสอบ
+  username: string = "admin' OR '1'='1";
+  password: string = 'anything';
 
   constructor(private loginService: LoginService) {}
 
@@ -16,7 +16,7 @@ export class LoginComponent {
     this.loginService.login(this.username, this.password)
       .subscribe(
         response => {
-          console.log(response);  // แสดงผลลัพธ์จาก backend
+          console.log(response);
           if (response === 'Login Successful') {
             alert('Login successful');
           } else {
