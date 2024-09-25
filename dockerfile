@@ -40,5 +40,5 @@ EXPOSE 80 8081
 CMD /zap/ZAP_WEEKLY_D-2024-09-17/zap.sh -daemon -config api.key=${ZAP_API_KEY} -port 8081 && \
     until curl -s http://localhost:8081 > /dev/null; do sleep 5; done && \
     npm run start -- --host 0.0.0.0 & \
-    until curl -s https://71b0-61-7-146-25.ngrok-free.app > /dev/null; do sleep 5; done && \
+    until curl -s http://172.16.253.11:4200/ > /dev/null; do sleep 5; done && \
     wait
