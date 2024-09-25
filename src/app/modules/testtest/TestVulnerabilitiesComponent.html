@@ -1,0 +1,15 @@
+<div>
+    <h1>Test Vulnerabilities</h1>
+  
+    <input #userInput type="text" placeholder="Input for SQL Injection">
+    <button (click)="vulnerableSQLInjection(userInput.value)">Test SQL Injection</button>
+  
+    <input #xssInput type="text" placeholder="Input for XSS">
+    <button (click)="vulnerableXSS(xssInput.value)">Test XSS</button>
+  
+    <input #userIdInput type="number" placeholder="User ID for IDOR">
+    <button (click)="vulnerableIDOR(userIdInput.value)">Test IDOR</button>
+  
+    <div id="output"></div>
+  </div>
+  
