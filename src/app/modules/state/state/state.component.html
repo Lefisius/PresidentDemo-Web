@@ -65,14 +65,6 @@
                             </tr>
                         </tbody>
                     </nz-table>
-                    <div>
-                        <input type="text" (input)="onUserInputChange($event)" placeholder="กรอกข้อมูลที่นี่" />
-                        <p>{{ userInput }}</p>
-                    </div>
-                    <form action="/search" method="GET">
-                        <input type="text" name="query" value="' OR '1'='1" placeholder="Search"/>
-                        <button type="submit">Search</button>
-                      </form>                      
                 </div>
             </nz-content>
         </nz-layout>

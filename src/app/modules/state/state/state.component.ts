@@ -12,7 +12,6 @@ export class StateComponent implements OnInit {
   datetime: string = '';
   presidentsData: any[] = [];
   filteredData: any[] = [];
-  userInput: string = '';
 
   constructor(private stateService: StateService) { }
 
@@ -31,6 +30,7 @@ export class StateComponent implements OnInit {
       console.error('Error fetching States:', error);
     });
   }
+
 
   updateDateTime(): void {
     const now = new Date();
@@ -56,12 +56,6 @@ export class StateComponent implements OnInit {
     console.log('Filtered data:', this.filteredData);
   }
 
-  // ฟังก์ชันสำหรับเก็บข้อมูลจากผู้ใช้
-  onUserInputChange(event: Event): void {
-    const inputElement = event.target as HTMLInputElement; // ใช้ Type Assertion
-    const userInput = inputElement.value; // เข้าถึง value ได้อย่างปลอดภัย
-    console.log(userInput); // แสดงผลข้อมูลที่ผู้ใช้กรอก
-  }  
 
   setTableTitle(title: string): void {
     this.tableTitle = title;
