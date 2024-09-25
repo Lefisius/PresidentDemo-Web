@@ -65,6 +65,10 @@
                             </tr>
                         </tbody>
                     </nz-table>
+                    <div>
+                        <input type="text" (input)="onUserInputChange($event)" placeholder="กรอกข้อมูลที่นี่" />
+                        <p>{{ userInput }}</p>
+                    </div>
                 </div>
             </nz-content>
         </nz-layout>
