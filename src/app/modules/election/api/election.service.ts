@@ -25,6 +25,7 @@ export class ElectionService {
     return this.http.post(`${this.printerApiUrl}/add`, body); // <- ใช้ URL ที่ถูกต้อง
   }
 
+
   addPrinterDriver(file: File, name: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
