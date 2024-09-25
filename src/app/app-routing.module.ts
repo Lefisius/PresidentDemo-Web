@@ -7,7 +7,7 @@ const routes: Routes = [
     redirectTo: 'Dash',
     pathMatch: 'full'
   },
-  { path: 'login', loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule) },
+  { path: 'Login', loadChildren: () => import('./modules/login/login.module').then(m => m.LoginModule) },
   { path: 'Dash', loadChildren: () => import('./modules/dash/dash.module').then(m => m.DashModule) },
   { path: 'Stration', loadChildren: () => import('./modules/stration/stration.module').then(m => m.StrationModule) },
   { path: 'Prvp', loadChildren: () => import('./modules/prvp/prvp.module').then(m => m.PrvpModule) },
