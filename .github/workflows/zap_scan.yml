@@ -29,6 +29,9 @@ jobs:
       with:
         target: 'http://localhost:4200'
         cmd_options: '-r zap_report.html'
+        docker_name: 'lefisius/dockerbuild:main'
+        fail_action: false
+        allow_issue_writing: true
 
     - name: Upload ZAP report
       uses: actions/upload-artifact@v3
