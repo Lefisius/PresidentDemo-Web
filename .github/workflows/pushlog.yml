@@ -150,6 +150,15 @@ jobs:
           target: "https://acec-61-7-146-25.ngrok-free.app/"
           cmd_options: "-a"
 
+      - name: Upload ZAP Scan Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: ZAP_API_Scan
+          path: |
+            report_json.json
+            report_md.md
+            report_html.html
+
   trigger_jenkins:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
