@@ -145,8 +145,7 @@ jobs:
             java -jar /zap/ZAP_D-2024-09-17/zap-D-2024-09-17.jar -cmd \
             -quickurl https://acec-61-7-146-25.ngrok-free.app/ \
             -quickout /output/zap_report.html \
-            -quickprogress \
-            -t 3
+            -quickprogress
       
       - name: Verify report generation
         run: |
