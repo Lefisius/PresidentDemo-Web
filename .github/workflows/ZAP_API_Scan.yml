@@ -28,4 +28,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ZAP_API_Scan
-          path: path_to_zap_report
+          path: |
+            report_json.json
+            report_md.md
+            report_html.html
