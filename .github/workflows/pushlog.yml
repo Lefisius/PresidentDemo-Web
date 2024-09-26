@@ -308,4 +308,3 @@ jobs:
             ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
           to: ${{ env.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
-    
