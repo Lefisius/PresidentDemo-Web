@@ -6,10 +6,9 @@ on:
       - main
 
 jobs:
-  zap_scan:
+  ZAP_API_Scan:
     runs-on: ubuntu-latest
-      # if: false
-    name: Scan the webapplication
+    name: ZAP_API_Scan
     steps:
       - name: Checkout
         uses: actions/checkout@v4
