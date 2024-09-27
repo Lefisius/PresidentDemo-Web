@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  zap_Full_Scan:
+  ZAP_Full_Scan:
     runs-on: ubuntu-latest
     name: Scan the webapplication
     steps:
