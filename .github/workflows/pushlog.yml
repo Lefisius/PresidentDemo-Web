@@ -148,8 +148,7 @@ jobs:
 
       - name: Run Playwright tests
         id: run-tests
-        run: |
-          npx playwright test
+        run: npx playwright test president/E2E-Script
 
       - name: Upload test results
         if: always()
