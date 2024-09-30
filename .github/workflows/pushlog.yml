@@ -213,8 +213,8 @@ jobs:
       - name: Trigger Jenkins Job
         id: trigger_jenkins
         run: |
-          response=$(curl -X POST "https://1412-61-7-146-25.ngrok-free.app/job/dornny/build" \
-          --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
+          response=$(curl -X POST "http://172.16.253.11:8080/job/testpipe/build" \
+          --user "user:11b20d5f21817203f0fb4db12e13b2402e")
           echo "Triggered Jenkins Job"
 
       - name: Wait for Jenkins Job to Complete
@@ -225,8 +225,8 @@ jobs:
           while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
             sleep 15
             attempt=$((attempt+1))
-            response=$(curl -s -w "%{http_code}" "https://1412-61-7-146-25.ngrok-free.app/job/dornny/lastBuild/api/json" \
-              --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
+            response=$(curl -s -w "%{http_code}" "http://172.16.253.11:8080/job/testpipe/lastBuild/api/json" \
+              --user "user:11b20d5f21817203f0fb4db12e13b2402e")
             http_code=${response: -3}
             body=${response:0:${#response}-3}
 
