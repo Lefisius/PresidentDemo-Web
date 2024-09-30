@@ -120,36 +120,36 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Create New Branch with Commit Message
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-            # Get the author information from the latest commit
-            COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+          # Get the author information from the latest commit
+          COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
+          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
 
-            # Set the git config to use the author's info
-            git config user.name "$COMMIT_AUTHOR_NAME"
-            git config user.email "$COMMIT_AUTHOR_EMAIL"
+          # Set the git config to use the author's info
+          git config user.name "$COMMIT_AUTHOR_NAME"
+          git config user.email "$COMMIT_AUTHOR_EMAIL"
 
-            FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
 
-            if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
-              PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
-              PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
-              COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
-            else
-              COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
-            fi
+          if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
+            PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
+            PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
+            COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
+          else
+            COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
+          fi
 
-            SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
+          SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
 
-            NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
+          NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
 
-            git checkout -b $NEW_BRANCH_NAME
-            git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+          git checkout -b $NEW_BRANCH_NAME
+          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
   ZAP_Full_Scan:
     runs-on: ubuntu-latest
@@ -219,71 +219,51 @@ jobs:
 
       - name: Wait for Jenkins Job to Complete
         run: |
-            job_status="null"
-            max_attempts=20
-            attempt=0
-            while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
-              sleep 15
-              attempt=$((attempt+1))
-              response=$(curl -s -w "%{http_code}" "https://1412-61-7-146-25.ngrok-free.app/job/dornny/lastBuild/api/json" \
-                --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
-              http_code=${response: -3}
-              body=${response:0:${#response}-3}
+          job_status="null"
+          max_attempts=20
+          attempt=0
+          while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
+            sleep 15
+            attempt=$((attempt+1))
+            response=$(curl -s -w "%{http_code}" "https://1412-61-7-146-25.ngrok-free.app/job/dornny/lastBuild/api/json" \
+              --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
+            http_code=${response: -3}
+            body=${response:0:${#response}-3}
 
-              echo "HTTP Response Code: $http_code"
+            echo "HTTP Response Code: $http_code"
 
-              if [ "$http_code" -ne 200 ]; then
-                echo "Error fetching Jenkins job status. HTTP Response Code: $http_code"
-                echo "Response body: $body"
-                if [ $attempt -eq $max_attempts ]; then
-                  echo "Max attempts reached. Exiting."
-                  exit 1
-                fi
-                continue
-              fi
-
-              if ! job_status=$(echo "$body" | jq -r '.result'); then
-                echo "Error parsing JSON response. Raw response:"
-                echo "$body"
-                if [ $attempt -eq $max_attempts ]; then
-                  echo "Max attempts reached. Exiting."
-                  exit 1
-                fi
-                continue
-              fi
-
-              echo "Current Job Status: $job_status"
-
-              if [ "$job_status" = "FAILURE" ]; then
-                echo "Jenkins job failed. Exiting."
+            if [ "$http_code" -ne 200 ]; then
+              echo "Error fetching Jenkins job status. HTTP Response Code: $http_code"
+              echo "Response body: $body"
+              if [ $attempt -eq $max_attempts ]; then
+                echo "Max attempts reached. Exiting."
                 exit 1
               fi
-            done
-
-            if [ $attempt -eq $max_attempts ]; then
-              echo "Max attempts reached. Job did not complete successfully."
-              exit 1
+              continue
             fi
 
-  get_commit_author_email:
-    name: Get Commit Author Email
-    runs-on: ubuntu-latest
-    outputs:
-      commit_author_email: ${{ steps.get_commit_info.outputs.commit_author_email }}
-      changed_files: ${{ steps.get_commit_info.outputs.changed_files }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
+            if ! job_status=$(echo "$body" | jq -r '.result'); then
+              echo "Error parsing JSON response. Raw response:"
+              echo "$body"
+              if [ $attempt -eq $max_attempts ]; then
+                echo "Max attempts reached. Exiting."
+                exit 1
+              fi
+              continue
+            fi
 
-      - name: Get Commit Info
-        id: get_commit_info
-        run: |
-          AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=${AUTHOR_EMAIL}" >> $GITHUB_ENV
-          echo "changed_files=${CHANGED_FILES}" >> $GITHUB_ENV
+            echo "Current Job Status: $job_status"
+
+            if [ "$job_status" = "FAILURE" ]; then
+              echo "Jenkins job failed. Exiting."
+              exit 1
+            fi
+          done
+
+          if [ $attempt -eq $max_attempts ]; then
+            echo "Max attempts reached. Job did not complete successfully."
+            exit 1
+          fi
 
   send_failure_notification:
     name: Send Failure Notification
@@ -299,11 +279,14 @@ jobs:
         trigger_jenkins,
       ]
     if: ${{ failure() }}
+    concurrency:
+      group: send-failure-notification-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0 # Fetch all history
 
       - name: Download Error Files
         uses: actions/download-artifact@v3
@@ -313,29 +296,27 @@ jobs:
       - name: Get Error Log and Commit Info
         id: error_info
         run: |
-          commit_author_email=$(git log -1 --pretty=format:'%ae')
+          # Get the author information from the latest commit
+          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+
+          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+          fi
+
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
 
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_ENV
-
-          check_file_for_errors() {
-            local file=$1
-            grep -q "$file" build_errors.log
-            return $?
-          }
+          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
 
           non_error_files=""
-
           for file in $changed_files; do
-            if ! check_file_for_errors "$file"; then
+            if ! grep -q "$file" build_errors.log; then
               non_error_files+="$file "
             fi
           done
 
-          echo "non_error_files=$non_error_files" >> $GITHUB_ENV
-          echo "changed_files_text=ไฟล์ที่มีการแก้ไข: $changed_files" >> $GITHUB_ENV
-          echo "commit_author_email=$commit_author_email" >> $GITHUB_ENV
+          echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
+          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
 
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
@@ -344,19 +325,16 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งาน ${{ github.job }} ของ ${{ github.repository }} ล้มเหลว
+          subject: "Build failure for ${{ github.repository }}"
           body: |
-            ข้อความ: งาน `build` ของ ${{ github.repository }} ล้มเหลว
+            Build failed for commit: ${{ github.sha }}
 
-            รายละเอียดข้อผิดพลาดอยู่ในไฟล์แนบ
+            Files with errors:
+            ${{ steps.error_info.outputs.error_paths }}
 
-            ไฟล์ที่มีข้อผิดพลาด :
-            ${{ env.error_paths }}
+            Files changed: ${{ steps.error_info.outputs.non_error_files }}
 
-            ไฟล์ที่แก้แล้ว complete: ${{ env.non_error_files }}
-
-            ${{ env.changed_files_text }}
-          to: ${{ env.commit_author_email }}
+          to: ${{ steps.error_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
@@ -373,20 +351,29 @@ jobs:
         ZAP_API_Scan,
         trigger_jenkins,
       ]
-    if: ${{ always() }}
+    if: ${{ success() }}
+    concurrency:
+      group: send-success-notification-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0 # Fetch all history
 
       - name: Get Commit Info
         id: commit_info
         run: |
-          commit_author_email=$(git log -1 --pretty=format:'%ae')
+          # Get the author information from the latest commit
+          COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
+
+          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+          fi
+
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=${commit_author_email}" >> $GITHUB_ENV
-          echo "changed_files=${changed_files}" >> $GITHUB_ENV
+          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
 
       - name: Send email on success
         uses: dawidd6/action-send-mail@v3
@@ -395,12 +382,11 @@ jobs:
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: งาน ${{ github.job }} ของ ${{ github.repository }} สำเร็จ
+          subject: "Build success for ${{ github.repository }}"
           body: |
-            ข้อความ: งาน `build` ของ ${{ github.repository }} สำเร็จ
+            Build succeeded for commit: ${{ github.sha }}
 
-            ไฟล์ที่มีการแก้ไข: ${{ env.changed_files }}
+            Files changed: ${{ steps.commit_info.outputs.changed_files }}
 
-            ขอบคุณที่รอดำเนินการให้เสร็จสิ้น
-          to: ${{ env.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
