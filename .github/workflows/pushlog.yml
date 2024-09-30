@@ -149,13 +149,7 @@ jobs:
       - name: Run Playwright tests
         id: run-tests
         run: |
-          npx playwright test --output=results.json || exit 1
-          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
-            echo "Tests failed."
-            exit 1
-          else
-            echo "Tests passed."
-          fi
+          npx playwright test
 
       - name: Upload test results
         if: always()
