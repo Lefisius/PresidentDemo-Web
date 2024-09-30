@@ -97,7 +97,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: krisneonploy/dockerbuild
+          images: lefisius/dockerbuild
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -120,36 +120,36 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
+          fetch-depth: 0  # Fetch all history for all branches and tags
 
       - name: Create New Branch with Commit Message
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+            # Get the author information from the latest commit
+            COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
 
-          # Set the git config to use the author's info
-          git config user.name "$COMMIT_AUTHOR_NAME"
-          git config user.email "$COMMIT_AUTHOR_EMAIL"
+            # Set the git config to use the author's info
+            git config user.name "$COMMIT_AUTHOR_NAME"
+            git config user.email "$COMMIT_AUTHOR_EMAIL"
 
-          FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+            FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
 
-          if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
-            PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
-            PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
-            COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
-          else
-            COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
-          fi
+            if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
+              PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
+              PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
+              COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
+            else
+              COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
+            fi
 
-          SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
+            SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
 
-          NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
+            NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
 
-          git checkout -b $NEW_BRANCH_NAME
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+            git checkout -b $NEW_BRANCH_NAME
+            git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
   ZAP_Full_Scan:
     runs-on: ubuntu-latest
