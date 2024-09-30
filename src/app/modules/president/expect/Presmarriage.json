@@ -1,0 +1,354 @@
+[
+    {
+        "presName": "Adams J",
+        "spouseName": "Smith A",
+        "prAge": 28,
+        "spAge": 19,
+        "nrChildren": 5,
+        "marYear": 1764
+    },
+    {
+        "presName": "Adams J Q",
+        "spouseName": "Johnson L C",
+        "prAge": 30,
+        "spAge": 22,
+        "nrChildren": 4,
+        "marYear": 1797
+    },
+    {
+        "presName": "Arthur C A",
+        "spouseName": "Herndon E L",
+        "prAge": 29,
+        "spAge": 22,
+        "nrChildren": 3,
+        "marYear": 1859
+    },
+    {
+        "presName": "Carter J E",
+        "spouseName": "Smith R",
+        "prAge": 21,
+        "spAge": 18,
+        "nrChildren": 4,
+        "marYear": 1946
+    },
+    {
+        "presName": "Cleveland G",
+        "spouseName": "Folson F",
+        "prAge": 49,
+        "spAge": 21,
+        "nrChildren": 5,
+        "marYear": 1886
+    },
+    {
+        "presName": "Coolidge C",
+        "spouseName": "Goodhue G A",
+        "prAge": 33,
+        "spAge": 26,
+        "nrChildren": 2,
+        "marYear": 1905
+    },
+    {
+        "presName": "Eisenhower D D",
+        "spouseName": "Doud G",
+        "prAge": 25,
+        "spAge": 19,
+        "nrChildren": 2,
+        "marYear": 1916
+    },
+    {
+        "presName": "Fillmore M",
+        "spouseName": "McIntosh C C",
+        "prAge": 58,
+        "spAge": 44,
+        "nrChildren": 0,
+        "marYear": 1858
+    },
+    {
+        "presName": "Fillmore M",
+        "spouseName": "McIntosh C C",
+        "prAge": 58,
+        "spAge": 44,
+        "nrChildren": 0,
+        "marYear": 1858
+    },
+    {
+        "presName": "Ford G R",
+        "spouseName": "Warren E B",
+        "prAge": 35,
+        "spAge": 30,
+        "nrChildren": 4,
+        "marYear": 1948
+    },
+    {
+        "presName": "Garfield J A",
+        "spouseName": "Rudolph L",
+        "prAge": 26,
+        "spAge": 26,
+        "nrChildren": 7,
+        "marYear": 1858
+    },
+    {
+        "presName": "Grant U S",
+        "spouseName": "Dent J B",
+        "prAge": 26,
+        "spAge": 22,
+        "nrChildren": 4,
+        "marYear": 1848
+    },
+    {
+        "presName": "Harding W G",
+        "spouseName": "De Wolfe F K",
+        "prAge": 25,
+        "spAge": 30,
+        "nrChildren": 0,
+        "marYear": 1891
+    },
+    {
+        "presName": "Harrison B",
+        "spouseName": "Dimmick M S L",
+        "prAge": 62,
+        "spAge": 37,
+        "nrChildren": 1,
+        "marYear": 1896
+    },
+    {
+        "presName": "Harrison B",
+        "spouseName": "Dimmick M S L",
+        "prAge": 62,
+        "spAge": 37,
+        "nrChildren": 1,
+        "marYear": 1896
+    },
+    {
+        "presName": "Harrison W H",
+        "spouseName": "Symmes A T",
+        "prAge": 22,
+        "spAge": 20,
+        "nrChildren": 10,
+        "marYear": 1795
+    },
+    {
+        "presName": "Hayes R B",
+        "spouseName": "Webb L W",
+        "prAge": 30,
+        "spAge": 21,
+        "nrChildren": 8,
+        "marYear": 1852
+    },
+    {
+        "presName": "Hoover H C",
+        "spouseName": "Henry L",
+        "prAge": 24,
+        "spAge": 23,
+        "nrChildren": 2,
+        "marYear": 1899
+    },
+    {
+        "presName": "Jackson A",
+        "spouseName": "Robards R D",
+        "prAge": 26,
+        "spAge": 26,
+        "nrChildren": 0,
+        "marYear": 1794
+    },
+    {
+        "presName": "Jefferson T",
+        "spouseName": "Skelton M W",
+        "prAge": 28,
+        "spAge": 23,
+        "nrChildren": 6,
+        "marYear": 1772
+    },
+    {
+        "presName": "Johnson A",
+        "spouseName": "McCardle E",
+        "prAge": 18,
+        "spAge": 16,
+        "nrChildren": 5,
+        "marYear": 1827
+    },
+    {
+        "presName": "Johnson L B",
+        "spouseName": "Taylor C A",
+        "prAge": 26,
+        "spAge": 21,
+        "nrChildren": 2,
+        "marYear": 1934
+    },
+    {
+        "presName": "Kennedy J F",
+        "spouseName": "Bouvier J L",
+        "prAge": 36,
+        "spAge": 24,
+        "nrChildren": 3,
+        "marYear": 1953
+    },
+    {
+        "presName": "Lincoln A",
+        "spouseName": "Todd M",
+        "prAge": 33,
+        "spAge": 23,
+        "nrChildren": 4,
+        "marYear": 1842
+    },
+    {
+        "presName": "Madison J",
+        "spouseName": "Todd D D P",
+        "prAge": 43,
+        "spAge": 26,
+        "nrChildren": 0,
+        "marYear": 1794
+    },
+    {
+        "presName": "McKinley W",
+        "spouseName": "Saxton I",
+        "prAge": 27,
+        "spAge": 23,
+        "nrChildren": 2,
+        "marYear": 1871
+    },
+    {
+        "presName": "Monroe J",
+        "spouseName": "Kortright E",
+        "prAge": 27,
+        "spAge": 17,
+        "nrChildren": 3,
+        "marYear": 1786
+    },
+    {
+        "presName": "Nixon R M",
+        "spouseName": "Ryan T C",
+        "prAge": 27,
+        "spAge": 28,
+        "nrChildren": 2,
+        "marYear": 1940
+    },
+    {
+        "presName": "Pierce F",
+        "spouseName": "Appleton J M",
+        "prAge": 29,
+        "spAge": 28,
+        "nrChildren": 3,
+        "marYear": 1834
+    },
+    {
+        "presName": "Polk J K",
+        "spouseName": "Childress S",
+        "prAge": 28,
+        "spAge": 20,
+        "nrChildren": 0,
+        "marYear": 1824
+    },
+    {
+        "presName": "Reagan R",
+        "spouseName": "Davis N",
+        "prAge": 41,
+        "spAge": 28,
+        "nrChildren": 2,
+        "marYear": 1952
+    },
+    {
+        "presName": "Reagan R",
+        "spouseName": "Davis N",
+        "prAge": 41,
+        "spAge": 28,
+        "nrChildren": 2,
+        "marYear": 1952
+    },
+    {
+        "presName": "Roosevelt F D",
+        "spouseName": "Roosevelt A E",
+        "prAge": 23,
+        "spAge": 20,
+        "nrChildren": 6,
+        "marYear": 1905
+    },
+    {
+        "presName": "Roosevelt T",
+        "spouseName": "Carow E K",
+        "prAge": 28,
+        "spAge": 25,
+        "nrChildren": 5,
+        "marYear": 1886
+    },
+    {
+        "presName": "Roosevelt T",
+        "spouseName": "Carow E K",
+        "prAge": 28,
+        "spAge": 25,
+        "nrChildren": 5,
+        "marYear": 1886
+    },
+    {
+        "presName": "Taft W H",
+        "spouseName": "Herron H",
+        "prAge": 28,
+        "spAge": 25,
+        "nrChildren": 3,
+        "marYear": 1886
+    },
+    {
+        "presName": "Taylor Z",
+        "spouseName": "Smith M M",
+        "prAge": 25,
+        "spAge": 21,
+        "nrChildren": 6,
+        "marYear": 1810
+    },
+    {
+        "presName": "Truman H S",
+        "spouseName": " Wallace E V",
+        "prAge": 35,
+        "spAge": 34,
+        "nrChildren": 1,
+        "marYear": 1919
+    },
+    {
+        "presName": "Tyler J",
+        "spouseName": "Christian L",
+        "prAge": 23,
+        "spAge": 22,
+        "nrChildren": 8,
+        "marYear": 1813
+    },
+    {
+        "presName": "Tyler J",
+        "spouseName": "Christian L",
+        "prAge": 23,
+        "spAge": 22,
+        "nrChildren": 8,
+        "marYear": 1813
+    },
+    {
+        "presName": "Van Buren M",
+        "spouseName": "Hoes H",
+        "prAge": 24,
+        "spAge": 23,
+        "nrChildren": 4,
+        "marYear": 1807
+    },
+    {
+        "presName": "Washington G",
+        "spouseName": "Custis M D",
+        "prAge": 26,
+        "spAge": 27,
+        "nrChildren": 0,
+        "marYear": 1759
+    },
+    {
+        "presName": "Wilson W",
+        "spouseName": "Axson E L",
+        "prAge": 28,
+        "spAge": 25,
+        "nrChildren": 3,
+        "marYear": 1885
+    },
+    {
+        "presName": "Wilson W",
+        "spouseName": "Axson E L",
+        "prAge": 28,
+        "spAge": 25,
+        "nrChildren": 3,
+        "marYear": 1885
+    }
+]

@@ -1,0 +1,252 @@
+[
+    {
+        "stateName": "Alabama",
+        "adminEntered": 8,
+        "yearEntered": 1819
+    },
+    {
+        "stateName": "Alaska",
+        "adminEntered": 43,
+        "yearEntered": 1959
+    },
+    {
+        "stateName": "Arizona",
+        "adminEntered": 31,
+        "yearEntered": 1912
+    },
+    {
+        "stateName": "Arkansas",
+        "adminEntered": 12,
+        "yearEntered": 1836
+    },
+    {
+        "stateName": "California",
+        "adminEntered": 16,
+        "yearEntered": 1850
+    },
+    {
+        "stateName": "Colorado",
+        "adminEntered": 22,
+        "yearEntered": 1876
+    },
+    {
+        "stateName": "Connecticut",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Delaware",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Florida",
+        "adminEntered": 14,
+        "yearEntered": 1845
+    },
+    {
+        "stateName": "Georgia",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Hawaii",
+        "adminEntered": 43,
+        "yearEntered": 1959
+    },
+    {
+        "stateName": "Idaho",
+        "adminEntered": 26,
+        "yearEntered": 1890
+    },
+    {
+        "stateName": "Illinois",
+        "adminEntered": 8,
+        "yearEntered": 1818
+    },
+    {
+        "stateName": "Indiana",
+        "adminEntered": 7,
+        "yearEntered": 1816
+    },
+    {
+        "stateName": "Iowa",
+        "adminEntered": 15,
+        "yearEntered": 1846
+    },
+    {
+        "stateName": "Kansas",
+        "adminEntered": 18,
+        "yearEntered": 1861
+    },
+    {
+        "stateName": "Kentucky",
+        "adminEntered": 1,
+        "yearEntered": 1792
+    },
+    {
+        "stateName": "Louisianna",
+        "adminEntered": 6,
+        "yearEntered": 1812
+    },
+    {
+        "stateName": "Maine",
+        "adminEntered": 8,
+        "yearEntered": 1820
+    },
+    {
+        "stateName": "Maryland",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Massachusetts",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Michigan",
+        "adminEntered": 12,
+        "yearEntered": 1837
+    },
+    {
+        "stateName": "Minnesota",
+        "adminEntered": 18,
+        "yearEntered": 1858
+    },
+    {
+        "stateName": "Mississippi",
+        "adminEntered": 8,
+        "yearEntered": 1817
+    },
+    {
+        "stateName": "Missouri",
+        "adminEntered": 9,
+        "yearEntered": 1821
+    },
+    {
+        "stateName": "Montana",
+        "adminEntered": 26,
+        "yearEntered": 1889
+    },
+    {
+        "stateName": "Nebraska",
+        "adminEntered": 20,
+        "yearEntered": 1867
+    },
+    {
+        "stateName": "Nevada",
+        "adminEntered": 19,
+        "yearEntered": 1864
+    },
+    {
+        "stateName": "New Hampshire",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "New Jersey",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "New Mexico",
+        "adminEntered": 31,
+        "yearEntered": 1912
+    },
+    {
+        "stateName": "New York",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "North Carolina",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "North Dakota",
+        "adminEntered": 26,
+        "yearEntered": 1889
+    },
+    {
+        "stateName": "Ohio",
+        "adminEntered": 4,
+        "yearEntered": 1803
+    },
+    {
+        "stateName": "Oklahoma",
+        "adminEntered": 30,
+        "yearEntered": 1907
+    },
+    {
+        "stateName": "Oregon",
+        "adminEntered": 18,
+        "yearEntered": 1859
+    },
+    {
+        "stateName": "Pensylvania",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Rhode Island",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "South Carolina",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "South Dakota",
+        "adminEntered": 26,
+        "yearEntered": 1889
+    },
+    {
+        "stateName": "Tennessee",
+        "adminEntered": 2,
+        "yearEntered": 1796
+    },
+    {
+        "stateName": "Texas",
+        "adminEntered": 15,
+        "yearEntered": 1845
+    },
+    {
+        "stateName": "Utah",
+        "adminEntered": 27,
+        "yearEntered": 1896
+    },
+    {
+        "stateName": "Vermont",
+        "adminEntered": 1,
+        "yearEntered": 1791
+    },
+    {
+        "stateName": "Virginia",
+        "adminEntered": null,
+        "yearEntered": 1776
+    },
+    {
+        "stateName": "Washington",
+        "adminEntered": 26,
+        "yearEntered": 1889
+    },
+    {
+        "stateName": "West Virginia",
+        "adminEntered": 19,
+        "yearEntered": 1863
+    },
+    {
+        "stateName": "Wisconsin",
+        "adminEntered": 15,
+        "yearEntered": 1848
+    },
+    {
+        "stateName": "Wyoming",
+        "adminEntered": 26,
+        "yearEntered": 1890
+    }
+]
