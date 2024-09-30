@@ -22,7 +22,7 @@
     "@angular/forms": "~12.2.0",
     "@angular/http": "^7.2.16",
     "@angular/platform-browser": "~12.2.0",
-    "@angular/platform-browser-dynamic": "~12.2.0",
+    "@angular/platform-browser-dynamic": "~18.2.6",
     "@angular/router": "~12.2.0",
     "@types/glob": "^8.1.0",
     "ag-grid-angular": "^32.0.0",
