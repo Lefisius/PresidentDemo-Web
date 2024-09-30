@@ -1,5 +1,9 @@
 name: CI Pipeline
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches:
@@ -75,6 +79,10 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: build
+    concurrency:
+      group: push-to-registry-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -89,7 +97,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: lefisius/dockerbuild
+          images: krisneonploy/dockerbuild
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -99,16 +107,49 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Create New Branch with Commit Hash
+  create_log_branch:
+    name: Create Log Branch
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, build, push_to_registry]
+    concurrency:
+      group: create-log-branch-${{ github.ref }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
+
+      - name: Create New Branch with Commit Message
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          git config user.name Lefisius
-          git config user.email lephiafuri@gmail.com
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          NEW_BRANCH_NAME="log-$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr '[:space:]' '-' | tr '[:punct:]' '-')"
-          git checkout -b $NEW_BRANCH_NAME
-          git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+            # Get the author information from the latest commit
+            COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+
+            # Set the git config to use the author's info
+            git config user.name "$COMMIT_AUTHOR_NAME"
+            git config user.email "$COMMIT_AUTHOR_EMAIL"
+
+            FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+
+            if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
+              PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
+              PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
+              COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
+            else
+              COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
+            fi
+
+            SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
+
+            NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
+
+            git checkout -b $NEW_BRANCH_NAME
+            git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
   ZAP_Full_Scan:
     runs-on: ubuntu-latest
@@ -160,11 +201,69 @@ jobs:
     name: Trigger Jenkins Job
     runs-on: ubuntu-latest
     needs: [ZAP_Full_Scan, ZAP_API_Scan]
+    if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: trigger-jenkins-job-${{ github.ref }}
+      cancel-in-progress: false
+
     steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Trigger Jenkins Job
+        id: trigger_jenkins
         run: |
-          curl -X POST "https://0524-61-7-146-25.ngrok-free.app/job/testpipe/build" \
-          --user "user:11b20d5f21817203f0fb4db12e13b2402e"
+          response=$(curl -X POST "https://1412-61-7-146-25.ngrok-free.app/job/dornny/build" \
+          --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
+          echo "Triggered Jenkins Job"
+
+      - name: Wait for Jenkins Job to Complete
+        run: |
+            job_status="null"
+            max_attempts=20
+            attempt=0
+            while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
+              sleep 15
+              attempt=$((attempt+1))
+              response=$(curl -s -w "%{http_code}" "https://1412-61-7-146-25.ngrok-free.app/job/dornny/lastBuild/api/json" \
+                --user "dornrock:1147d17fc8ec8e23ed131270370d186bf6")
+              http_code=${response: -3}
+              body=${response:0:${#response}-3}
+
+              echo "HTTP Response Code: $http_code"
+
+              if [ "$http_code" -ne 200 ]; then
+                echo "Error fetching Jenkins job status. HTTP Response Code: $http_code"
+                echo "Response body: $body"
+                if [ $attempt -eq $max_attempts ]; then
+                  echo "Max attempts reached. Exiting."
+                  exit 1
+                fi
+                continue
+              fi
+
+              if ! job_status=$(echo "$body" | jq -r '.result'); then
+                echo "Error parsing JSON response. Raw response:"
+                echo "$body"
+                if [ $attempt -eq $max_attempts ]; then
+                  echo "Max attempts reached. Exiting."
+                  exit 1
+                fi
+                continue
+              fi
+
+              echo "Current Job Status: $job_status"
+
+              if [ "$job_status" = "FAILURE" ]; then
+                echo "Jenkins job failed. Exiting."
+                exit 1
+              fi
+            done
+
+            if [ $attempt -eq $max_attempts ]; then
+              echo "Max attempts reached. Job did not complete successfully."
+              exit 1
+            fi
 
   get_commit_author_email:
     name: Get Commit Author Email
