@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Demo CI CD Pipeline
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
