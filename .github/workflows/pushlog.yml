@@ -250,7 +250,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "https://db6483278460b2bc25fe661d049ecb32.serveo.net/"
+          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
           cmd_options: "-a"
 
   ZAP_API_Scan:
@@ -269,7 +269,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
           format: openapi
-          target: "https://db6483278460b2bc25fe661d049ecb32.serveo.net/"
+          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
           cmd_options: "-a"
 
       - name: Upload ZAP Scan Report
@@ -297,7 +297,7 @@ jobs:
       - name: Trigger Jenkins Job
         id: trigger_jenkins
         run: |
-          response=$(curl -X POST "https://405ead263ffe3aca85c865c1065f780f.serveo.net/job/testpipe/build" \
+          response=$(curl -X POST "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/build" \
           --user "user:11b20d5f21817203f0fb4db12e13b2402e")
           echo "Triggered Jenkins Job"
 
@@ -309,7 +309,7 @@ jobs:
           while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
             sleep 15
             attempt=$((attempt+1))
-            response=$(curl -s -w "%{http_code}" "https://405ead263ffe3aca85c865c1065f780f.serveo.net/job/testpipe/lastBuild/api/json" \
+            response=$(curl -s -w "%{http_code}" "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/lastBuild/api/json" \
               --user "user:11b20d5f21817203f0fb4db12e13b2402e")
             http_code=${response: -3}
             body=${response:0:${#response}-3}

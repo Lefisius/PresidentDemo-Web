@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  await page.goto('http://localhost:4200/');
-  await page.goto('http://localhost:4200/Dash');
+  await page.goto('https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/');
+  await page.goto('https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/Dash');
   await page.getByText('President', { exact: true }).click();
   await page.getByPlaceholder('Search President').click();
   await page.getByPlaceholder('Search President').fill('Adams J');
