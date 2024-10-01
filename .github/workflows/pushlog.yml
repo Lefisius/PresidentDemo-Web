@@ -150,7 +150,13 @@ jobs:
       - name: Run Playwright tests
         id: run-tests
         run: |
-          npx playwright test president/E2E-Script || true
+          npx playwright test president/E2E-Script --output=results.json || exit 1
+          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
+            echo "Tests failed."
+            exit 1
+          else
+            echo "Tests passed."
+          fi
 
       - name: Upload test results
         if: always()

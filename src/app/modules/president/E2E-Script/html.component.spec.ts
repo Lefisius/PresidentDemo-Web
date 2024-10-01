@@ -8,6 +8,7 @@ test('test', async ({ page }) => {
   await page.getByPlaceholder('Search President').fill('Adams J');
   await page.getByPlaceholder('Search President').press('Enter');
   await page.getByRole('button', { name: 'Search' }).first().click();
+  await page.screenshot({ path: 'Errorอะไร.png' });
   await page.getByRole('cell', { name: 'Adams J', exact: true }).click();
   await page.getByRole('cell', { name: '1735' }).click();
   await page.getByPlaceholder('From').click();
