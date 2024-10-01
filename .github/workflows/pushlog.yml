@@ -112,7 +112,7 @@ jobs:
           mvn spring-boot:run | tee spring-boot-output.log
           sleep 30 # รอให้ API เริ่มทำงาน
           # ตรวจสอบว่า API ทำงานหรือไม่
-          curl --retry 5 --retry-delay 5 http://localhost:420/actuator/health
+          curl --retry 5 --retry-delay 5 http://localhost:4200/actuator/health
 
   # Run Web and Playwright Tests Job
   run-web-and-test:
