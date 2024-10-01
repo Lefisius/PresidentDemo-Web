@@ -92,7 +92,6 @@ jobs:
   run-api:
     name: Run API
     runs-on: ubuntu-latest
-    # needs: build
     steps:
       - name: Checkout API repository
         uses: actions/checkout@v3
@@ -110,7 +109,10 @@ jobs:
       - name: Build and Run Spring Boot API
         run: |
           mvn clean install
-          nohup mvn spring-boot:run > /dev/null 2>&1 &
+          mvn spring-boot:run &
+          sleep 30 # รอให้ API เริ่มทำงาน
+          # ตรวจสอบว่า API ทำงานหรือไม่
+          curl --retry 5 --retry-delay 5 http://localhost:4200/actuator/health
 
   # Run Web and Playwright Tests Job
   run-web-and-test:
