@@ -158,13 +158,16 @@ jobs:
             echo "Tests passed."
           fi
 
+      - name: Create screenshots directory
+        run: mkdir -p screenshots
+
       - name: Upload Screenshots
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: playwright-screenshots
           path: screenshots/
-
+  
   # ZAP_Full_Scan_Before:
   #   runs-on: ubuntu-latest
   #   needs: run-web-and-test
