@@ -158,12 +158,11 @@ jobs:
             echo "Tests passed."
           fi
 
-      - name: Upload test results
-        if: always()
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v3
         with:
-          name: playwright-results
-          path: results.json
+          name: playwright-screenshots
+          path: screenshots/
 
   push_to_registry:
     name: Push Docker image to Docker Hub
