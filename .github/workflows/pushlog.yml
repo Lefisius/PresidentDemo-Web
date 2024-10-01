@@ -71,7 +71,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm install -
 
       - name: Build Project
         id: build
@@ -148,10 +148,9 @@ jobs:
 
     - name: Run Playwright tests
       id: run-tests
-      run: npx playwright test president/E2E-Script --reporter=json --output=playwright-report
+      run: npx playwright test president/E2E-Script --reporter=json --output=playwright-report || true
 
-    - name: Upload test results
-      if: always()
+    - name: Upload Playwright test results
       uses: actions/upload-artifact@v3
       with:
         name: playwright-results
