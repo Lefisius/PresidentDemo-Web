@@ -95,13 +95,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Checkout API repository
-        uses: actions/checkout@v3
-        with:
-          repository: Theerapat-dev/PresidentDemo-API
-          ref: ${{ github.event.inputs.api_branch || 'main' }}
-          token: ${{ secrets.GH_PAT }}
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
