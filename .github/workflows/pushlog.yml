@@ -109,7 +109,10 @@ jobs:
         run: |
           mvn clean install
           nohup mvn spring-boot:run > /dev/null 2>&1 &
-          
+
+      - name: Wait for API to be ready
+        run: npx wait-on http://localhost:9003/api/President
+
   run-web-and-test:
     name: Run Web and Playwright Tests
     runs-on: ubuntu-latest
@@ -165,6 +168,7 @@ jobs:
         with:
           name: playwright-screenshots
           path: screenshots/failure.png
+
 
   # ZAP_Full_Scan_Before:
   #   runs-on: ubuntu-latest
@@ -370,7 +374,7 @@ jobs:
   #     - name: Trigger Jenkins Job
   #       id: trigger_jenkins
   #       run: |
-  #         response=$(curl -X POST "https://f07d8609aac8ab38043c4b362d5ff31a.serveo.net/job/testpipe/build" \
+  #         response=$(curl -X POST "https://89f76092c05fc32fec6c4eeb4015446d.serveo.net/job/testpipe/build" \
   #         --user "user:11b20d5f21817203f0fb4db12e13b2402e")
   #         echo "Triggered Jenkins Job"
 
@@ -382,7 +386,7 @@ jobs:
   #         while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
   #           sleep 15
   #           attempt=$((attempt+1))
-  #           response=$(curl -s -w "%{http_code}" "https://f07d8609aac8ab38043c4b362d5ff31a.serveo.net/job/testpipe/lastBuild/api/json" \
+  #           response=$(curl -s -w "%{http_code}" "https://89f76092c05fc32fec6c4eeb4015446d.serveo.net/job/testpipe/lastBuild/api/json" \
   #             --user "user:11b20d5f21817203f0fb4db12e13b2402e")
   #           http_code=${response: -3}
   #           body=${response:0:${#response}-3}
