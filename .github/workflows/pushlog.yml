@@ -88,9 +88,15 @@ jobs:
   #         name: error-files
   #         path: build_errors.log
 
-  run-api:
-    name: Run API
+  # run-api:
+  #   name: Run API
+  #   runs-on: ubuntu-latest
+  #   steps:
+
+  run-web-and-test:
+    name: Run Web and Playwright Tests
     runs-on: ubuntu-latest
+    # needs: run-api
     steps:
       - name: Checkout API repository
         uses: actions/checkout@v3
@@ -110,18 +116,9 @@ jobs:
           mvn clean install
           nohup mvn spring-boot:run > /dev/null 2>&1 &
 
-      - name: Install wait-on
-        run: npm install -g wait-on
-
       - name: Wait for API to be ready
-        run: wait-on https://02d3b69ec631957944e5a8177168b349.serveo.net/api/President
+        run: npx wait-on http://localhost:9003/api/President
 
-  run-web-and-test:
-    name: Run Web and Playwright Tests
-    runs-on: ubuntu-latest
-    needs: run-api
-
-    steps:
       - name: Checkout Web repository
         uses: actions/checkout@v3
         with:
