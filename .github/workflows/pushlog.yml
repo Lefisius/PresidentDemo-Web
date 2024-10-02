@@ -110,8 +110,11 @@ jobs:
           mvn clean install
           nohup mvn spring-boot:run > /dev/null 2>&1 &
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Wait for API to be ready
-        run: npx wait-on http://localhost:9003/api/President
+        run: wait-on http://localhost:9003/api/President
 
   run-web-and-test:
     name: Run Web and Playwright Tests
@@ -168,7 +171,6 @@ jobs:
         with:
           name: playwright-screenshots
           path: screenshots/failure.png
-
 
   # ZAP_Full_Scan_Before:
   #   runs-on: ubuntu-latest
