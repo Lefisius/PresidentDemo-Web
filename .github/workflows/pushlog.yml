@@ -88,11 +88,6 @@ jobs:
   #         name: error-files
   #         path: build_errors.log
 
-  # run-api:
-  #   name: Run API
-  #   runs-on: ubuntu-latest
-  #   steps:
-
   run-web-and-test:
     name: Run Web and Playwright Tests
     runs-on: ubuntu-latest
@@ -107,6 +102,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Start Angular application
+        run: npm start & 
 
       - name: Install Playwright
         run: npx playwright install
