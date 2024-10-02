@@ -112,6 +112,13 @@ jobs:
 
       - name: Start Angular application
         run: npm start &
+        env:
+          CI: true
+
+      - name: Wait for Angular application to be ready
+        run: |
+          echo "Waiting for Angular application to be ready..."
+          npx wait-on http://localhost:4200
 
       - name: Install Playwright
         run: npx playwright install
