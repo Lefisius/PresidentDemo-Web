@@ -92,6 +92,8 @@ jobs:
   run-api:
     name: Run API
     runs-on: ubuntu-latest
+    needs: build
+
     steps:
       - name: Checkout API repository
         uses: actions/checkout@v3
@@ -109,9 +111,7 @@ jobs:
       - name: Build and Run Spring Boot API
         run: |
           mvn clean install
-          mvn spring-boot:run | tee spring-boot-output.log
-          sleep 30
-          curl --retry 5 --retry-delay 5 http://localhost:9003/actuator/health
+          nohup mvn spring-boot:run > /dev/null 2>&1 &
 
   # Run Web and Playwright Tests Job
   run-web-and-test:
@@ -374,7 +374,7 @@ jobs:
   #     - name: Trigger Jenkins Job
   #       id: trigger_jenkins
   #       run: |
-  #         response=$(curl -X POST "https://1fb797e4bc5e9b7d2204ef1645b19e7d.serveo.net/job/testpipe/build" \
+  #         response=$(curl -X POST "https://f07d8609aac8ab38043c4b362d5ff31a.serveo.net/job/testpipe/build" \
   #         --user "user:11b20d5f21817203f0fb4db12e13b2402e")
   #         echo "Triggered Jenkins Job"
 
@@ -386,7 +386,7 @@ jobs:
   #         while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
   #           sleep 15
   #           attempt=$((attempt+1))
-  #           response=$(curl -s -w "%{http_code}" "https://1fb797e4bc5e9b7d2204ef1645b19e7d.serveo.net/job/testpipe/lastBuild/api/json" \
+  #           response=$(curl -s -w "%{http_code}" "https://f07d8609aac8ab38043c4b362d5ff31a.serveo.net/job/testpipe/lastBuild/api/json" \
   #             --user "user:11b20d5f21817203f0fb4db12e13b2402e")
   #           http_code=${response: -3}
   #           body=${response:0:${#response}-3}
