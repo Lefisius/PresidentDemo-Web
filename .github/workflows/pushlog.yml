@@ -115,8 +115,8 @@ jobs:
           mvn clean install
           nohup mvn spring-boot:run > /dev/null 2>&1 &
 
-      - name: Check if API is running
-        run: curl --fail http://localhost:9003/api/President || exit 1
+      - name: Wait for API to be ready
+        run: npx wait-on http://localhost:9003/api/President
 
       - name: Checkout Web repository
         uses: actions/checkout@v3
@@ -140,8 +140,6 @@ jobs:
         run: |
           npm start &
           npx wait-on http://localhost:4200
-        env:
-          PORT: 4200
 
       - name: Install Playwright
         run: npx playwright install
