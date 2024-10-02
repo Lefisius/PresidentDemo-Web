@@ -95,6 +95,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Checkout API repository
+        uses: actions/checkout@v3
+        with:
+          repository: Theerapat-dev/PresidentDemo-API
+          ref: ${{ github.event.inputs.api_branch || 'main' }}
+          token: ${{ secrets.GH_PAT }}
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
@@ -105,13 +112,6 @@ jobs:
 
       - name: Start Angular application
         run: npm start &
-        env:
-          CI: true
-
-      - name: Wait for Angular application to be ready
-        run: |
-          echo "Waiting for Angular application to be ready..."
-          npx wait-on http://localhost:4200
 
       - name: Install Playwright
         run: npx playwright install
