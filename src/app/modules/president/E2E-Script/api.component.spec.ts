@@ -4,11 +4,11 @@ import { filterData } from '../param.data/data.util';
 
 test('test', async ({ page }) => {
     try {
-        await page.goto('http://localhost:4200/President');
+        await page.goto('https://24d95ca73e89dfa76c417797f94624e1.serveo.net/President');
         //-------------------------------------------------------------------------
         // รอรับ response จาก API
         const apiResponse = await page.waitForResponse(
-            (response) => response.url().includes('http://localhost:9003/api/President') && response.status() === 200
+            (response) => response.url().includes('https://02d3b69ec631957944e5a8177168b349.serveo.net/api/President') && response.status() === 200
         );
 
         // รับข้อมูล JSON จาก API
