@@ -97,68 +97,19 @@ jobs:
     name: Run Web and Playwright Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout API repository
-        uses: actions/checkout@v3
-        with:
-          repository: Theerapat-dev/PresidentDemo-API
-          ref: ${{ github.event.inputs.api_branch || 'main' }}
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          distribution: "adopt"
-          java-version: "17"
-
-      - name: Build and Run Spring Boot API
-        run: |
-          mvn clean install
-          nohup mvn spring-boot:run > /dev/null 2>&1 &
-
-      - name: Install wait-on
-        run: npm install -g wait-on
-
-      - name: Wait for API to be ready
-        run: |
-          sleep 10
-          wait-on http://localhost:9003/api/President
-
-      - name: Checkout Web repository
-        uses: actions/checkout@v3
-        with:
-          repository: Theerapat-dev/PresidentDemo-Web
-          token: ${{ secrets.GH_PAT }}
-          ref: ${{ github.event.inputs.web_branch || 'main' }}
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: "16.20.2"
-
-      - name: Set npm registry
-        run: npm config set registry https://registry.npmjs.org/
+          node-version: '16.20.2'
 
       - name: Install dependencies
-        run: npm install --force
-
-      - name: Start the app
-        run: |
-          npm start &
-          wait-on http://localhost:4200
-
-      - name: Install Playwright
-        run: npx playwright install
+        run: npm install
 
       - name: Run Playwright tests
-        id: run-tests
-        run: |
-          npx playwright test president/E2E-Script --output=results.json || exit 1
-          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
-            echo "Tests failed."
-            exit 1
-          else
-            echo "Tests passed."
-          fi
+        run: npx playwright test president/E2E-Script
 
       - name: Create screenshots directory
         if: always()
