@@ -115,8 +115,11 @@ jobs:
           mvn clean install
           nohup mvn spring-boot:run > /dev/null 2>&1 &
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Wait for API to be ready
-        run: npx wait-on http://localhost:9003/api/President
+        run: wait-on http://localhost:9003/api/President
 
       - name: Checkout Web repository
         uses: actions/checkout@v3
@@ -139,7 +142,7 @@ jobs:
       - name: Start the app
         run: |
           npm start &
-          npx wait-on http://localhost:4200
+          wait-on http://localhost:4200
 
       - name: Install Playwright
         run: npx playwright install
