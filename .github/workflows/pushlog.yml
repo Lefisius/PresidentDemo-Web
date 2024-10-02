@@ -106,7 +106,7 @@ jobs:
           node-version: '16.20.2'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run Playwright tests
         run: npx playwright test president/E2E-Script
