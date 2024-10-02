@@ -115,7 +115,7 @@ jobs:
 
       - name: Wait for API to be available
         run: |
-          npx wait-on http://localhost:9003/api/President --timeout 60000 || (cat api.log && exit 1)
+          npx wait-on http://localhost:9003/api/President --timeout 180000 || (cat api.log && exit 1)
 
   run-web-and-test:
     name: Run Web and Playwright Tests
