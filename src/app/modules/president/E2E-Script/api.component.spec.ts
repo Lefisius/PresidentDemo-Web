@@ -5,9 +5,10 @@ import { filterData } from '../param.data/data.util';
 test('test', async ({ page }) => {
     try {
         await page.goto('http://localhost:4200/President');
+        console.log('Navigated to the President page');
 
         // รอให้ Angular application โหลดเสร็จ
-        await page.waitForSelector('selector-that-indicates-page-loaded'); // เปลี่ยนเป็น selector ที่เหมาะสม
+        await page.waitForSelector('selector-that-indicates-page-loaded', { timeout: 60000 }); // เพิ่ม timeout
 
         // รอรับ response จาก API
         const apiResponse = await page.waitForResponse(
