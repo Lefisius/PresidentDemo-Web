@@ -108,11 +108,14 @@ jobs:
       - name: Build and Run Spring Boot API
         run: |
           mvn clean install
-          nohup mvn spring-boot:run > /dev/null 2>&1 &
+          nohup mvn spring-boot:run -Dserver.port=9003 > api.log 2>&1 &
+
+      - name: Show API logs (for debugging if needed)
+        run: tail -n 100 api.log
 
       - name: Wait for API to be available
         run: |
-          npx wait-on http://localhost:9003/api/President || exit 1
+          npx wait-on http://localhost:9003/api/President --timeout 600000 || (cat api.log && exit 1)
 
   run-web-and-test:
     name: Run Web and Playwright Tests
