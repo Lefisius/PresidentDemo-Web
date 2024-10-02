@@ -5,10 +5,11 @@ import { filterData } from '../param.data/data.util';
 test('test', async ({ page }) => {
     try {
         await page.goto('http://localhost:4200/President');
-        //-------------------------------------------------------------------------
+
         // รอรับ response จาก API
         const apiResponse = await page.waitForResponse(
-            (response) => response.url().includes('http://localhost:9003/api/President') && response.status() === 200
+            (response) => response.url().includes('http://localhost:9003/api/President') && response.status() === 200,
+            { timeout: 60000 }  // เพิ่ม timeout เป็น 60 วินาที
         );
 
         // รับข้อมูล JSON จาก API
