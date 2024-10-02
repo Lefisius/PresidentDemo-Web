@@ -6,6 +6,9 @@ test('test', async ({ page }) => {
     try {
         await page.goto('http://localhost:4200/President');
 
+        // รอให้ Angular application โหลดเสร็จ
+        await page.waitForSelector('selector-that-indicates-page-loaded'); // เปลี่ยนเป็น selector ที่เหมาะสม
+
         // รอรับ response จาก API
         const apiResponse = await page.waitForResponse(
             (response) => response.url().includes('http://localhost:9003/api/President') && response.status() === 200,
