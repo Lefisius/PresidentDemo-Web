@@ -176,7 +176,7 @@ jobs:
     name: Create Log Branch
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [lint, build, push_to_registry]
+    needs: [lint, build,run-web-and-test, push_to_registry]
     concurrency:
       group: create-log-branch-${{ github.ref }}
       cancel-in-progress: false
