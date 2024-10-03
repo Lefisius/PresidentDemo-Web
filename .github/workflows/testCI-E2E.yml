@@ -3,11 +3,10 @@ name: Run API, Web, and Playwright Tests
 on:
   push:
     branches:
-      - dorn-ci
-  pull_request:
-    branches:
-      - dorn-ci
-      
+      - uuu
+
+
+
   workflow_dispatch:
     inputs:
       api_branch:
