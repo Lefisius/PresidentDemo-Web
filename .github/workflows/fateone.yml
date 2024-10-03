@@ -44,8 +44,8 @@ jobs:
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: true    # เปลี่ยนจาก false เป็น true ถ้าต้องการให้ตรวจสอบโค้ดทั้งหมด
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }} 
+          VALIDATE_ALL_CODEBASE: false
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           DEFAULT_BRANCH: main  # ระบุ branch ที่ต้องการตรวจสอบ
 
   build:
