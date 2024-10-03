@@ -7,10 +7,10 @@ concurrency:
 on:
   push:
     branches:
-      - main
+      - feature/deployment-with-cicd
   pull_request:
     branches:
-      - main
+      - feature/deployment-with-cicd
 
 jobs:
   dependabot:
