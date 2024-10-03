@@ -514,3 +514,4 @@ jobs:
 
           to: ${{ steps.commit_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
+          
