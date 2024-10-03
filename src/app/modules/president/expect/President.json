@@ -1,0 +1,314 @@
+[
+    {
+        "presName": "Adams J",
+        "birthYr": 1735,
+        "yrsServ": 4,
+        "deathAge": 90,
+        "party": "Federalist",
+        "stateBorn": "Massachusetts"
+    },
+    {
+        "presName": "Adams J Q",
+        "birthYr": 1767,
+        "yrsServ": 4,
+        "deathAge": 80,
+        "party": "Demo-Rep",
+        "stateBorn": "Massachusetts"
+    },
+    {
+        "presName": "Arthur C A",
+        "birthYr": 1830,
+        "yrsServ": 3,
+        "deathAge": 56,
+        "party": "Republican",
+        "stateBorn": "Vermont"
+    },
+    {
+        "presName": "Buchanan J",
+        "birthYr": 1791,
+        "yrsServ": 4,
+        "deathAge": 77,
+        "party": "Democratic",
+        "stateBorn": "Pensylvania"
+    },
+    {
+        "presName": "Carter J E",
+        "birthYr": 1924,
+        "yrsServ": 4,
+        "deathAge": null,
+        "party": "Democratic",
+        "stateBorn": "Georgia"
+    },
+    {
+        "presName": "Cleveland G",
+        "birthYr": 1837,
+        "yrsServ": 8,
+        "deathAge": 71,
+        "party": "Democratic",
+        "stateBorn": "New Jersey"
+    },
+    {
+        "presName": "Coolidge C",
+        "birthYr": 1872,
+        "yrsServ": 5,
+        "deathAge": 60,
+        "party": "Republican",
+        "stateBorn": "Vermont"
+    },
+    {
+        "presName": "Eisenhower D D",
+        "birthYr": 1890,
+        "yrsServ": 8,
+        "deathAge": 79,
+        "party": "Republican",
+        "stateBorn": "Texas"
+    },
+    {
+        "presName": "Fillmore M",
+        "birthYr": 1800,
+        "yrsServ": 2,
+        "deathAge": 74,
+        "party": "Whig",
+        "stateBorn": "New York"
+    },
+    {
+        "presName": "Ford G R",
+        "birthYr": 1913,
+        "yrsServ": 2,
+        "deathAge": null,
+        "party": "Republican",
+        "stateBorn": "Nebraska"
+    },
+    {
+        "presName": "Garfield J A",
+        "birthYr": 1831,
+        "yrsServ": 0,
+        "deathAge": 49,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Grant U S",
+        "birthYr": 1822,
+        "yrsServ": 8,
+        "deathAge": 63,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Harding W G",
+        "birthYr": 1865,
+        "yrsServ": 2,
+        "deathAge": 57,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Harrison B",
+        "birthYr": 1833,
+        "yrsServ": 4,
+        "deathAge": 67,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Harrison W H",
+        "birthYr": 1773,
+        "yrsServ": 0,
+        "deathAge": 68,
+        "party": "Whig",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Hayes R B",
+        "birthYr": 1822,
+        "yrsServ": 4,
+        "deathAge": 70,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Hoover H C",
+        "birthYr": 1874,
+        "yrsServ": 4,
+        "deathAge": 90,
+        "party": "Republican",
+        "stateBorn": "Iowa"
+    },
+    {
+        "presName": "Jackson A",
+        "birthYr": 1767,
+        "yrsServ": 8,
+        "deathAge": 78,
+        "party": "Democratic",
+        "stateBorn": "South Carolina"
+    },
+    {
+        "presName": "Jefferson T",
+        "birthYr": 1743,
+        "yrsServ": 8,
+        "deathAge": 83,
+        "party": "Demo-Rep",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Johnson A",
+        "birthYr": 1808,
+        "yrsServ": 3,
+        "deathAge": 66,
+        "party": "Democratic",
+        "stateBorn": "North Carolina"
+    },
+    {
+        "presName": "Johnson L B",
+        "birthYr": 1908,
+        "yrsServ": 5,
+        "deathAge": 65,
+        "party": "Democratic",
+        "stateBorn": "Texas"
+    },
+    {
+        "presName": "Kennedy J F",
+        "birthYr": 1917,
+        "yrsServ": 2,
+        "deathAge": 46,
+        "party": "Democratic",
+        "stateBorn": "Massachusetts"
+    },
+    {
+        "presName": "Lincoln A",
+        "birthYr": 1809,
+        "yrsServ": 4,
+        "deathAge": 56,
+        "party": "Republican",
+        "stateBorn": "Kentucky"
+    },
+    {
+        "presName": "Madison J",
+        "birthYr": 1751,
+        "yrsServ": 8,
+        "deathAge": 85,
+        "party": "Demo-Rep",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "McKinley W",
+        "birthYr": 1843,
+        "yrsServ": 4,
+        "deathAge": 58,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Monroe J",
+        "birthYr": 1758,
+        "yrsServ": 8,
+        "deathAge": 73,
+        "party": "Demo-Rep",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Nixon R M",
+        "birthYr": 1913,
+        "yrsServ": 5,
+        "deathAge": null,
+        "party": "Republican",
+        "stateBorn": "California"
+    },
+    {
+        "presName": "Pierce F",
+        "birthYr": 1804,
+        "yrsServ": 4,
+        "deathAge": 64,
+        "party": "Democratic",
+        "stateBorn": "New Hampshire"
+    },
+    {
+        "presName": "Polk J K",
+        "birthYr": 1795,
+        "yrsServ": 4,
+        "deathAge": 53,
+        "party": "Democratic",
+        "stateBorn": "North Carolina"
+    },
+    {
+        "presName": "Reagan R",
+        "birthYr": 1911,
+        "yrsServ": 3,
+        "deathAge": null,
+        "party": "Republican",
+        "stateBorn": "Illinois"
+    },
+    {
+        "presName": "Roosevelt F D",
+        "birthYr": 1882,
+        "yrsServ": 12,
+        "deathAge": 63,
+        "party": "Democratic",
+        "stateBorn": "New York"
+    },
+    {
+        "presName": "Roosevelt T",
+        "birthYr": 1858,
+        "yrsServ": 7,
+        "deathAge": 60,
+        "party": "Republican",
+        "stateBorn": "New York"
+    },
+    {
+        "presName": "Taft W H",
+        "birthYr": 1857,
+        "yrsServ": 4,
+        "deathAge": 72,
+        "party": "Republican",
+        "stateBorn": "Ohio"
+    },
+    {
+        "presName": "Taylor Z",
+        "birthYr": 1784,
+        "yrsServ": 1,
+        "deathAge": 65,
+        "party": "Whig",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Truman H S",
+        "birthYr": 1884,
+        "yrsServ": 7,
+        "deathAge": 88,
+        "party": "Democratic",
+        "stateBorn": "Missouri"
+    },
+    {
+        "presName": "Tyler J",
+        "birthYr": 1790,
+        "yrsServ": 3,
+        "deathAge": 71,
+        "party": "Whig",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Van Buren M",
+        "birthYr": 1782,
+        "yrsServ": 4,
+        "deathAge": 79,
+        "party": "Democratic",
+        "stateBorn": "New York"
+    },
+    {
+        "presName": "Washington G",
+        "birthYr": 1732,
+        "yrsServ": 7,
+        "deathAge": 67,
+        "party": "Federalist",
+        "stateBorn": "Virginia"
+    },
+    {
+        "presName": "Wilson W",
+        "birthYr": 1856,
+        "yrsServ": 8,
+        "deathAge": 67,
+        "party": "Democratic",
+        "stateBorn": "Virginia"
+    }
+]

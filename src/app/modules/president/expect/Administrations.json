@@ -1,0 +1,292 @@
+[
+    {
+        "adminNr": 1,
+        "presName": "Washington G",
+        "yearInaugurated": 1789
+    },
+    {
+        "adminNr": 2,
+        "presName": "Washington G",
+        "yearInaugurated": 1793
+    },
+    {
+        "adminNr": 3,
+        "presName": "Adams J",
+        "yearInaugurated": 1797
+    },
+    {
+        "adminNr": 4,
+        "presName": "Jefferson T",
+        "yearInaugurated": 1801
+    },
+    {
+        "adminNr": 5,
+        "presName": "Jefferson T",
+        "yearInaugurated": 1805
+    },
+    {
+        "adminNr": 6,
+        "presName": "Madison J",
+        "yearInaugurated": 1809
+    },
+    {
+        "adminNr": 7,
+        "presName": "Madison J",
+        "yearInaugurated": 1813
+    },
+    {
+        "adminNr": 8,
+        "presName": "Monroe J",
+        "yearInaugurated": 1817
+    },
+    {
+        "adminNr": 9,
+        "presName": "Monroe J",
+        "yearInaugurated": 1821
+    },
+    {
+        "adminNr": 10,
+        "presName": "Adams J Q",
+        "yearInaugurated": 1825
+    },
+    {
+        "adminNr": 11,
+        "presName": "Jackson A",
+        "yearInaugurated": 1829
+    },
+    {
+        "adminNr": 12,
+        "presName": "Jackson A",
+        "yearInaugurated": 1833
+    },
+    {
+        "adminNr": 13,
+        "presName": "Van Buren M",
+        "yearInaugurated": 1837
+    },
+    {
+        "adminNr": 14,
+        "presName": "Harrison W H",
+        "yearInaugurated": 1841
+    },
+    {
+        "adminNr": 14,
+        "presName": "Harrison W H",
+        "yearInaugurated": 1841
+    },
+    {
+        "adminNr": 15,
+        "presName": "Polk J K",
+        "yearInaugurated": 1845
+    },
+    {
+        "adminNr": 16,
+        "presName": "Fillmore M",
+        "yearInaugurated": 1850
+    },
+    {
+        "adminNr": 16,
+        "presName": "Fillmore M",
+        "yearInaugurated": 1850
+    },
+    {
+        "adminNr": 17,
+        "presName": "Pierce F",
+        "yearInaugurated": 1853
+    },
+    {
+        "adminNr": 18,
+        "presName": "Buchanan J",
+        "yearInaugurated": 1857
+    },
+    {
+        "adminNr": 19,
+        "presName": "Lincoln A",
+        "yearInaugurated": 1861
+    },
+    {
+        "adminNr": 20,
+        "presName": "Johnson A",
+        "yearInaugurated": 1865
+    },
+    {
+        "adminNr": 20,
+        "presName": "Johnson A",
+        "yearInaugurated": 1865
+    },
+    {
+        "adminNr": 21,
+        "presName": "Grant U S",
+        "yearInaugurated": 1869
+    },
+    {
+        "adminNr": 22,
+        "presName": "Grant U S",
+        "yearInaugurated": 1873
+    },
+    {
+        "adminNr": 23,
+        "presName": "Hayes R B",
+        "yearInaugurated": 1877
+    },
+    {
+        "adminNr": 24,
+        "presName": "Arthur C A",
+        "yearInaugurated": 1881
+    },
+    {
+        "adminNr": 24,
+        "presName": "Arthur C A",
+        "yearInaugurated": 1881
+    },
+    {
+        "adminNr": 25,
+        "presName": "Cleveland G",
+        "yearInaugurated": 1885
+    },
+    {
+        "adminNr": 26,
+        "presName": "Harrison B",
+        "yearInaugurated": 1889
+    },
+    {
+        "adminNr": 27,
+        "presName": "Cleveland G",
+        "yearInaugurated": 1893
+    },
+    {
+        "adminNr": 28,
+        "presName": "McKinley W",
+        "yearInaugurated": 1897
+    },
+    {
+        "adminNr": 29,
+        "presName": "McKinley W",
+        "yearInaugurated": 1901
+    },
+    {
+        "adminNr": 29,
+        "presName": "McKinley W",
+        "yearInaugurated": 1901
+    },
+    {
+        "adminNr": 30,
+        "presName": "Roosevelt T",
+        "yearInaugurated": 1905
+    },
+    {
+        "adminNr": 31,
+        "presName": "Taft W H",
+        "yearInaugurated": 1909
+    },
+    {
+        "adminNr": 32,
+        "presName": "Wilson W",
+        "yearInaugurated": 1913
+    },
+    {
+        "adminNr": 33,
+        "presName": "Wilson W",
+        "yearInaugurated": 1917
+    },
+    {
+        "adminNr": 34,
+        "presName": "Coolidge C",
+        "yearInaugurated": 1923
+    },
+    {
+        "adminNr": 34,
+        "presName": "Coolidge C",
+        "yearInaugurated": 1923
+    },
+    {
+        "adminNr": 35,
+        "presName": "Coolidge C",
+        "yearInaugurated": 1925
+    },
+    {
+        "adminNr": 36,
+        "presName": "Hoover H C",
+        "yearInaugurated": 1929
+    },
+    {
+        "adminNr": 37,
+        "presName": "Roosevelt F D",
+        "yearInaugurated": 1933
+    },
+    {
+        "adminNr": 38,
+        "presName": "Roosevelt F D",
+        "yearInaugurated": 1937
+    },
+    {
+        "adminNr": 39,
+        "presName": "Roosevelt F D",
+        "yearInaugurated": 1941
+    },
+    {
+        "adminNr": 40,
+        "presName": "Roosevelt F D",
+        "yearInaugurated": 1945
+    },
+    {
+        "adminNr": 40,
+        "presName": "Roosevelt F D",
+        "yearInaugurated": 1945
+    },
+    {
+        "adminNr": 41,
+        "presName": "Truman H S",
+        "yearInaugurated": 1949
+    },
+    {
+        "adminNr": 42,
+        "presName": "Eisenhower D D",
+        "yearInaugurated": 1953
+    },
+    {
+        "adminNr": 43,
+        "presName": "Eisenhower D D",
+        "yearInaugurated": 1957
+    },
+    {
+        "adminNr": 44,
+        "presName": "Johnson L B",
+        "yearInaugurated": 1963
+    },
+    {
+        "adminNr": 44,
+        "presName": "Johnson L B",
+        "yearInaugurated": 1963
+    },
+    {
+        "adminNr": 45,
+        "presName": "Johnson L B",
+        "yearInaugurated": 1965
+    },
+    {
+        "adminNr": 46,
+        "presName": "Nixon R M",
+        "yearInaugurated": 1969
+    },
+    {
+        "adminNr": 47,
+        "presName": "Ford G R",
+        "yearInaugurated": 1974
+    },
+    {
+        "adminNr": 47,
+        "presName": "Ford G R",
+        "yearInaugurated": 1974
+    },
+    {
+        "adminNr": 48,
+        "presName": "Carter J E",
+        "yearInaugurated": 1977
+    },
+    {
+        "adminNr": 49,
+        "presName": "Reagan R",
+        "yearInaugurated": 1981
+    }
+]

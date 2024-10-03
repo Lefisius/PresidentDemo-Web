@@ -1,0 +1,30 @@
+<form (submit)="onSubmit()">
+    <label for="username">Username:</label>
+    <input type="text" id="username" [(ngModel)]="username" name="username" required>
+    
+    <label for="password">Password:</label>
+    <input type="password" id="password" [(ngModel)]="password" name="password" required>
+    
+    <input type="submit" value="Login">
+  </form>
+  <div>
+    <nz-layout>
+        <nz-header>
+            <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+                <li nz-menu-item routerLink="/Stration" routerLinkActive="active">Stration</li>
+                <li nz-menu-item routerLink="/Prvp" routerLinkActive="active">
+                    Prvp</li>
+                <li nz-menu-item routerLink="/Election" routerLinkActive="active">
+                    Election</li>
+                <li nz-menu-item routerLink="/Preshobby" routerLinkActive="active">
+                    PresHobby</li>
+                <li nz-menu-item routerLink="/President" routerLinkActive="active">
+                    President</li>
+                <li nz-menu-item routerLink="/Presmarriage" routerLinkActive="active">PresMarriage</li>
+                <li nz-menu-item routerLink="/State" routerLinkActive="active">State
+                </li>
+                <li nz-menu-item nzSelected routerLink="/Login" routerLinkActive="active">Login</li>
+            </ul>
+        </nz-header>
+    </nz-layout>
+</div>
