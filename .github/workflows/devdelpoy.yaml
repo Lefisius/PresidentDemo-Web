@@ -79,34 +79,53 @@ jobs:
   run-web-and-test:
     name: Run Web and Playwright Tests
     runs-on: ubuntu-latest
-    needs: build
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Web repository
+        uses: actions/checkout@v3
+        with:
+          repository: Theerapat-dev/PresidentDemo-Web
+          token: ${{ secrets.GH_PAT }}
+          ref: ${{ github.event.inputs.web_branch || 'dorn-ci' }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.20.2"
+          node-version: '16'
+
+      - name: Set npm registry
+        run: npm config set registry https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --force
 
-      - name: Start Angular application
-        run: npm run start
-        env:
-          CI: true
-
-      - name: Wait for Angular application to be ready
+      - name: Start the app
         run: |
-          echo "Waiting for Angular application to be ready..."
+          npm start &
           npx wait-on http://localhost:4200
+        env:
+          PORT: 4200
 
       - name: Install Playwright
         run: npx playwright install
 
       - name: Run Playwright tests
-        run: npx playwright test
+        id: run-tests
+        run: |
+          npx playwright test --output=results.json || exit 1
+          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
+            echo "Tests failed."
+            exit 1
+          else
+            echo "Tests passed."
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-results
+          path: results.json
 
       - name: Create screenshots directory
         if: always()
