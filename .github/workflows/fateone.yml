@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     branches:
-      - dornlog
+      - main
   pull_request:
     branches:
       - main
@@ -300,4 +300,3 @@ jobs:
 
           to: ${{ steps.commit_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
-          
