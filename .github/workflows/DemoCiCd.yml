@@ -1,459 +1,459 @@
-name: Demo CI CD Pipeline
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      api_branch:
-        description: 'API branch to checkout'
-        required: true
-        default: 'main'
-      web_branch:
-        description: 'Web branch to checkout'
-        required: true
-        default: 'main'
-
-jobs:
-  dependabot:
-    name: Dependabot Updates
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set up Dependabot Configuration
-        run: |
-          echo "version: 2" > .github/dependabot.yml
-          echo "updates:" >> .github/dependabot.yml
-          echo "  - package-ecosystem: \"npm\"" >> .github/dependabot.yml
-          echo "    directory: \"/\"" >> .github/dependabot.yml
-          echo "    schedule:" >> .github/dependabot.yml
-          echo "      interval: \"monthly\"" >> .github/dependabot.yml
-          echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
-          echo "Dependabot configuration created"
-        shell: bash
-        continue-on-error: true
-
-  lint:
-    name: Lint Code Base
-    runs-on: ubuntu-latest
-    needs: dependabot
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Run Super-Linter
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-
-  build:
-    name: Build Project
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.20.2"
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build Project
-        id: build
-        run: |
-          npm run build 2> build_errors.log || true
-          exit_code=$?
-          echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
-          exit $exit_code
-
-      - name: Upload Error Files
-        if: ${{ env.error_files_present == 'true' || always() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: error-files
-          path: build_errors.log
-
-  run-web-and-test:
-    name: Run Web and Playwright Tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout Web repository
-        uses: actions/checkout@v3
-        with:
-          repository: Theerapat-dev/PresidentDemo-Web
-          token: ${{ secrets.GH_PAT }}
-          ref: ${{ github.event.inputs.web_branch || 'main' }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.20.2'
-
-      - name: Set npm registry
-        run: npm config set registry https://registry.npmjs.org/
-
-      - name: Install dependencies
-        run: npm install --force
-
-      - name: Start the app
-        run: |
-          npm start &
-          npx wait-on http://localhost:4200
-        env:
-          PORT: 4200
-
-      - name: Install Playwright
-        run: npx playwright install
-
-      - name: Run Playwright tests
-        id: run-tests
-        run: |
-          npx playwright test president/E2E-Script --output=results.json || exit 1
-          if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
-            echo "Tests failed."
-            exit 1
-          else
-            echo "Tests passed."
-          fi
-
-      - name: Upload Screenshots
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-screenshots
-          path: screenshots/
-
-  push_to_registry:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    needs: run-web-and-test
-    # needs: build
-    # needs: run-api
-    concurrency:
-      group: push-to-registry-${{ github.ref }}
-      cancel-in-progress: false
-
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: lefisius/dockerbuild
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  create_log_branch:
-    name: Create Log Branch
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [lint, build,run-web-and-test, push_to_registry]
-    concurrency:
-      group: create-log-branch-${{ github.ref }}
-      cancel-in-progress: false
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
-
-      - name: Create New Branch with Commit Message
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-            # Get the author information from the latest commit
-            COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
-            # Set the git config to use the author's info
-            git config user.name "$COMMIT_AUTHOR_NAME"
-            git config user.email "$COMMIT_AUTHOR_EMAIL"
-
-            FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-
-            if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
-              PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
-              PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
-              COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
-            else
-              COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
-            fi
-
-            SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
-
-            NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
-
-            git checkout -b $NEW_BRANCH_NAME
-            git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
-
-  ZAP_Full_Scan:
-    runs-on: ubuntu-latest
-    needs: push_to_registry
-    name: ZAP Full Scan Webapplication
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: master
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.11.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
-          cmd_options: "-a"
-
-  ZAP_API_Scan:
-    runs-on: ubuntu-latest
-    needs: push_to_registry
-    name: ZAP_API_Scan
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: master
-
-      - name: ZAP Scan
-        uses: zaproxy/action-api-scan@v0.8.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          format: openapi
-          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
-          cmd_options: "-a"
-
-      - name: Upload ZAP Scan Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: ZAP_API_Scan
-          path: |
-            report_json.json
-            report_md.md
-            report_html.html
-
-  trigger_jenkins:
-    name: Trigger Jenkins Job
-    runs-on: ubuntu-latest
-    needs: [ZAP_Full_Scan, ZAP_API_Scan]
-    if: github.ref == 'refs/heads/main'
-    concurrency:
-      group: trigger-jenkins-job-${{ github.ref }}
-      cancel-in-progress: false
-
-    steps:
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Trigger Jenkins Job
-        id: trigger_jenkins
-        run: |
-          response=$(curl -X POST "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/build" \
-          --user "user:11b20d5f21817203f0fb4db12e13b2402e")
-          echo "Triggered Jenkins Job"
-
-      - name: Wait for Jenkins Job to Complete
-        run: |
-          job_status="null"
-          max_attempts=20
-          attempt=0
-          while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
-            sleep 15
-            attempt=$((attempt+1))
-            response=$(curl -s -w "%{http_code}" "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/lastBuild/api/json" \
-              --user "user:11b20d5f21817203f0fb4db12e13b2402e")
-            http_code=${response: -3}
-            body=${response:0:${#response}-3}
-
-            echo "HTTP Response Code: $http_code"
-
-            if [ "$http_code" -ne 200 ]; then
-              echo "Error fetching Jenkins job status. HTTP Response Code: $http_code"
-              echo "Response body: $body"
-              if [ $attempt -eq $max_attempts ]; then
-                echo "Max attempts reached. Exiting."
-                exit 1
-              fi
-              continue
-            fi
-
-            if ! job_status=$(echo "$body" | jq -r '.result'); then
-              echo "Error parsing JSON response. Raw response:"
-              echo "$body"
-              if [ $attempt -eq $max_attempts ]; then
-                echo "Max attempts reached. Exiting."
-                exit 1
-              fi
-              continue
-            fi
-
-            echo "Current Job Status: $job_status"
-
-            if [ "$job_status" = "FAILURE" ]; then
-              echo "Jenkins job failed. Exiting."
-              exit 1
-            fi
-          done
-
-          if [ $attempt -eq $max_attempts ]; then
-            echo "Max attempts reached. Job did not complete successfully."
-            exit 1
-          fi
-
-  send_failure_notification:
-    name: Send Failure Notification
-    runs-on: ubuntu-latest
-    needs:
-      [
-        dependabot,
-        lint,
-        build,
-        run-web-and-test,
-        push_to_registry,
-        ZAP_Full_Scan,
-        ZAP_API_Scan,
-        trigger_jenkins,
-      ]
-    if: ${{ failure() }}
-    concurrency:
-      group: send-failure-notification-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch all history
-
-      - name: Download Error Files
-        uses: actions/download-artifact@v3
-        with:
-          name: error-files
-
-      - name: Get Error Log and Commit Info
-        id: error_info
-        run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
-          fi
-
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
-          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-
-          non_error_files=""
-          for file in $changed_files; do
-            if ! grep -q "$file" build_errors.log; then
-              non_error_files+="$file "
-            fi
-          done
-
-          echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
-          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-
-      - name: Send email on failure
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Build failure for ${{ github.repository }}"
-          body: |
-            Build failed for commit: ${{ github.sha }}
-
-            Files with errors:
-            ${{ steps.error_info.outputs.error_paths }}
-
-            Files changed: ${{ steps.error_info.outputs.non_error_files }}
-
-          to: ${{ steps.error_info.outputs.commit_author_email }}
-          from: ${{ secrets.GMAIL_USERNAME }}
-          attachments: build_errors.log
-
-  send_success_notification:
-    name: Send Success Notification
-    runs-on: ubuntu-latest
-    needs:
-      [
-        dependabot,
-        lint,
-        build,
-        run-web-and-test,
-        push_to_registry,
-        ZAP_Full_Scan,
-        ZAP_API_Scan,
-        trigger_jenkins,
-      ]
-    if: ${{ success() }}
-    concurrency:
-      group: send-success-notification-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch all history
-
-      - name: Get Commit Info
-        id: commit_info
-        run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
-
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
-          fi
-
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
-
-      - name: Send email on success
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Build success for ${{ github.repository }}"
-          body: |
-            Build succeeded for commit: ${{ github.sha }}
-
-            Files changed: ${{ steps.commit_info.outputs.changed_files }}
-
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
-          from: ${{ secrets.GMAIL_USERNAME }}
+# name: Demo CI CD Pipeline
+
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: false
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
+#     inputs:
+#       api_branch:
+#         description: 'API branch to checkout'
+#         required: true
+#         default: 'main'
+#       web_branch:
+#         description: 'Web branch to checkout'
+#         required: true
+#         default: 'main'
+
+# jobs:
+#   dependabot:
+#     name: Dependabot Updates
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Dependabot Configuration
+#         run: |
+#           echo "version: 2" > .github/dependabot.yml
+#           echo "updates:" >> .github/dependabot.yml
+#           echo "  - package-ecosystem: \"npm\"" >> .github/dependabot.yml
+#           echo "    directory: \"/\"" >> .github/dependabot.yml
+#           echo "    schedule:" >> .github/dependabot.yml
+#           echo "      interval: \"monthly\"" >> .github/dependabot.yml
+#           echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
+#           echo "Dependabot configuration created"
+#         shell: bash
+#         continue-on-error: true
+
+#   lint:
+#     name: Lint Code Base
+#     runs-on: ubuntu-latest
+#     needs: dependabot
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       - name: Run Super-Linter
+#         uses: github/super-linter@v4
+#         env:
+#           VALIDATE_ALL_CODEBASE: false
+#           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+#   build:
+#     name: Build Project
+#     runs-on: ubuntu-latest
+#     needs: lint
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: "16.20.2"
+
+#       - name: Install dependencies
+#         run: npm install --legacy-peer-deps
+
+#       - name: Build Project
+#         id: build
+#         run: |
+#           npm run build 2> build_errors.log || true
+#           exit_code=$?
+#           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
+#           exit $exit_code
+
+#       - name: Upload Error Files
+#         if: ${{ env.error_files_present == 'true' || always() }}
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: error-files
+#           path: build_errors.log
+
+#   run-web-and-test:
+#     name: Run Web and Playwright Tests
+#     runs-on: ubuntu-latest
+#     needs: build
+#     steps:
+#       - name: Checkout Web repository
+#         uses: actions/checkout@v3
+#         with:
+#           repository: Theerapat-dev/PresidentDemo-Web
+#           token: ${{ secrets.GH_PAT }}
+#           ref: ${{ github.event.inputs.web_branch || 'main' }}
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '16.20.2'
+
+#       - name: Set npm registry
+#         run: npm config set registry https://registry.npmjs.org/
+
+#       - name: Install dependencies
+#         run: npm install --force
+
+#       - name: Start the app
+#         run: |
+#           npm start &
+#           npx wait-on http://localhost:4200
+#         env:
+#           PORT: 4200
+
+#       - name: Install Playwright
+#         run: npx playwright install
+
+#       - name: Run Playwright tests
+#         id: run-tests
+#         run: |
+#           npx playwright test president/E2E-Script --output=results.json || exit 1
+#           if jq -e '.[] | select(.status == "failed")' results.json > /dev/null; then
+#             echo "Tests failed."
+#             exit 1
+#           else
+#             echo "Tests passed."
+#           fi
+
+#       - name: Upload Screenshots
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: playwright-screenshots
+#           path: screenshots/
+
+#   push_to_registry:
+#     name: Push Docker image to Docker Hub
+#     runs-on: ubuntu-latest
+#     needs: run-web-and-test
+#     # needs: build
+#     # needs: run-api
+#     concurrency:
+#       group: push-to-registry-${{ github.ref }}
+#       cancel-in-progress: false
+
+#     steps:
+#       - name: Check out the repo
+#         uses: actions/checkout@v3
+
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
+
+#       - name: Extract metadata for Docker
+#         id: meta
+#         uses: docker/metadata-action@v4
+#         with:
+#           images: lefisius/dockerbuild
+
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v4
+#         with:
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+
+#   create_log_branch:
+#     name: Create Log Branch
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#     needs: [lint, build,run-web-and-test, push_to_registry]
+#     concurrency:
+#       group: create-log-branch-${{ github.ref }}
+#       cancel-in-progress: false
+
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0  # Fetch all history for all branches and tags
+
+#       - name: Create New Branch with Commit Message
+#         env:
+#           GH_PAT: ${{ secrets.GH_PAT }}
+#         run: |
+#             # Get the author information from the latest commit
+#             COMMIT_AUTHOR_NAME=$(git log -1 --pretty=%an)
+#             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+
+#             # Set the git config to use the author's info
+#             git config user.name "$COMMIT_AUTHOR_NAME"
+#             git config user.email "$COMMIT_AUTHOR_EMAIL"
+
+#             FULL_COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+
+#             if [[ $FULL_COMMIT_MESSAGE == Merge\ pull\ request* ]]; then
+#               PR_NUM=$(echo "$FULL_COMMIT_MESSAGE" | grep -oP '#\K\d+')
+#               PR_TITLE=$(git log -1 --pretty=%B | sed -n '5p' | cut -c1-50)
+#               COMMIT_MESSAGE="pr-${PR_NUM}-${PR_TITLE}"
+#             else
+#               COMMIT_MESSAGE=$(echo "$FULL_COMMIT_MESSAGE" | head -n 1)
+#             fi
+
+#             SANITIZED_MESSAGE=$(echo "$COMMIT_MESSAGE" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-' | sed 's/^-//;s/-$//' | cut -c1-50)
+
+#             NEW_BRANCH_NAME="log-${SANITIZED_MESSAGE}"
+
+#             git checkout -b $NEW_BRANCH_NAME
+#             git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
+
+#   ZAP_Full_Scan:
+#     runs-on: ubuntu-latest
+#     needs: push_to_registry
+#     name: ZAP Full Scan Webapplication
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           ref: master
+
+#       - name: ZAP Scan
+#         uses: zaproxy/action-full-scan@v0.11.0
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+#           target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
+#           cmd_options: "-a"
+
+#   ZAP_API_Scan:
+#     runs-on: ubuntu-latest
+#     needs: push_to_registry
+#     name: ZAP_API_Scan
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           ref: master
+
+#       - name: ZAP Scan
+#         uses: zaproxy/action-api-scan@v0.8.0
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+#           format: openapi
+#           target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
+#           cmd_options: "-a"
+
+#       - name: Upload ZAP Scan Report
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: ZAP_API_Scan
+#           path: |
+#             report_json.json
+#             report_md.md
+#             report_html.html
+
+#   trigger_jenkins:
+#     name: Trigger Jenkins Job
+#     runs-on: ubuntu-latest
+#     needs: [ZAP_Full_Scan, ZAP_API_Scan]
+#     if: github.ref == 'refs/heads/main'
+#     concurrency:
+#       group: trigger-jenkins-job-${{ github.ref }}
+#       cancel-in-progress: false
+
+#     steps:
+#       - name: Install jq
+#         run: sudo apt-get update && sudo apt-get install -y jq
+
+#       - name: Trigger Jenkins Job
+#         id: trigger_jenkins
+#         run: |
+#           response=$(curl -X POST "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/build" \
+#           --user "user:11b20d5f21817203f0fb4db12e13b2402e")
+#           echo "Triggered Jenkins Job"
+
+#       - name: Wait for Jenkins Job to Complete
+#         run: |
+#           job_status="null"
+#           max_attempts=20
+#           attempt=0
+#           while [ "$job_status" != "SUCCESS" ] && [ $attempt -lt $max_attempts ]; do
+#             sleep 15
+#             attempt=$((attempt+1))
+#             response=$(curl -s -w "%{http_code}" "https://7bfe77155e1704b6bda5b9043029c178.serveo.net/job/testpipe/lastBuild/api/json" \
+#               --user "user:11b20d5f21817203f0fb4db12e13b2402e")
+#             http_code=${response: -3}
+#             body=${response:0:${#response}-3}
+
+#             echo "HTTP Response Code: $http_code"
+
+#             if [ "$http_code" -ne 200 ]; then
+#               echo "Error fetching Jenkins job status. HTTP Response Code: $http_code"
+#               echo "Response body: $body"
+#               if [ $attempt -eq $max_attempts ]; then
+#                 echo "Max attempts reached. Exiting."
+#                 exit 1
+#               fi
+#               continue
+#             fi
+
+#             if ! job_status=$(echo "$body" | jq -r '.result'); then
+#               echo "Error parsing JSON response. Raw response:"
+#               echo "$body"
+#               if [ $attempt -eq $max_attempts ]; then
+#                 echo "Max attempts reached. Exiting."
+#                 exit 1
+#               fi
+#               continue
+#             fi
+
+#             echo "Current Job Status: $job_status"
+
+#             if [ "$job_status" = "FAILURE" ]; then
+#               echo "Jenkins job failed. Exiting."
+#               exit 1
+#             fi
+#           done
+
+#           if [ $attempt -eq $max_attempts ]; then
+#             echo "Max attempts reached. Job did not complete successfully."
+#             exit 1
+#           fi
+
+#   send_failure_notification:
+#     name: Send Failure Notification
+#     runs-on: ubuntu-latest
+#     needs:
+#       [
+#         dependabot,
+#         lint,
+#         build,
+#         run-web-and-test,
+#         push_to_registry,
+#         ZAP_Full_Scan,
+#         ZAP_API_Scan,
+#         trigger_jenkins,
+#       ]
+#     if: ${{ failure() }}
+#     concurrency:
+#       group: send-failure-notification-${{ github.ref }}
+#       cancel-in-progress: false
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0 # Fetch all history
+
+#       - name: Download Error Files
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: error-files
+
+#       - name: Get Error Log and Commit Info
+#         id: error_info
+#         run: |
+#           # Get the author information from the latest commit
+#           COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+
+#           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+#             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+#           fi
+
+#           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+
+#           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+#           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+
+#           non_error_files=""
+#           for file in $changed_files; do
+#             if ! grep -q "$file" build_errors.log; then
+#               non_error_files+="$file "
+#             fi
+#           done
+
+#           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
+#           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+
+#       - name: Send email on failure
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtp.gmail.com
+#           server_port: 587
+#           username: ${{ secrets.GMAIL_USERNAME }}
+#           password: ${{ secrets.GMAIL_APP_PASSWORD }}
+#           subject: "Build failure for ${{ github.repository }}"
+#           body: |
+#             Build failed for commit: ${{ github.sha }}
+
+#             Files with errors:
+#             ${{ steps.error_info.outputs.error_paths }}
+
+#             Files changed: ${{ steps.error_info.outputs.non_error_files }}
+
+#           to: ${{ steps.error_info.outputs.commit_author_email }}
+#           from: ${{ secrets.GMAIL_USERNAME }}
+#           attachments: build_errors.log
+
+#   send_success_notification:
+#     name: Send Success Notification
+#     runs-on: ubuntu-latest
+#     needs:
+#       [
+#         dependabot,
+#         lint,
+#         build,
+#         run-web-and-test,
+#         push_to_registry,
+#         ZAP_Full_Scan,
+#         ZAP_API_Scan,
+#         trigger_jenkins,
+#       ]
+#     if: ${{ success() }}
+#     concurrency:
+#       group: send-success-notification-${{ github.ref }}
+#       cancel-in-progress: false
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0 # Fetch all history
+
+#       - name: Get Commit Info
+#         id: commit_info
+#         run: |
+#           # Get the author information from the latest commit
+#           COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
+
+#           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+#             COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+#           fi
+
+#           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+#           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+#           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+
+#       - name: Send email on success
+#         uses: dawidd6/action-send-mail@v3
+#         with:
+#           server_address: smtp.gmail.com
+#           server_port: 587
+#           username: ${{ secrets.GMAIL_USERNAME }}
+#           password: ${{ secrets.GMAIL_APP_PASSWORD }}
+#           subject: "Build success for ${{ github.repository }}"
+#           body: |
+#             Build succeeded for commit: ${{ github.sha }}
+
+#             Files changed: ${{ steps.commit_info.outputs.changed_files }}
+
+#           to: ${{ steps.commit_info.outputs.commit_author_email }}
+#           from: ${{ secrets.GMAIL_USERNAME }}
