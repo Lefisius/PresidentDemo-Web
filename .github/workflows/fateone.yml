@@ -7,10 +7,10 @@ concurrency:
 on:
   push:
     branches:
-      - feature/deployment-with-cicd
+      - main
   pull_request:
     branches:
-      - feature/deployment-with-cicd
+      - main
 
 jobs:
   dependabot:
@@ -39,13 +39,14 @@ jobs:
     needs: dependabot
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: false
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          VALIDATE_ALL_CODEBASE: true    # เปลี่ยนจาก false เป็น true ถ้าต้องการให้ตรวจสอบโค้ดทั้งหมด
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }} 
+          DEFAULT_BRANCH: main  # ระบุ branch ที่ต้องการตรวจสอบ
 
   build:
     name: Build Project
