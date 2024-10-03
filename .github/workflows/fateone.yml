@@ -221,10 +221,6 @@ jobs:
           git checkout -b $NEW_BRANCH_NAME
           git push https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git $NEW_BRANCH_NAME
 
-
-
-
-
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
