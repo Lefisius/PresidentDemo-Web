@@ -59,11 +59,11 @@ jobs:
                 fi
 
             - name: Upload Lint Errors
-              if: ${{ steps.linter.outcome == 'failure' }}
               uses: actions/upload-artifact@v3
               with:
                 name: lint-errors
                 path: .github/linter.log
+
 
 
   build:
