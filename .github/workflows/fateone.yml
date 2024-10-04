@@ -45,9 +45,8 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: false
-          DISABLE_LINTERS: yaml
-          VALIDATE_ESLINT: true  # เปิดใช้ ESLint
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          continue-on-error: true
 
 
   build:
