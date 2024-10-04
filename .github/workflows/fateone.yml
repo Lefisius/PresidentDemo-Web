@@ -199,7 +199,6 @@ jobs:
         run-web-and-test,
         ZAP_Full_Scan_Before,
         ZAP_API_Scan_Before,
-
       ]
     if: ${{ failure() }}
     concurrency:
@@ -221,26 +220,20 @@ jobs:
         run: |
           # Get the author information from the latest commit
           COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
           fi
-
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-
           non_error_files=""
           for file in $changed_files; do
             if ! grep -q "$file" build_errors.log; then
               non_error_files+="$file "
             fi
           done
-
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -251,13 +244,10 @@ jobs:
           subject: "Build failure for ${{ github.repository }}"
           body: |
             Build failed for commit: ${{ github.sha }}
-
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
-
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-
-          to: ${{ steps.error_info.outputs.commit_author_email }}
+          to: theerapat1302@gmail.com
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
@@ -288,12 +278,15 @@ jobs:
         run: |
           # Get the author information from the latest commit
           COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
-
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)' || true)
           fi
-
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          # Check if there are changes
+          if git diff --quiet HEAD~1 HEAD; then
+            changed_files=""
+          else
+            changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          fi
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
 
@@ -310,5 +303,5 @@ jobs:
 
             Files changed: ${{ steps.commit_info.outputs.changed_files }}
 
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+          to: theerapat1302@gmail.com
           from: ${{ secrets.GMAIL_USERNAME }}
