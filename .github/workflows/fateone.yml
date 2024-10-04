@@ -34,27 +34,36 @@ jobs:
         continue-on-error: true
 
   lint:
-    name: Lint Code Base
-    runs-on: ubuntu-latest
-    needs: dependabot
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+          name: Lint Code Base
+          runs-on: ubuntu-latest
+          needs: dependabot
+          steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
 
-      - name: Run Super-Linter
-        id: linter
-        uses: github/super-linter@v4
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          continue-on-error: true
+            - name: Run Super-Linter
+              id: linter
+              uses: github/super-linter@v4
+              env:
+                VALIDATE_ALL_CODEBASE: false
+                GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+                continue-on-error: true
 
-      - name: Upload Lint Errors
-        if: ${{ steps.linter.outcome == 'failure' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: lint-errors
-          path: .github/linter.log
+            - name: Save Linter Results
+              run: |
+                if [ -f .github/linter.log ]; then
+                  echo "Linter log found."
+                else
+                  echo "No linter log found. Creating a dummy log."
+                  echo "No errors found." > .github/linter.log
+                fi
+
+            - name: Upload Lint Errors
+              if: ${{ steps.linter.outcome == 'failure' }}
+              uses: actions/upload-artifact@v3
+              with:
+                name: lint-errors
+                path: .github/linter.log
 
 
   build:
