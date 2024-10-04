@@ -256,7 +256,7 @@ jobs:
 
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
 
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+          to: ${{ steps.error_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
@@ -308,5 +308,5 @@ jobs:
 
             Files changed: ${{ steps.commit_info.outputs.changed_files }}
 
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
