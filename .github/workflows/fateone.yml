@@ -226,8 +226,10 @@ jobs:
           fi
 
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          echo "Changed files: $changed_files"
 
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          echo "Error paths: $error_paths"
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
 
           non_error_files=""
@@ -236,6 +238,7 @@ jobs:
               non_error_files+="$file "
             fi
           done
+          echo "Non error files: $non_error_files"
 
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
