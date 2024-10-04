@@ -47,7 +47,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Run Super-Linter
         uses: github/super-linter@v4
@@ -76,7 +76,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm install --legacy-peer-deps
 
       - name: Build Project
         id: build
@@ -107,7 +107,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm install --legacy-peer-deps
 
       - name: Start Angular application
         run: npm run start
