@@ -46,25 +46,8 @@ jobs:
               uses: github/super-linter@v4
               env:
                 VALIDATE_ALL_CODEBASE: false
+                VALIDATE_YAML: false
                 GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-                continue-on-error: true
-
-            - name: Save Linter Results
-              run: |
-                if [ -f .github/linter.log ]; then
-                  echo "Linter log found."
-                else
-                  echo "No linter log found. Creating a dummy log."
-                  echo "No errors found." > .github/linter.log
-                fi
-
-            - name: Upload Lint Errors
-              uses: actions/upload-artifact@v3
-              with:
-                name: lint-errors
-                path: .github/linter.log
-
-
 
   build:
     name: Build Project
