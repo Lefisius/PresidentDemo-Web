@@ -161,7 +161,7 @@ jobs:
 
   ZAP_API_Scan_Before:
     runs-on: ubuntu-latest
-    needs: run-web-and-test
+    needs: build
     name: ZAP_API_Scan_Before
     steps:
       - name: Checkout
