@@ -191,14 +191,7 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [
-        dependabot,
-        lint,
-        build,
-        # run-web-and-test,
-        # ZAP_Full_Scan_Before,
-        ZAP_API_Scan_Before,
-      ]
+    needs: [dependabot, lint, build, ZAP_API_Scan_Before]
     if: ${{ failure() }}
     concurrency:
       group: send-failure-notification-${{ github.ref }}
@@ -214,6 +207,11 @@ jobs:
         with:
           name: error-files
 
+      # แสดงเนื้อหาไฟล์ build_errors.log เพื่อ debug
+      - name: Display Error Log
+        run: |
+          cat build_errors.log
+
       - name: Get Error Log and Commit Info
         id: error_info
         run: |
@@ -226,11 +224,11 @@ jobs:
           fi
 
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          echo "Changed files: $changed_files"
 
+          # ตรวจสอบว่ามี path ที่ error ถูกดึงมาหรือไม่
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "Error paths: $error_paths"
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+          echo "Error paths found: $error_paths"
 
           non_error_files=""
           for file in $changed_files; do
@@ -238,7 +236,6 @@ jobs:
               non_error_files+="$file "
             fi
           done
-          echo "Non error files: $non_error_files"
 
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
