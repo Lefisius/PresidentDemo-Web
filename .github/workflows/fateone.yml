@@ -189,119 +189,126 @@ jobs:
             report_html.html
 
   send_failure_notification:
-    name: Send Failure Notification
-    runs-on: ubuntu-latest
-    needs:
-      [
-        dependabot,
-        lint,
-        build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
-        ZAP_API_Scan_Before,
-      ]
-    if: ${{ failure() }}
-    concurrency:
-      group: send-failure-notification-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch all history
+              name: Send Failure Notification
+              runs-on: ubuntu-latest
+              needs:
+                [
+                  dependabot,
+                  lint,
+                  build,
+                  run-web-and-test,
+                  ZAP_Full_Scan_Before,
+                  ZAP_API_Scan_Before,
 
-      - name: Download Error Files
-        uses: actions/download-artifact@v3
-        with:
-          name: error-files
+                ]
+              if: ${{ failure() }}
+              concurrency:
+                group: send-failure-notification-${{ github.ref }}
+                cancel-in-progress: false
+              steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v3
+                  with:
+                    fetch-depth: 0 # Fetch all history
 
-      - name: Get Error Log and Commit Info
-        id: error_info
-        run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
-          fi
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-          non_error_files=""
-          for file in $changed_files; do
-            if ! grep -q "$file" build_errors.log; then
-              non_error_files+="$file "
-            fi
-          done
-          echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
-          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-      - name: Send email on failure
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Build failure for ${{ github.repository }}"
-          body: |
-            Build failed for commit: ${{ github.sha }}
-            Files with errors:
-            ${{ steps.error_info.outputs.error_paths }}
-            Files changed: ${{ steps.error_info.outputs.non_error_files }}
-          to: theerapat1302@gmail.com
-          from: ${{ secrets.GMAIL_USERNAME }}
-          attachments: build_errors.log
+                - name: Download Error Files
+                  uses: actions/download-artifact@v3
+                  with:
+                    name: error-files
+
+                - name: Get Error Log and Commit Info
+                  id: error_info
+                  run: |
+                    # Get the author information from the latest commit
+                    COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+
+                    if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+                      COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+                    fi
+
+                    changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+
+                    error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+                    echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+
+                    non_error_files=""
+                    for file in $changed_files; do
+                      if ! grep -q "$file" build_errors.log; then
+                        non_error_files+="$file "
+                      fi
+                    done
+
+                    echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
+                    echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+
+                - name: Send email on failure
+                  uses: dawidd6/action-send-mail@v3
+                  with:
+                    server_address: smtp.gmail.com
+                    server_port: 587
+                    username: ${{ secrets.GMAIL_USERNAME }}
+                    password: ${{ secrets.GMAIL_APP_PASSWORD }}
+                    subject: "Build failure for ${{ github.repository }}"
+                    body: |
+                      Build failed for commit: ${{ github.sha }}
+
+                      Files with errors:
+                      ${{ steps.error_info.outputs.error_paths }}
+
+                      Files changed: ${{ steps.error_info.outputs.non_error_files }}
+
+                    to: ${{ steps.error_info.outputs.commit_author_email }}
+                    from: ${{ secrets.GMAIL_USERNAME }}
+                    attachments: build_errors.log
 
   send_success_notification:
-    name: Send Success Notification
-    runs-on: ubuntu-latest
-    needs:
-      [
-        dependabot,
-        lint,
-        build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
-        ZAP_API_Scan_Before,
-      ]
-    if: ${{ success() }}
-    concurrency:
-      group: send-success-notification-${{ github.ref }}
-      cancel-in-progress: false
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Fetch all history
+              name: Send Success Notification
+              runs-on: ubuntu-latest
+              needs:
+                [
+                  dependabot,
+                  lint,
+                  build,
+                  run-web-and-test,
+                  ZAP_Full_Scan_Before,
+                  ZAP_API_Scan_Before,
+                ]
+              if: ${{ success() }}
+              concurrency:
+                group: send-success-notification-${{ github.ref }}
+                cancel-in-progress: false
+              steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v3
+                  with:
+                    fetch-depth: 0 # Fetch all history
 
-      - name: Get Commit Info
-        id: commit_info
-        run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)' || true)
-          fi
-          # Check if there are changes
-          if git diff --quiet HEAD~1 HEAD; then
-            changed_files=""
-          else
-            changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          fi
-          echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-          echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
+                - name: Get Commit Info
+                  id: commit_info
+                  run: |
+                    # Get the author information from the latest commit
+                    COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
 
-      - name: Send email on success
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Build success for ${{ github.repository }}"
-          body: |
-            Build succeeded for commit: ${{ github.sha }}
+                    if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
+                      COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+                    fi
 
-            Files changed: ${{ steps.commit_info.outputs.changed_files }}
+                    changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+                    echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+                    echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
 
-          to: theerapat1302@gmail.com
-          from: ${{ secrets.GMAIL_USERNAME }}
+                - name: Send email on success
+                  uses: dawidd6/action-send-mail@v3
+                  with:
+                    server_address: smtp.gmail.com
+                    server_port: 587
+                    username: ${{ secrets.GMAIL_USERNAME }}
+                    password: ${{ secrets.GMAIL_APP_PASSWORD }}
+                    subject: "Build success for ${{ github.repository }}"
+                    body: |
+                      Build succeeded for commit: ${{ github.sha }}
+
+                      Files changed: ${{ steps.commit_info.outputs.changed_files }}
+
+                    to: ${{ steps.commit_info.outputs.commit_author_email }}
+                    from: ${{ secrets.GMAIL_USERNAME }}
