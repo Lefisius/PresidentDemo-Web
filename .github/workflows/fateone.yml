@@ -22,16 +22,22 @@ jobs:
 
       - name: Set up Dependabot Configuration
         run: |
-          echo "version: 2" > .github/dependabot.yml
-          echo "updates:" >> .github/dependabot.yml
-          echo "  - package-ecosystem: \"npm\"" >> .github/dependabot.yml
-          echo "    directory: \"/\"" >> .github/dependabot.yml
-          echo "    schedule:" >> .github/dependabot.yml
-          echo "      interval: \"monthly\"" >> .github/dependabot.yml
-          echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
-          echo "Dependabot configuration created"
-        shell: bash
-        continue-on-error: true
+          {
+            echo "version: 2" > .github/dependabot.yml
+            echo "updates:" >> .github/dependabot.yml
+            echo "  - package-ecosystem: \"npm\"" >> .github/dependabot.yml
+            echo "    directory: \"/\"" >> .github/dependabot.yml
+            echo "    schedule:" >> .github/dependabot.yml
+            echo "      interval: \"monthly\"" >> .github/dependabot.yml
+            echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
+          } >> output.txt
+
+      - name: Echo variable
+        run: |
+          echo "This is a variable: ${VAR_NAME}"
+
+      - name: Verify Dependabot Configuration
+        run: cat .github/dependabot.yml
 
   lint:
     name: Lint Code Base
