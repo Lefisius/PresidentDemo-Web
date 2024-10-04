@@ -82,7 +82,6 @@ jobs:
           exit_code=$?
           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
           exit $exit_code
-
       - name: Upload Error Files
         if: ${{ env.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
@@ -246,7 +245,7 @@ jobs:
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-          to: ${{ steps.error_info.outputs.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
@@ -274,12 +273,18 @@ jobs:
       - name: Get Commit Info
         id: commit_info
         run: |
-          # Get the author information from the latest commit
           COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)' || true)
           fi
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          if [ -z "$COMMIT_AUTHOR_EMAIL" ]; then
+            COMMIT_AUTHOR_EMAIL="default@example.com" # เพิ่มค่า default email หากไม่มีข้อมูล
+          fi
+          if git diff --quiet HEAD~1 HEAD; then
+            changed_files=""
+          else
+            changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          fi
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
       - name: Send email on success
@@ -293,5 +298,5 @@ jobs:
           body: |
             Build succeeded for commit: ${{ github.sha }}
             Files changed: ${{ steps.commit_info.outputs.changed_files }}
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
