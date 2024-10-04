@@ -216,11 +216,12 @@ jobs:
       - name: Get Error Log and Commit Info
         id: error_info
         run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # สำหรับ push event
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+          else
+            # สำหรับ pull_request event
+            COMMIT_AUTHOR_EMAIL="${{ github.actor }}"
           fi
 
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
