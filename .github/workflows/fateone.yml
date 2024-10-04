@@ -191,13 +191,12 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs:
-      [
+    needs: [
         dependabot,
         lint,
         build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
+        # run-web-and-test,
+        # ZAP_Full_Scan_Before,
         ZAP_API_Scan_Before,
       ]
     if: ${{ failure() }}
@@ -263,13 +262,12 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs:
-      [
+    needs: [
         dependabot,
         lint,
         build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
+        # run-web-and-test,
+        # ZAP_Full_Scan_Before,
         ZAP_API_Scan_Before,
       ]
     if: ${{ success() }}
