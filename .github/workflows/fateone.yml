@@ -45,7 +45,7 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: false
-          DISABLE_LINTERS: 'shellcheck'
+          DISABLE_LINTERS: yaml
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
   build:
