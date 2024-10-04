@@ -289,16 +289,10 @@ jobs:
           COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
 
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)' || true)
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
           fi
 
-          # Check if there are changes
-          if git diff --quiet HEAD~1 HEAD; then
-            changed_files=""
-          else
-            changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-          fi
-
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
 
