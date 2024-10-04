@@ -246,9 +246,10 @@ jobs:
           body: |
             Build failed for commit: ${{ github.sha }}
 
-            Commit by: ${{ steps.error_info.outputs.commit_author_email }}
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
+
+            Files changed: ${{ steps.error_info.outputs.non_error_files }}
 
           to: ${{ steps.error_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
