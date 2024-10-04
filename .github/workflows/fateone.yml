@@ -47,7 +47,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install --force
 
       - name: Run lint
         run: npm run lint
@@ -73,7 +73,7 @@ jobs:
           node-version: "16.20.2"
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install --force
 
       - name: Build Project
         id: build
@@ -82,7 +82,6 @@ jobs:
           exit_code=$?
           echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
           exit $exit_code
-
       - name: Upload Error Files
         if: ${{ env.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
