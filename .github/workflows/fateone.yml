@@ -217,10 +217,25 @@ jobs:
         id: error_info
         run: |
           # Get the author information from the latest commit
+          if [ -z "$(git log -1 --pretty=%H)" ]; then
+            echo "No commits found in the repository."
+            exit 0
+          fi
+
           COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
           fi
+
+          # Check if build_errors.log file exists
+          if [ ! -f build_errors.log ]; then
+            echo "No error log file found."
+            echo "error_paths=" >> $GITHUB_OUTPUT
+            echo "non_error_files=" >> $GITHUB_OUTPUT
+            echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
@@ -232,6 +247,13 @@ jobs:
           done
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+
+      - name: Debugging Step
+        run: |
+          echo "COMMIT_AUTHOR_EMAIL: $COMMIT_AUTHOR_EMAIL"
+          echo "Changed Files: $changed_files"
+          echo "Error Paths: $error_paths"
+
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -245,7 +267,7 @@ jobs:
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-          to: ${{ steps.error_info.outputs.commit_author_email }}
+          to: ${{ steps.error_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
