@@ -7,7 +7,8 @@ concurrency:
 on:
   push:
     branches:
-      - feature/test-error
+      # - feature/test-error
+      - main
   pull_request:
     branches:
       - main
@@ -255,7 +256,7 @@ jobs:
 
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
 
-          to: ${{ steps.error_info.outputs.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
