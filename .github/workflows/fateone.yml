@@ -186,6 +186,7 @@ jobs:
             report_json.json
             report_md.md
             report_html.html
+
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
@@ -222,10 +223,16 @@ jobs:
             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
           fi
 
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
-          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          # Check if build_errors.log exists before processing it
+          if [[ -f build_errors.log ]]; then
+            error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          else
+            echo "build_errors.log not found." >> $GITHUB_OUTPUT
+            error_paths=""
+          fi
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
 
           non_error_files=""
           for file in $changed_files; do
