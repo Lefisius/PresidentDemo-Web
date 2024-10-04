@@ -207,10 +207,16 @@ jobs:
         with:
           name: error-files
 
-      # แสดงเนื้อหาไฟล์ build_errors.log เพื่อ debug
-      - name: Display Error Log
+      - name: List downloaded files
+        run: ls -la
+
+      - name: Check if build_errors.log exists
         run: |
-          cat build_errors.log
+          if [[ -f build_errors.log ]]; then
+            echo "build_errors.log exists."
+          else
+            echo "build_errors.log does not exist."
+          fi
 
       - name: Get Error Log and Commit Info
         id: error_info
@@ -225,10 +231,13 @@ jobs:
 
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
 
-          # ตรวจสอบว่ามี path ที่ error ถูกดึงมาหรือไม่
-          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
-          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-          echo "Error paths found: $error_paths"
+          if [[ -f build_errors.log ]]; then
+            error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+            echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+            echo "Error paths found: $error_paths"
+          else
+            echo "No error paths found."
+          fi
 
           non_error_files=""
           for file in $changed_files; do
