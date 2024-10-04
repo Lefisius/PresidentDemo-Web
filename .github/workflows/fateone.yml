@@ -217,35 +217,22 @@ jobs:
       - name: Get Error Log and Commit Info
         id: error_info
         run: |
-          set -e
           # Get the author information from the latest commit
           COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
           fi
-
-          # Check if build_errors.log exists before processing it
-          if [[ ! -f build_errors.log ]]; then
-            echo "Error: build_errors.log not found."
-            exit 1
-          fi
-
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
           non_error_files=""
           for file in $changed_files; do
             if ! grep -q "$file" build_errors.log; then
               non_error_files+="$file "
             fi
           done
-
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -256,12 +243,9 @@ jobs:
           subject: "Build failure for ${{ github.repository }}"
           body: |
             Build failed for commit: ${{ github.sha }}
-
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
-
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-
           to: ${{ steps.error_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
