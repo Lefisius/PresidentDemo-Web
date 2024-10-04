@@ -191,7 +191,14 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs: [dependabot, lint, build, ZAP_API_Scan_Before]
+    needs: [
+        dependabot,
+        lint,
+        build,
+        # run-web-and-test,
+        # ZAP_Full_Scan_Before,
+        ZAP_API_Scan_Before,
+      ]
     if: ${{ failure() }}
     concurrency:
       group: send-failure-notification-${{ github.ref }}
@@ -200,41 +207,34 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Fetch all history
 
       - name: Download Error Files
         uses: actions/download-artifact@v3
         with:
           name: error-files
 
-      - name: Display Artifacts
-        run: ls -l # ตรวจสอบว่า artifact ถูกดาวน์โหลดมาหรือไม่
-
-      - name: Check if Error Log Exists
-        run: |
-          if [ -f build_errors.log ]; then
-            echo "Error log found"
-            cat build_errors.log
-          else
-            echo "No build_errors.log found"
-          fi
-
-      - name: Get Commit Info and Email
+      - name: Get Error Log and Commit Info
         id: error_info
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
+            # สำหรับ push event
             COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
           else
+            # สำหรับ pull_request event ใช้ email ชั่วคราว
             COMMIT_AUTHOR_EMAIL="${{ github.actor }}@noreply.github.com"
           fi
+          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
+          echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
+          non_error_files=""
+          for file in $changed_files; do
+            if ! grep -q "$file" build_errors.log; then
+              non_error_files+="$file "
+            fi
+          done
+          echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-
-      - name: Echo Commit Author Email
-        run: |
-          echo "Sending email to: $COMMIT_AUTHOR_EMAIL"
-        env:
-          COMMIT_AUTHOR_EMAIL: ${{ steps.error_info.outputs.commit_author_email }}
-
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -245,13 +245,10 @@ jobs:
           subject: "Build failure for ${{ github.repository }}"
           body: |
             Build failed for commit: ${{ github.sha }}
-
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
-
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-
-          to: ${{ steps.error_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
+          to: ${{ steps.error_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
 
