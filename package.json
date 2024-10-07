@@ -45,7 +45,7 @@
     "@angular-eslint/template-parser": "12.7.0",
     "@angular/cli": "~12.2.5",
     "@angular/compiler-cli": "~12.2.0",
-    "@playwright/test": "^1.46.0",
+    "@playwright/test": "^1.47.2",
     "@testing-library/angular": "^13.4.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@types/diff": "^5.2.1",
