@@ -63,7 +63,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-html-loader": "^1.0.0",
-    "jest-preset-angular": "^14.2.2",
+    "jest-preset-angular": "^14.2.4",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.0.3",
