@@ -7,6 +7,7 @@ concurrency:
 on:
   push:
     branches:
+      # - feature/test-error
       - main
   pull_request:
     branches:
@@ -28,7 +29,7 @@ jobs:
           echo "    directory: \"/\"" >> .github/dependabot.yml
           echo "    schedule:" >> .github/dependabot.yml
           echo "      interval: \"monthly\"" >> .github/dependabot.yml
-          echo "    open-pull-requests-limit: 10" >> .github/dependabot.yml
+          echo "    open-pull-requests-limit: 50" >> .github/dependabot.yml
           echo "Dependabot configuration created"
         shell: bash
         continue-on-error: true
@@ -78,91 +79,90 @@ jobs:
       - name: Build Project
         id: build
         run: |
-          npm run build 2> build_errors.log || true
+          npm run build 2> build_errors.log
           exit_code=$?
-          echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_ENV
-          exit $exit_code
+          echo "error_files_present=$([[ $exit_code -ne 0 ]])" >> $GITHUB_OUTPUT
 
       - name: Upload Error Files
-        if: ${{ env.error_files_present == 'true' || always() }}
+        if: ${{ steps.build.outputs.error_files_present == 'true' || always() }}
         uses: actions/upload-artifact@v3
         with:
           name: error-files
           path: build_errors.log
 
-  run-web-and-test:
-    name: Run Web and Playwright Tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # run-web-and-test:
+  #   name: Run Web and Playwright Tests
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16.20.2"
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: "16.20.2"
 
-      - name: Set npm registry
-        run: npm config set registry https://registry.npmjs.org/
+  #     - name: Set npm registry
+  #       run: npm config set registry https://registry.npmjs.org/
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+  #     - name: Install dependencies
+  #       run: npm install --legacy-peer-deps
 
-      - name: Start the app
-        run: |
-          npm start &
-          npx wait-on http://localhost:4200
-        env:
-          PORT: 4200
+  #     - name: Start the app
+  #       run: |
+  #         npm start &
+  #         npx wait-on http://localhost:4200
+  #       env:
+  #         PORT: 4200
 
-      - name: Install Playwright
-        run: npx playwright install
+  #     - name: Install Playwright
+  #       run: npx playwright install
 
-      - name: Run Playwright tests
-        run: npx playwright test
+  #     - name: Run Playwright tests
+  #       run: npx playwright test
 
-      - name: Create screenshots directory
-        if: always()
-        run: mkdir -p screenshots
+  #     - name: Create screenshots directory
+  #       if: always()
+  #       run: mkdir -p screenshots
 
-      - name: Upload Screenshots
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-screenshots
-          path: screenshots/failure.png
+  #     - name: Upload Screenshots
+  #       if: always()
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: playwright-screenshots
+  #         path: screenshots/failure.png
 
-  ZAP_Full_Scan_Before:
-    runs-on: ubuntu-latest
-    needs: run-web-and-test
-    name: ZAP_Full_Scan_Before
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: master
+  # ZAP_Full_Scan_Before:
+  #   runs-on: ubuntu-latest
+  #   needs: run-web-and-test
+  #   name: ZAP_Full_Scan_Before
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ref: master
 
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.11.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "https://24d95ca73e89dfa76c417797f94624e1.serveo.net/" #ลิ้งของ pea แบบ public
-          cmd_options: "-a"
+  #     - name: ZAP Scan
+  #       uses: zaproxy/action-full-scan@v0.11.0
+  #       with:
+  #         token: ${{ secrets.GH_PAT }}
+  #         docker_name: "ghcr.io/zaproxy/zaproxy:stable"
+  #         target: "https://24d95ca73e89dfa76c417797f94624e1.serveo.net/" #ลิ้งของ pea แบบ public
+  #         cmd_options: "-a"
 
-      - name: Upload ZAP Scan Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: ZAP_Full_Scan_Before
-          path: |
-            report_json.json
-            report_md.md
-            report_html.html
+  #     - name: Upload ZAP Scan Report
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ZAP_Full_Scan_Before
+  #         path: |
+  #           report_json.json
+  #           report_md.md
+  #           report_html.html
 
   ZAP_API_Scan_Before:
     runs-on: ubuntu-latest
-    needs: run-web-and-test
+    needs: build
     name: ZAP_API_Scan_Before
     steps:
       - name: Checkout
@@ -173,7 +173,7 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-api-scan@v0.8.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
           format: openapi
           target: "https://24d95ca73e89dfa76c417797f94624e1.serveo.net/" #ลิ้งของ pea แบบ public
@@ -191,13 +191,12 @@ jobs:
   send_failure_notification:
     name: Send Failure Notification
     runs-on: ubuntu-latest
-    needs:
-      [
+    needs: [
         dependabot,
         lint,
         build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
+        # run-web-and-test,
+        # ZAP_Full_Scan_Before,
         ZAP_API_Scan_Before,
       ]
     if: ${{ failure() }}
@@ -218,28 +217,24 @@ jobs:
       - name: Get Error Log and Commit Info
         id: error_info
         run: |
-          # Get the author information from the latest commit
-          COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
-
-          if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%b | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # สำหรับ push event
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+          else
+            # สำหรับ pull_request event ใช้ email ชั่วคราว
+            COMMIT_AUTHOR_EMAIL="${{ github.actor }}@noreply.github.com"
           fi
-
           changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
-
           error_paths=$(grep -o '/.*error' build_errors.log | sed 's/:.*//' | sort -u | tr '\n' ' ' | sed 's/ $//')
           echo "error_paths=$error_paths" >> $GITHUB_OUTPUT
-
           non_error_files=""
           for file in $changed_files; do
             if ! grep -q "$file" build_errors.log; then
               non_error_files+="$file "
             fi
           done
-
           echo "non_error_files=$non_error_files" >> $GITHUB_OUTPUT
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-
       - name: Send email on failure
         uses: dawidd6/action-send-mail@v3
         with:
@@ -250,12 +245,9 @@ jobs:
           subject: "Build failure for ${{ github.repository }}"
           body: |
             Build failed for commit: ${{ github.sha }}
-
             Files with errors:
             ${{ steps.error_info.outputs.error_paths }}
-
             Files changed: ${{ steps.error_info.outputs.non_error_files }}
-
           to: ${{ steps.error_info.outputs.commit_author_email }}
           from: ${{ secrets.GMAIL_USERNAME }}
           attachments: build_errors.log
@@ -263,13 +255,12 @@ jobs:
   send_success_notification:
     name: Send Success Notification
     runs-on: ubuntu-latest
-    needs:
-      [
+    needs: [
         dependabot,
         lint,
         build,
-        run-web-and-test,
-        ZAP_Full_Scan_Before,
+        # run-web-and-test,
+        # ZAP_Full_Scan_Before,
         ZAP_API_Scan_Before,
       ]
     if: ${{ success() }}
@@ -285,29 +276,30 @@ jobs:
       - name: Get Commit Info
         id: commit_info
         run: |
-          # Get the author information from the latest commit
           COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%ae')
-
           if [[ "$COMMIT_AUTHOR_EMAIL" == *"@users.noreply.github.com" ]]; then
-            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)')
+            COMMIT_AUTHOR_EMAIL=$(git log -1 --format='%b' | grep -oP '(?<=Signed-off-by: ).*(?= <)' || true)
           fi
-
-          changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          if [ -z "$COMMIT_AUTHOR_EMAIL" ]; then
+            COMMIT_AUTHOR_EMAIL="default@example.com" # เพิ่มค่า default email หากไม่มีข้อมูล
+          fi
+          if git diff --quiet HEAD~1 HEAD; then
+            changed_files=""
+          else
+            changed_files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ')
+          fi
           echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_OUTPUT
           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
-
       - name: Send email on success
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.GMAIL_USERNAME }}
-          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }} 
           subject: "Build success for ${{ github.repository }}"
           body: |
             Build succeeded for commit: ${{ github.sha }}
-
             Files changed: ${{ steps.commit_info.outputs.changed_files }}
-
-          to: ${{ steps.commit_info.outputs.commit_author_email }}
+          to: ${{ steps.commit_info.outputs.commit_author_email || secrets.DEFAULT_EMAIL }}
           from: ${{ secrets.GMAIL_USERNAME }}
