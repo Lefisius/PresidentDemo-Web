@@ -231,7 +231,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
-          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
+          target: "https://31dd9fd757bcdd3899aa4fda881084d5.serveo.net/"
           cmd_options: "-a"
 
   ZAP_API_Scan:
@@ -250,7 +250,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "ghcr.io/zaproxy/zaproxy:stable"
           format: openapi
-          target: "https://e628d8c0cdb8d05495ea252b22096c1f.serveo.net/"
+          target: "https://31dd9fd757bcdd3899aa4fda881084d5.serveo.net/"
           cmd_options: "-a"
 
       - name: Upload ZAP Scan Report
